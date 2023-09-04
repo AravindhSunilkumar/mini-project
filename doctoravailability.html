@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Manage Doctors' Available Time</h1>
+    <form action="/update_doctortime" method="post">
+        <label for="doctor_id">Select Doctor:</label>
+        <select name="doctor_id" id="doctor_id">
+            <option value="1">Doctor 1</option>
+            <option value="2">Doctor 2</option>
+            <!-- Add more doctor options here -->
+        </select><br><br>
+
+        <label for="day">Select Day:</label>
+        <select name="day" id="day">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <!-- Add more day options here -->
+        </select><br><br>
+
+        <label for="start_time">Start Time:</label>
+        <input type="time" name="start_time" required><br><br>
+
+        <label for="end_time">End Time:</label>
+        <input type="time" name="end_time" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
