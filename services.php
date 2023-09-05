@@ -108,52 +108,65 @@ if (isset($_POST['update_service'])) {
   //header("Location: doctors_list.php");
   //exit();
 }
+
+
 if (isset($_POST['update_image'])) {
-  $service_id = $_POST['service_id'];
+  if ($_FILES['new_image']['error'] === UPLOAD_ERR_OK) {
+    // Get the service ID from the form
+    $service_id = $_POST['service_id'];
 
-  // Check if a file was uploaded successfully
-  if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === UPLOAD_ERR_OK) {
-    $target_dir = "img/service_images/";
-    $file_extension = strtolower(pathinfo($_FILES["new_image"]["name"], PATHINFO_EXTENSION));
-    $new_filename = uniqid() . '.' . $file_extension;
-    $target_file = $target_dir . $new_filename;
-
-    // Delete the previous image if it exists
-    $get_previous_image_sql = "SELECT service_image FROM tbl_services WHERE service_id = '$service_id'";
-    $previous_image_result = $conn->query($get_previous_image_sql);
-
-    if ($previous_image_result && $previous_image_result->num_rows === 1) {
-      $previous_image = $previous_image_result->fetch_assoc()['service_image'];
-      if ($previous_image && file_exists($previous_image)) {
-        unlink($previous_image);
-      }
-    }
+    // Define the upload directory and target file name
+    $upload_dir = 'img/service_images/';
+    $target_file = $upload_dir . basename($_FILES['new_image']['name']);
 
     // Move the uploaded file to the target directory
-    if (move_uploaded_file($_FILES["new_image"]["tmp_name"], $target_file)) {
-      // Update the service's image path in the database
+    if (move_uploaded_file($_FILES['new_image']['tmp_name'], $target_file)) {
+      $get_image_sql = "SELECT service_image FROM tbl_services WHERE service_id = ?";
+      $stmt = $conn->prepare($get_image_sql);
+      $stmt->bind_param("i", $service_id);
+      $stmt->execute();
+      $stmt->bind_result($old_image_path);
+      $stmt->fetch();
+      $stmt->close();
+
+      // Delete the old image if it exists
+      if ($old_image_path && file_exists($old_image_path)) {
+        unlink($old_image_path);
+      }
+      // Image upload successful
+
+      // Update the database with the new image file name
+      $new_image_name = $target_file; // Full path to the image
+
+      // Update the service_image column in the tbl_services table
       $update_image_sql = "UPDATE tbl_services SET service_image = ? WHERE service_id = ?";
+
+      // Create a prepared statement
       $stmt = $conn->prepare($update_image_sql);
-      $stmt->bind_param("si", $target_file, $service_id);
+
+      // Bind parameters
+      $stmt->bind_param("si", $new_image_name, $service_id);
 
       if ($stmt->execute()) {
-        // Image update successful
-        echo "<script>alert('Image updated successfully.');</script>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
+        // Image update successful
+        // Delete the previous image (if it exists)
+
+
+        $stmt->close();
       } else {
-        // Image update failed
-        echo "<script>alert('Error updating image in the database: " . $stmt->error . "');</script>";
+        echo "Error updating record: " . $stmt->error;
       }
     } else {
-      // Failed to move the uploaded file
-      echo "<script>alert('Failed to move the uploaded file.');</script>";
+      echo "Error moving uploaded file.";
     }
   } else {
-    // No file uploaded or an error occurred during upload
-    echo "<script>alert('Error uploading file.');</script>";
+    echo "Error uploading file.";
   }
 }
+
+
 
 
 
@@ -260,7 +273,28 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
       </div>
     </div>
     <div class="service-list">
-      <h4>Service List</h4>
+      <div class="row">
+        <h4>Service List</h4>
+        <div class="col">
+          <form class="d-flex" onsubmit="handleSearch(); return false;">
+            <div class="d-flex search-container">
+              <div class="d-flex">
+                <input id="searchInput" class="form-control me-2 btn-outline-success custom-input" type="search" placeholder="Search" aria-label="Search">
+              </div>
+              <div class="d-flex">
+                <button class="btn btn-outline-success  custom-input2" type="submit">Search</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col justify-content-center align-items-center">
+          <div class="right-corner d-flex justify-content-center">
+            <form action="add_patient.php" method="post">
+              <input class="btn btn-success" type="submit" value="ADD">
+            </form>
+          </div>
+        </div>
+      </div>
       <div class="table-responsive">
         <table class="col-* table table-success table-striped shadow-lg">
           <thead>
@@ -286,11 +320,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
                     <img src="<?= $services['service_image']; ?>" alt="" class="img-icon">
                     <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data" class="upload-form">
                       <input type="file" name="new_image" accept="image/*">
-                      <input type="hidden" name="service_id" value="<?= $service_id['service_id']; ?>">
+                      <input type="hidden" name="service_id" value="<?= $services['service_id']; ?>">
                       <input class="btn btn-primary" type="submit" name="update_image" value="Change Image">
                     </form>
                   </div>
                 </td>
+
                 <td><?= $services['additional_info']; ?></td>
                 <td><?= $services['created_at']; ?></td>
                 <div class="d-flex">
