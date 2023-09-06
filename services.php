@@ -31,8 +31,8 @@ function addService()
             if (isset($service_name) && isset($service_info) &&  isset($fileAddress)) {
 
               // Insert data into the table
-              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info ) 
-                    VALUES (?, ?, ?)";
+              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info,status ) 
+                    VALUES (?, ?, ?,'Active')";
 
               $stmt = $conn->prepare($sql);
               $stmt->bind_param("sss", $service_name, $fileAddress, $service_info);
@@ -197,7 +197,25 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
   }
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_status"])) {
+  $service_id = $_POST["service_id"];
+  $new_status = $_POST["new_status"];
 
+  // Update the service status in the database
+  $update_sql = "UPDATE tbl_services SET status = ? WHERE service_id = ?";
+  $stmt = $conn->prepare($update_sql);
+  $stmt->bind_param("si", $new_status, $service_id);
+
+  if ($stmt->execute()) {
+    // Status updated successfully
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+  } else {
+    echo "Error updating status: " . $stmt->error;
+  }
+
+  $stmt->close();
+}
 
 
 
@@ -255,7 +273,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
             <h3>Service Management</h3>
           </center>
           <center>
-            <div class=flex">
+            <div class="flex">
 
               <label for="service_name">Service Name:</label>
               <input type="text" id="service_name" name="service_name" required />
@@ -303,6 +321,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
               <th>Service Name</th>
               <th>Service Image</th>
               <th>Additional Info</th>
+              <th>Status</th>
               <th>created_at</th>
               <th>update</th>
 
@@ -325,8 +344,49 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
                     </form>
                   </div>
                 </td>
+                
 
                 <td><?= $services['additional_info']; ?></td>
+                <td>
+                  <div class="onoffswitch">
+                    <input type="checkbox" class="onoffswitch-checkbox" id="serviceSwitch<?= $services['service_id']; ?>" <?= $services['status'] === 'Active' ? 'checked' : ''; ?>>
+                    <label class="onoffswitch-label swi" for="serviceSwitch<?= $services['service_id']; ?>" onclick="toggleServiceStatus(<?= $services['service_id']; ?>, '<?= $services['status']; ?>')">
+                      <span class="onoffswitch-inner"></span>
+                      <span class="onoffswitch-switch"></span>
+                    </label>
+                  </div>
+                </td>
+                <!-- JavaScript to handle status toggle -->
+                <script>
+                  function toggleServiceStatus(serviceId, currentStatus) {
+                    var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+
+                    var confirmation = confirm("Are you sure you want to change the status to " + newStatus + "?");
+                    if (confirmation) {
+                      // Send an AJAX request to update the status
+                      $.ajax({
+                        type: "POST",
+                        url: "update_status.php", // Replace with the actual PHP script that updates the status
+                        data: {
+                          service_id: serviceId,
+                          new_status: newStatus
+                        },
+                        success: function(response) {
+                          if (response === 'success') {
+                            // Status updated successfully
+                            location.reload(); // Reload the page or update the status in the table dynamically
+                          } else {
+                            alert("Error updating status: " + response);
+                          }
+                        }
+                      });
+                    }
+                  }
+                </script>
+
+
+
+
                 <td><?= $services['created_at']; ?></td>
                 <div class="d-flex">
                   <!-- ... your existing table rows ... -->
@@ -346,6 +406,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
               <?php endforeach; ?>
         </table>
       </div>
+
 
       <!-- JavaScript to handle edit form display and submission -->
       <!-- ... your existing code ... -->
@@ -393,6 +454,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['servi
         </div>
       </div>
     </div>
+
     <script>
       function handleSearch() {
         var searchInput = document.getElementById("searchInput").value.toLowerCase();

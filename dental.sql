@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 04, 2023 at 04:52 PM
+-- Generation Time: Sep 06, 2023 at 06:22 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -79,6 +79,7 @@ CREATE TABLE `tbl_doctortime` (
   `slot_id` int(11) DEFAULT NULL,
   `A_start_time` time DEFAULT NULL,
   `A_end_time` time DEFAULT NULL,
+  `status` varchar(20) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -86,14 +87,14 @@ CREATE TABLE `tbl_doctortime` (
 -- Dumping data for table `tbl_doctortime`
 --
 
-INSERT INTO `tbl_doctortime` (`doctortime_id`, `doctor_id`, `service_id`, `slot_id`, `A_start_time`, `A_end_time`, `created_at`) VALUES
-(10, 22, 1, 2, '09:00:00', '12:00:00', '2023-09-01 17:11:10'),
-(11, 22, 1, 3, '09:00:00', '12:00:00', '2023-09-01 17:11:10'),
-(12, 22, 1, 4, '09:00:00', '12:00:00', '2023-09-01 17:11:10'),
-(13, 22, 1, 5, '09:00:00', '12:00:00', '2023-09-01 17:11:10'),
-(14, 22, 1, 6, '09:00:00', '12:00:00', '2023-09-01 17:11:10'),
-(15, 22, 1, 1, '09:00:00', '12:00:00', '2023-09-01 17:14:12'),
-(16, 26, 1, 6, '09:00:00', '12:00:00', '2023-09-01 18:14:04');
+INSERT INTO `tbl_doctortime` (`doctortime_id`, `doctor_id`, `service_id`, `slot_id`, `A_start_time`, `A_end_time`, `status`, `created_at`) VALUES
+(10, 22, 5, 2, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(11, 22, 5, 3, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(12, 22, 5, 4, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(13, 22, 6, 5, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
+(14, 22, 1, 6, '09:00:00', '12:00:00', '', '2023-09-01 17:11:10'),
+(15, 22, 1, 1, '09:00:00', '12:00:00', '', '2023-09-01 17:14:12'),
+(16, 26, 1, 6, '09:00:00', '12:00:00', '', '2023-09-01 18:14:04');
 
 -- --------------------------------------------------------
 
@@ -132,6 +133,7 @@ CREATE TABLE `tbl_services` (
   `service_name` varchar(255) NOT NULL,
   `service_image` varchar(255) DEFAULT NULL,
   `additional_info` text DEFAULT NULL,
+  `status` varchar(20) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -139,10 +141,9 @@ CREATE TABLE `tbl_services` (
 -- Dumping data for table `tbl_services`
 --
 
-INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `created_at`) VALUES
-(2, 'General dentistry', 'img/services/64ea4b29312c.jpg', 'General Dentistry', '2023-08-27 00:27:45'),
-(3, 'aligner', 'img/services/64f0c226c6f51.jpg', 'aligners', '2023-08-31 22:09:02'),
-(4, 'Orthodontics', 'img/services/64f17af955495.jpg', 'sddsddd', '2023-09-01 11:17:37');
+INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `status`, `created_at`) VALUES
+(5, 'Cosmetic Dentistry', 'img/services/64f89857ebb00.jpg', 'adsdfff', 'Inactive', '2023-09-06 20:48:47'),
+(6, 'General Dentistry', 'img/services/64f8a20d7f6a6.png', 'dfdfggfg', 'Active', '2023-09-06 21:30:13');
 
 -- --------------------------------------------------------
 
@@ -276,7 +277,7 @@ ALTER TABLE `tbl_patient`
 -- AUTO_INCREMENT for table `tbl_services`
 --
 ALTER TABLE `tbl_services`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tbl_timeslot`
