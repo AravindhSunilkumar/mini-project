@@ -33,8 +33,8 @@ function timeSlot()
                     $end_time = $_POST[$day . "_end"];
 
                     // Insert data into tbl_doctortime with 'start_time' and 'end_time' columns
-                    $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id,slot_id, A_start_time, A_end_time, created_at) 
-                    VALUES (?, ?,?, ?, ?, NOW())";
+                    $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id,slot_id, A_start_time, A_end_time,status, created_at) 
+                    VALUES (?, ?,?, ?, ?,'Active', NOW())";
 
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("iiiss", $doctor_id, $service_id, $slot_id, $start_time, $end_time);

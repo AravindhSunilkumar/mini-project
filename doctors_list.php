@@ -120,6 +120,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['docto
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="css/services.css">
     <!-- ... your head content ... -->
 
 </head>
@@ -168,6 +169,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['docto
                         <th>Services</th>
                         <th>Qualification</th>
                         <th>Doctor Image</th>
+                        <th>Status</th>
                         <th>Doctor Joined Date</th>
                         <th>Update</th>
 
@@ -192,6 +194,42 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['docto
                                     </form>
                                 </div>
                             </td>
+                            <td>
+                                <div class="onoffswitch">
+                                    <input type="checkbox" class="onoffswitch-checkbox" id="serviceSwitch<?= $doctor['doctor_id']; ?>" <?= $doctor['status'] === 'Active' ? 'checked' : ''; ?>>
+                                    <label class="onoffswitch-label swi" for="serviceSwitch<?= $doctor['doctor_id']; ?>" onclick="toggleServiceStatus(<?= $doctor['doctor_id']; ?>, '<?= $doctor['status']; ?>')">
+                                        <span class="onoffswitch-inner"></span>
+                                        <span class="onoffswitch-switch"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <!-- JavaScript to handle status toggle -->
+                            <script>
+                                function toggleServiceStatus(doctorId, currentStatus) {
+                                    var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+
+                                    var confirmation = confirm("Are you sure you want to change the status to " + newStatus + "?");
+                                    if (confirmation) {
+                                        // Send an AJAX request to update the status
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "update_status.php", // Replace with the actual PHP script that updates the status
+                                            data: {
+                                                doctor_id: doctorId,
+                                                new_status: newStatus
+                                            },
+                                            success: function(response) {
+                                                if (response === 'success') {
+                                                    // Status updated successfully
+                                                    location.reload(); // Reload the page or update the status in the table dynamically
+                                                } else {
+                                                    alert("Error updating status: " + response);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            </script>
 
                             <td><?= $doctor['doctor_created_at']; ?></td>
                             <div class="d-flex">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 06, 2023 at 06:22 PM
+-- Generation Time: Sep 07, 2023 at 09:07 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -44,6 +44,29 @@ INSERT INTO `tbl_admin` (`admin_id`, `admin_username`, `admin_password`, `create
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_appointments`
+--
+
+CREATE TABLE `tbl_appointments` (
+  `appointment_id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `service_id` int(11) NOT NULL,
+  `doctortime_id` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tbl_appointments`
+--
+
+INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `doctor_id`, `service_id`, `doctortime_id`, `status`, `created_at`) VALUES
+(1, 8, 22, 5, 12, 'Inactive', '2023-09-07 15:48:38');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_doctors`
 --
 
@@ -55,6 +78,7 @@ CREATE TABLE `tbl_doctors` (
   `services` varchar(255) NOT NULL,
   `qualification` varchar(10) NOT NULL,
   `doctor_image` varchar(255) NOT NULL,
+  `status` varchar(20) NOT NULL,
   `doctor_created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -62,9 +86,9 @@ CREATE TABLE `tbl_doctors` (
 -- Dumping data for table `tbl_doctors`
 --
 
-INSERT INTO `tbl_doctors` (`doctor_id`, `doctor_name`, `age`, `gender`, `services`, `qualification`, `doctor_image`, `doctor_created_at`) VALUES
-(22, 'SABU', 34, 'Male', 'tooth cleaning ', 'BDS', 'img/doctors/64ea24299a982.jpg', '2023-08-17 19:37:50'),
-(26, 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', '2023-08-26 21:11:49');
+INSERT INTO `tbl_doctors` (`doctor_id`, `doctor_name`, `age`, `gender`, `services`, `qualification`, `doctor_image`, `status`, `doctor_created_at`) VALUES
+(22, 'SABU', 34, 'Male', 'tooth cleaning ', 'BDS', 'img/doctors/64ea24299a982.jpg', 'Inactive', '2023-08-17 19:37:50'),
+(26, 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', 'Inactive', '2023-08-26 21:11:49');
 
 -- --------------------------------------------------------
 
@@ -88,13 +112,14 @@ CREATE TABLE `tbl_doctortime` (
 --
 
 INSERT INTO `tbl_doctortime` (`doctortime_id`, `doctor_id`, `service_id`, `slot_id`, `A_start_time`, `A_end_time`, `status`, `created_at`) VALUES
-(10, 22, 5, 2, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
-(11, 22, 5, 3, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
-(12, 22, 5, 4, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(10, 22, 5, 2, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
+(11, 22, 5, 3, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
+(12, 22, 5, 4, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
 (13, 22, 6, 5, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
-(14, 22, 1, 6, '09:00:00', '12:00:00', '', '2023-09-01 17:11:10'),
-(15, 22, 1, 1, '09:00:00', '12:00:00', '', '2023-09-01 17:14:12'),
-(16, 26, 1, 6, '09:00:00', '12:00:00', '', '2023-09-01 18:14:04');
+(14, 22, 1, 6, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
+(15, 22, 1, 1, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:14:12'),
+(16, 26, 1, 6, '09:00:00', '12:00:00', 'Active', '2023-09-01 18:14:04'),
+(17, 26, 6, 1, '09:00:00', '12:00:00', 'Active', '2023-09-07 13:47:30');
 
 -- --------------------------------------------------------
 
@@ -142,7 +167,7 @@ CREATE TABLE `tbl_services` (
 --
 
 INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `status`, `created_at`) VALUES
-(5, 'Cosmetic Dentistry', 'img/services/64f89857ebb00.jpg', 'adsdfff', 'Inactive', '2023-09-06 20:48:47'),
+(5, 'Cosmetic Dentistry', 'img/services/64f89857ebb00.jpg', 'adsdfff', 'Active', '2023-09-06 20:48:47'),
 (6, 'General Dentistry', 'img/services/64f8a20d7f6a6.png', 'dfdfggfg', 'Active', '2023-09-06 21:30:13');
 
 -- --------------------------------------------------------
@@ -205,6 +230,12 @@ ALTER TABLE `tbl_admin`
   ADD UNIQUE KEY `admin_username` (`admin_username`);
 
 --
+-- Indexes for table `tbl_appointments`
+--
+ALTER TABLE `tbl_appointments`
+  ADD PRIMARY KEY (`appointment_id`);
+
+--
 -- Indexes for table `tbl_doctors`
 --
 ALTER TABLE `tbl_doctors`
@@ -265,7 +296,7 @@ ALTER TABLE `tbl_doctors`
 -- AUTO_INCREMENT for table `tbl_doctortime`
 --
 ALTER TABLE `tbl_doctortime`
-  MODIFY `doctortime_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `doctortime_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `tbl_patient`
