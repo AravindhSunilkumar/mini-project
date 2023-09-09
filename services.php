@@ -362,7 +362,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_status"])) {
                     var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
 
                     var confirmation = confirm("Are you sure you want to change the status to " + newStatus + "?");
-                    if (confirmation) {
+                     if (confirmation) {
                       // Send an AJAX request to update the status
                       $.ajax({
                         type: "POST",

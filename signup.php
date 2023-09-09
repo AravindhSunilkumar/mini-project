@@ -6,15 +6,15 @@ $message2 = '';
 
 if (isset($_SESSION["message1"])) {
 	$message1 = $_SESSION["message1"];
-	echo "<script>alert('$message1');</script>";
+	// Store the message content in a JavaScript variable
+	$message1 = htmlspecialchars($message1, ENT_QUOTES);
 }
 
 if (isset($_SESSION["message2"])) {
 	$message2 = $_SESSION["message2"];
-	echo "<script>alert('$message2');</script>";
+	// Store the message content in a JavaScript variable
+	$message2 = htmlspecialchars($message2, ENT_QUOTES);
 }
-
-
 ?>
 
 
@@ -263,12 +263,69 @@ if (isset($_SESSION["message2"])) {
 			font-weight: 500;
 			cursor: pointer;
 		}
+
+		/*validation*/
+		/* Style for the modal */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		/* Style for the modal content */
+		.modal-content {
+			background: linear-gradient(45deg, #c52db2, transparent);
+			/*background-color: #fff;*/
+			margin: 2% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 56%;
+			/*height: 30%;*/
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+		}
+
+		/* Style for the close button */
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
 	</style>
+
 </head>
 
 <body>
 	<!--<video src="./img/signupvideo.mp4"></video>-->
 	<div class="wrapper">
+		<!-- ... Your HTML code ... -->
+
+		<div class="modal" id="message-modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeModal()">&times;</span>
+				<center><p id="message-content"></p></center>
+			</div>
+		</div>
+
+
+		<!-- ... Your HTML code ... -->
+
+		
+
+
 
 		<div class="title-text">
 			<div class="title login">Smile 32</div>
@@ -320,6 +377,24 @@ if (isset($_SESSION["message2"])) {
 			</div>
 		</div>
 	</div>
+	<script>
+		// JavaScript for modal execution
+		console.log("JavaScript for modal execution");
+
+		function closeModal() {
+			var modal = document.getElementById('message-modal');
+			modal.style.display = 'none';
+		}
+
+		// Check if there's a message to display
+		var message1 = "<?php echo $message1; ?>";
+		var message2 = "<?php echo $message2; ?>";
+
+		if (message1 || message2) {
+			document.getElementById('message-content').innerHTML = message1 || message2;
+			document.getElementById('message-modal').style.display = 'block';
+		}
+	</script>
 
 
 	<script>
@@ -341,6 +416,7 @@ if (isset($_SESSION["message2"])) {
 			return false;
 		});
 	</script>
+	
 	<?php
 	unset($_SESSION['message1']);
 	unset($_SESSION['message1']);
