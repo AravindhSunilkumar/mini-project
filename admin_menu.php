@@ -75,8 +75,9 @@ include("connection.php");
                 </div>
 
                 <!--<a href="services.html" class="nav-item nav-link" data-section="content-patient">Services</a>-->
+                <a href="appointments.html" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
                 <a href="Service.php" class="nav-item nav-link" data-section="content-services">Services</a>
-                <a href="contact.php" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
+                
             </div>
 
             <div class="nav-item dropdown">
