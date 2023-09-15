@@ -83,5 +83,21 @@
 .appmt-form {
   width: 50%;
 }
+.box{
+  width: 65%;
+  margin-left: 100px;
+}
+@media (max-width: 900px) {
+  .appmt-form {
+    width: 100%;
+  }
 
+  
+}
+.box-space{
+  row-gap:16px;
+}
+.fg{
+  margin-top: 16px;
+}
 /*appointment CSS Ends*/

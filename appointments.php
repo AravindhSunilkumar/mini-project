@@ -92,62 +92,63 @@ $doctors = fetchTableData($conn, "tbl_doctors");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100%;">
+    height: 80vh;">
       <div class="appmt-form">
-
-        <div class="container">
-          <h2 class="mt-5">Appointment Fixing Form</h2>
-          <form action="process_appointment.php" method="POST" style="color: black;
-    text-align: center;
-    font-family: sans-serif;">
-            <div class="row">
-              <div class="form-group">
-                <label for="name">Your Name:</label>
-                <input type="text" class="form-control" name="name" id="name" required>
-
-              </div>
-              <div class="col-md-6">
-
+        <div class="box">
+          <div class="container ">
+            <center><h2 class="mt-5">Appointment </h2></center>
+            <form action="process_appointment.php" method="POST" style="color: black;
+              text-align: center;
+               font-family: sans-serif;margin-top: 55px;">
+              <div class="row box-space">
                 <div class="form-group">
-                  <label for="doctor">Select Doctor:</label>
-                  <select class="form-control" name="doctor" id="doctor">
-                    <!-- Populate this dropdown with doctor options from your database -->
-                    <option value="doctor1">Doctor 1</option>
-                    <option value="doctor2">Doctor 2</option>
-                    <!-- Add more options as needed -->
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="date">Appointment Date:</label>
-                  <input type="date" class="form-control" name="date" id="date" required>
-                </div>
+                  <label for="name">Your Name:</label>
+                  <input type="text" class="form-control" name="name" id="name" required>
 
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="service">Select Service:</label>
-                  <select class="form-control" name="service" id="service">
-                    <!-- Populate this dropdown with service options from your database -->
-                    <option value="service1">Service 1</option>
-                    <option value="service2">Service 2</option>
-                    <!-- Add more options as needed -->
-                  </select>
                 </div>
-                <div class="form-group">
-                  <label for="time">Appointment Time:</label>
-                  <select class="form-control" name="time" id="time">
-                    <!-- Populate this dropdown with time options from your database -->
-                    <option value="9AM">9AM</option>
-                    <option value="10AM">10AM</option>
-                    <!-- Add more options as needed -->
-                  </select>
+                <div class="col-md-6 ">
+
+                  <div class="form-group">
+                    <label for="doctor">Select Doctor:</label>
+                    <select class="form-control" name="doctor" id="doctor">
+                      <!-- Populate this dropdown with doctor options from your database -->
+                      <option value="doctor1">Doctor 1</option>
+                      <option value="doctor2">Doctor 2</option>
+                      <!-- Add more options as needed -->
+                    </select>
+                  </div>
+                  <div class="form-group fg">
+                    <label for="date">Appointment Date:</label>
+                    <input type="date" class="form-control" name="date" id="date" required>
+                  </div>
+
                 </div>
-              </div>
-            </div>
-            <center>
-              <button type="submit" class="btn btn-primary">Fix Appointment</button>
-            </center>
-          </form>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="service">Select Service:</label>
+                    <select class="form-control" name="service" id="service">
+                      <!-- Populate this dropdown with service options from your database -->
+                      <option value="service1">Service 1</option>
+                      <option value="service2">Service 2</option>
+                      <!-- Add more options as needed -->
+                    </select>
+                  </div>
+                  <div class="form-group fg">
+                    <label for="time">Appointment Time:</label>
+                    <select class="form-control" name="time" id="time">
+                      <!-- Populate this dropdown with time options from your database -->
+                      <option value="9AM">9AM</option>
+                      <option value="10AM">10AM</option>
+                      <!-- Add more options as needed -->
+                    </select>
+                  </div>
+                </div>
+              </div><br><br>
+              <center>
+                <button type="submit" class="btn btn-primary">Fix Appointment</button>
+              </center>
+            </form>
+          </div>
         </div>
 
 
