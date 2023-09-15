@@ -308,7 +308,7 @@ if (isset($_SESSION["message2"])) {
 
 </head>
 
-<body>
+<body> 
 	<!--<video src="./img/signupvideo.mp4"></video>-->
 	<div class="wrapper">
 		<!-- ... Your HTML code ... -->

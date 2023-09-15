@@ -288,7 +288,7 @@ if (isset($_POST["add_doctor"])) {
                         <input type="checkbox" id="monday" name="availability_days[]" value="Monday" />
                         <label for="monday">Monday</label>
 
-                        <input type="text" id="monday_start" name="Monday_start" placeholder="starting time" />
+                        <input type="text" id="monday_start"  name="Monday_start" placeholder="starting time" />
                         <input type="text" id="monday_end" name="Monday_end" placeholder="Ending time" />
 
                         <input type="checkbox" id="tuesday" name="availability_days[]" value="Tuesday" />
