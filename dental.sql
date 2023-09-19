@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 07, 2023 at 09:07 PM
+-- Generation Time: Sep 19, 2023 at 08:09 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -54,6 +54,7 @@ CREATE TABLE `tbl_appointments` (
   `service_id` int(11) NOT NULL,
   `doctortime_id` int(11) NOT NULL,
   `status` varchar(20) NOT NULL,
+  `appointmentneed_date` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -61,8 +62,9 @@ CREATE TABLE `tbl_appointments` (
 -- Dumping data for table `tbl_appointments`
 --
 
-INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `doctor_id`, `service_id`, `doctortime_id`, `status`, `created_at`) VALUES
-(1, 8, 22, 5, 12, 'Inactive', '2023-09-07 15:48:38');
+INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `doctor_id`, `service_id`, `doctortime_id`, `status`, `appointmentneed_date`, `created_at`) VALUES
+(1, 8, 22, 5, 12, 'Active', '09-05-2023', '2023-09-07 15:48:38'),
+(4, 9, 26, 5, 11, 'pending', '04-06-2023', '2023-09-19 15:10:33');
 
 -- --------------------------------------------------------
 
@@ -87,8 +89,8 @@ CREATE TABLE `tbl_doctors` (
 --
 
 INSERT INTO `tbl_doctors` (`doctor_id`, `doctor_name`, `age`, `gender`, `services`, `qualification`, `doctor_image`, `status`, `doctor_created_at`) VALUES
-(22, 'SABU', 34, 'Male', 'tooth cleaning ', 'BDS', 'img/doctors/64ea24299a982.jpg', 'Inactive', '2023-08-17 19:37:50'),
-(26, 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', 'Inactive', '2023-08-26 21:11:49');
+(22, 'SABU', 34, 'Male', 'Cosmetic Dentistry', 'BDS', 'img/doctors/64ea24299a982.jpg', 'Active', '2023-08-17 19:37:50'),
+(26, 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', 'Active', '2023-08-26 21:11:49');
 
 -- --------------------------------------------------------
 
@@ -112,9 +114,9 @@ CREATE TABLE `tbl_doctortime` (
 --
 
 INSERT INTO `tbl_doctortime` (`doctortime_id`, `doctor_id`, `service_id`, `slot_id`, `A_start_time`, `A_end_time`, `status`, `created_at`) VALUES
-(10, 22, 5, 2, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
-(11, 22, 5, 3, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
-(12, 22, 5, 4, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
+(10, 22, 5, 2, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(11, 22, 5, 3, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
+(12, 22, 5, 4, '09:00:00', '12:00:00', 'Inactive', '2023-09-01 17:11:10'),
 (13, 22, 6, 5, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
 (14, 22, 1, 6, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:11:10'),
 (15, 22, 1, 1, '09:00:00', '12:00:00', 'Active', '2023-09-01 17:14:12'),
@@ -167,8 +169,7 @@ CREATE TABLE `tbl_services` (
 --
 
 INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `status`, `created_at`) VALUES
-(5, 'Cosmetic Dentistry', 'img/services/64f89857ebb00.jpg', 'adsdfff', 'Active', '2023-09-06 20:48:47'),
-(6, 'General Dentistry', 'img/services/64f8a20d7f6a6.png', 'dfdfggfg', 'Active', '2023-09-06 21:30:13');
+(5, 'Cosmetic Dentistry', 'img/service_images/heart.png', 'adsdfff', 'Inactive', '2023-09-06 20:48:47');
 
 -- --------------------------------------------------------
 
@@ -308,7 +309,7 @@ ALTER TABLE `tbl_patient`
 -- AUTO_INCREMENT for table `tbl_services`
 --
 ALTER TABLE `tbl_services`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tbl_timeslot`
