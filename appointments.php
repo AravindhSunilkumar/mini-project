@@ -50,14 +50,7 @@ $appmts = fetchTableData($conn, "tbl_appointments");
 $patients = fetchTableData($conn, "tbl_patient");
 $doctors = fetchTableData($conn, "tbl_doctors");
 $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
-if (isset($_POST['update_doctor'])) {
-  $doctorId = $_POST['doctor_id'];
-  $newDoctorName = $_POST['new_doctor_name'];
-  $newAge = $_POST['new_age'];
-  $newGender = $_POST['new_gender'];
-  $newServices = $_POST['new_services'];
-  $newQualification = $_POST['new_qualification'];
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,6 +62,7 @@ if (isset($_POST['update_doctor'])) {
 
 
   <!-- Favicon -->
+
   <link rel="icon" href="./img/tooth.png" type="image/png" />
 
   <!-- Google Web Fonts -->
@@ -95,55 +89,13 @@ if (isset($_POST['update_doctor'])) {
 </head>
 
 <body>
-  <!--confirm box-->
-  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editModalLabel">Edit Doctor Details</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <script>
-              function showEditForm(aid, fullname, d, s, Astarttime, Aendtime, $needdate) {
-                console.log("Edit button clicked!");
-                var modal = document.getElementById("editModal");
-                var modalBody = modal.querySelector(".modal-body");
 
-                var form = `
-            <form action="" method="post">
-                <input type="hidden" name="doctor_id" value="${aid}">
-                <label>Patient Name:</label>
-                <input type="text" name="Patient_name" value="${fullname}" required><br>
-                <label>Doctor Name:</label>
-                <input type="text" name="Doctor_name" value="${d}" required><br>
-                <label>Service Name:</label>
-                <input type="text" name="service_name" value="${s}" required><br>
-                <label>Startig Time:</label>
-                <input type="text" name="starting_time" value="${Astarttime}" required><br>
-                <label>Ending time:</label>
-                <input type="text" name="Ending_time" value="${Aendtime}" required><br>
-                <label>needed date  </label>
-                <input type="text" name="needed_date" value="${$needdate}" required><br>
-                <button type="submit" name="update_doctor" class="btn btn-success">Update</button>
-            </form>
-        `;
-                $(document).ready(function() {
-                  $('#datetimepicker-element').datetimepicker();
-                });
-
-                modalBody.innerHTML = form;
-                $(modal).modal("show");
-              }
-            </script>
-          </div>
-        </div>
-      </div>
-    </div>
   <div class="nav-admin">
     <?php include("admin_menu.php"); ?>
   </div>
   <div class="appmt1">
+
+
     <div class="appmt-container">
       <h1>Appointment</h1>
       <form class="d-flex" onsubmit="handleSearch(); return false;">
@@ -169,7 +121,7 @@ if (isset($_POST['update_doctor'])) {
               <th>Needed Date</th>
               <th>Status</th>
               <th>Applied Date</th>
-              <th>update</th>
+              <th>View</th>
             </tr>
           </thead>
 
@@ -245,26 +197,86 @@ if (isset($_POST['update_doctor'])) {
                     ?></td>
                 <div class="d-flex">
                   <!-- ... your existing table rows ... -->
-                  <td class="wrapper">
-                    <a href="javascript:void(0);" class="btn btn-info" data-toggle="modal" data-target="#editModal" onclick="showEditForm(
-                                  '<?= $a_id; ?>',
-                                  '<?= $full_name; ?>',
-                                  '<?= $d; ?>',
-                                  '<?= $s; ?>',
-                                  '<?= $A_start_time; ?>',
-                                   '<?= $A_end_time ?>',
-                                   '<?= $need_date; ?>'
-                                  )">Edit</a>
 
-                    <a href="<?= $_SERVER["PHP_SELF"] ?>?action=delete&doctor_id=<?= $doctor['doctor_id'] ?>" class="btn btn-danger">Del</a>
-                  </td>
+                  <td><a href="#" onclick="openDocumentPopup('img/about-1.jpg')">View Document</a></td>
+
                 </div>
+
+                <!-- JavaScript functions to open and close the documents -->
+                <script>
+                  function openDocumentPopup(imageSrc) {
+                    var modal = document.getElementById("documentModal");
+                    var image = document.getElementById("documentImage");
+
+                    image.src = imageSrc;
+                    modal.style.display = "block";
+                  }
+
+                  function closeDocumentPopup() {
+                    var modal = document.getElementById("documentModal");
+                    modal.style.display = "none";
+                  }
+                </script>
       </div>
     <?php endforeach; ?>
     </tr>
     </tbody>
     </table>
 
+    </div>
+
+
+  </div>
+  <!-- The  View Documents-->
+  <div id="documentModal" class="modal">
+    <div class="modal-content table-success table-striped" style="width:50%;margin:108px;margin-left :350px;">
+      <div class="row">
+        <div id="documentImage" class="d-flex col-md-6 justify-content-center" style="width:90%;">
+          <img  src="https://img.icons8.com/color/200w/european-dragon.png" class="img-fluid rounded-circle">
+
+        </div>
+        <div class="d-flex col-sm-3" style="width:50px;">
+          <span class="close" onclick="closeDocumentPopup()" style="font-size:47px;">&times;</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3" >
+          <label for="appmt-id">APPOINTMENT ID</label>
+          <?php echo $a_id; ?>
+        </div>
+        <div class="col-sm-3">
+          <label for="P_NAME">PATIENT NAME</label>
+          <?php echo $fullname; ?>
+        </div>
+        <div class="col-sm-3">
+          <label for="D-NAME">DOCTOR NAME</label>
+          <?php echo $d; ?>
+        </div>
+        <div class="col-sm-3">
+          <label for="D-NAME">SERVICE NAME</label>
+          <?php echo $s; ?>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <label for="">NEEDED TIME </label>
+          <?php echo $A_start_time . "-" . $A_end_time; ?>
+        </div>
+        <div class="col-sm-3">
+          <label for="D-NAME">NEEDED DATE</label>
+          <?php echo $need_date; ?>
+        </div>
+        <div class="col-sm-3">
+          <label for="">STATUS</label><br>
+          <?php echo $status; ?>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          
+        </div>
+      </div>
     </div>
   </div>
   </div>
