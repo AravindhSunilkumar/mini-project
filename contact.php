@@ -1,20 +1,35 @@
 <?php
 session_start();
 include("connection.php");
+function fetchTableData($conn, $tableName)
+{
+  $sql = "SELECT * FROM $tableName";
+  $result = $conn->query($sql);
+  $data = [];
 
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $data[] = $row;
+    }
+  }
+
+  return $data;
+}
+$doctors = fetchTableData($conn, "tbl_doctors");
+$services = fetchTableData($conn, "tbl_services");
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>DentCare - Dental Clinic Website Template</title>
+    <title>Smile 32</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link rel="icon" href="./img/tooth.png" type="image/png">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -78,8 +93,8 @@ include("connection.php");
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
-        <a href="index.php" class="navbar-brand p-0">
-            <h1 class="m-0 text-primary"><i class="fa fa-tooth me-2"></i>DentCare</h1>
+        <a href="contact.php" class="navbar-brand p-0">
+            <h1 class="m-0 text-primary"><i class="fa fa-tooth me-2"></i>Smile <span style="color:orange;">32</span></h1>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
@@ -95,7 +110,7 @@ include("connection.php");
                         <a href="price.php" class="dropdown-item active">Pricing Plan</a>
                         <a href="team.php" class="dropdown-item">Our Dentist</a>
                         <a href="testimonial.php" class="dropdown-item">Testimonial</a>
-                        
+
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
                 </div>
@@ -142,10 +157,10 @@ include("connection.php");
     <div class="container-fluid bg-primary py-5 hero-header mb-5">
         <div class="row py-3">
             <div class="col-12 text-center">
-                <h1 class="display-3 text-white animated zoomIn">Contact Us</h1>
-                <a href="" class="h4 text-white">Home</a>
+                <h1 class="display-3 text-white animated zoomIn">Appointment</h1>
+                <a href="index.php" class="h4 text-white">Home</a>
                 <i class="far fa-circle text-white px-2"></i>
-                <a href="" class="h4 text-white">Contact</a>
+                <a href="contact.php" class="h4 text-white">Appointment</a>
             </div>
         </div>
     </div>
@@ -153,7 +168,7 @@ include("connection.php");
 
 
     <!-- Contact Start -->
-    <div class="container-fluid py-5">
+    <div class="container-fluid py-5" style="background-color: #091e3e">
         <div class="container">
             <div class="row g-5">
                 <div class="col-xl-4 col-lg-6 wow slideInUp" data-wow-delay="0.1s">
@@ -165,31 +180,59 @@ include("connection.php");
                         <div class="d-flex align-items-center mb-2">
                             <i class="bi bi-geo-alt fs-1 text-primary me-3"></i>
                             <div class="text-start">
-                                <h5 class="mb-0">Our Office</h5>
-                                <span>123 Street, New York, USA</span>
+                                <h5 class="mb-0">Our Clinic</h5>
+                                <span>Tripunithura. 3.0. Layam Road, Tripunithura, Ernakulam - 682301 (Near Chakkankulangara Temple).</span>
                             </div>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <i class="bi bi-envelope-open fs-1 text-primary me-3"></i>
                             <div class="text-start">
                                 <h5 class="mb-0">Email Us</h5>
-                                <span>info@example.com</span>
+                                <span>Abc@gmail.com.com</span>
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
                             <i class="bi bi-phone-vibrate fs-1 text-primary me-3"></i>
                             <div class="text-start">
                                 <h5 class="mb-0">Call Us</h5>
-                                <span>+012 345 6789</span>
+                                <span>094461 80415</span><br>
+                                <span>0484 277 7924</span><br>
+                                <span>094961 79353</span><br>
+
+
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-lg-6 wow slideInUp" data-wow-delay="0.3s">
+                <div class="col-xl-4 col-lg-6 wow slideInUp" style="width: 66%;" data-wow-delay="0.3s">
                     <form>
                         <div class="row g-3">
                             <div class="col-12">
                                 <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
+                            </div>
+                            <div class="col-12 col-sm-6">
+                            <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;" required>
+                      <?php
+                      foreach ($services as $index => $service) :
+
+                        $service_id = $service["service_id"];
+                        $service_name = $service["service_name"];
+                        echo "<option  value=\"$service_id\" selected>$service_name</option>";
+
+
+                      endforeach;
+
+
+                      ?>
+                    </select>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <select class="form-select bg-light border-0" style="height: 55px;">
+                                    <option selected>Select Doctor</option>
+                                    <option value="1">Doctor 1</option>
+                                    <option value="2">Doctor 2</option>
+                                    <option value="3">Doctor 3</option>
+                                </select>
                             </div>
                             <div class="col-12">
                                 <input type="email" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;">
@@ -206,9 +249,10 @@ include("connection.php");
                         </div>
                     </form>
                 </div>
-                <div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
+              <!-- <div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
                     <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-                </div>
+                    <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/dir//Smile+32+Dental+Clinic/@9.9485722,76.2634294,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3b08736c06ffece7:0x6e9419692f18feb3!2m2!1d76.3458313!2d9.9485823?entry=ttu" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                </div> -->
             </div>
         </div>
     </div>

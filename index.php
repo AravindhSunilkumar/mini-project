@@ -67,7 +67,7 @@ include("connection.php");
                         <p class="m-0"><i class="fa fa-envelope-open me-2"></i>info@example.com</p>
                     </div>
                     <div class="py-2">
-                        <p class="m-0"><i class="fa fa-phone-alt me-2"></i>+012 345 6789</p>
+                        <p class="m-0"><i class="fa fa-phone-alt me-2"></i>+0484 277 7924</p>
                     </div>
                 </div>
             </div>
@@ -87,8 +87,9 @@ include("connection.php");
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
                 <a href="index.php" class="nav-item nav-link active">Home</a>
-                <a href="about.php" class="nav-item nav-link">About</a>
-                <a href="service.php" class="nav-item nav-link">Service</a>
+                <a href="#about" class="nav-item nav-link">About Us</a>
+                <a href="#services" class="nav-item nav-link">Service</a>
+                <a href="#dentist" class="nav-item nav-link">Our Dentist</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
@@ -98,7 +99,7 @@ include("connection.php");
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
                 </div>
-                <a href="contact.php" class="nav-item nav-link">Contact</a>
+                <a href="contact.php" class="nav-item nav-link">Appointments</a>
             </div>
             <?php if (isset($_SESSION['name'])) { ?>
                 <div class="nav-item dropdown">
@@ -188,7 +189,7 @@ include("connection.php");
 
 
     <!-- About Start -->
-    <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container-fluid py-5 wow fadeInUp" id="about" data-wow-delay="0.1s">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-7">
@@ -200,8 +201,11 @@ include("connection.php");
                     <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos labore. Clita erat ipsum et lorem et sit, sed stet no labore lorem sit. Sanctus clita duo justo et tempor eirmod magna dolore erat amet</p>
                     <div class="row g-3">
                         <div class="col-sm-6 wow zoomIn" data-wow-delay="0.3s">
+
+                            
                             <h5 class="mb-3"><i class="fa fa-check-circle text-primary me-3"></i>Award Winning</h5>
                             <h5 class="mb-3"><i class="fa fa-check-circle text-primary me-3"></i>Professional Staff</h5>
+                           
                         </div>
                         <div class="col-sm-6 wow zoomIn" data-wow-delay="0.6s">
                             <h5 class="mb-3"><i class="fa fa-check-circle text-primary me-3"></i>24/7 Opened</h5>
@@ -282,7 +286,7 @@ include("connection.php");
 
 
     <!-- Service Start -->
-    <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container-fluid py-5 wow fadeInUp" id="services" data-wow-delay="0.1s">
         <div class="container">
             <div class="row g-5 mb-5">
                 <div class="col-lg-5 wow zoomIn" data-wow-delay="0.3s" style="min-height: 400px;">
@@ -298,12 +302,14 @@ include("connection.php");
                     </div>
                     <div class="row g-5">
                         <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.6s">
+                        <a href="">
                             <div class="rounded-top overflow-hidden">
                                 <img class="img-fluid" src="img/service-1.jpg" alt="">
                             </div>
                             <div class="position-relative bg-light rounded-bottom text-center p-4">
                                 <h5 class="m-0">Cosmetic Dentistry</h5>
                             </div>
+                            </a>
                         </div>
                         <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.9s">
                             <div class="rounded-top overflow-hidden">
@@ -466,7 +472,9 @@ include("connection.php");
 
 
     <!-- Team Start -->
-    <div class="container-fluid py-5">
+    <div class="container-fluid py-5" id="dentist" style="
+    background-color: #f57e57;
+">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">

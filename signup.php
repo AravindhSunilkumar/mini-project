@@ -40,7 +40,7 @@ if (isset($_SESSION["message2"])) {
 		html,
 		body {
 			display: grid;
-			background-image: url('./img/signup.jpg');
+			background-image: url('./img/sign.jpg');
 			place-items: center;
 			background-size: cover;
 			background-position: center center;
@@ -64,7 +64,7 @@ if (isset($_SESSION["message2"])) {
 
 
 		::selection {
-			background: #bf0b0b;
+			background: #06A3DA;
 			color: #fff;
 		}
 
@@ -92,9 +92,13 @@ if (isset($_SESSION["message2"])) {
 		.wrapper .title {
 			width: 50%;
 			font-size: 35px;
+			color: #06A3DA;
 			font-weight: 600;
 			text-align: center;
 			transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+		}
+		.num{
+			color: #f57e57;
 		}
 
 		.wrapper .slide-controls {
@@ -133,7 +137,7 @@ if (isset($_SESSION["message2"])) {
 			left: 0;
 			z-index: 0;
 			border-radius: 5px;
-			background: -webkit-linear-gradient(left, #121212, #bf0b0b);
+			background: -webkit-linear-gradient(left, #1b4766, #06A3DA);
 			transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 		}
 
@@ -152,11 +156,11 @@ if (isset($_SESSION["message2"])) {
 		}
 
 		#signup:checked~label.login {
-			color: #000;
+			color: #fff;
 		}
 
 		#login:checked~label.signup {
-			color: #000;
+			color: #fff;
 		}
 
 		#login:checked~label.login {
@@ -245,14 +249,14 @@ if (isset($_SESSION["message2"])) {
 			width: 300%;
 			position: absolute;
 			left: -100%;
-			background: -webkit-linear-gradient(right, #bf0b0b, #ab090f, #000000, #bf0b0b);
+			background: -webkit-linear-gradient(left, #1b4766, #06A3DA);
 			border-radius: 5px;
 			transition: all 0.4s ease;
 			;
 		}
 
 		.input-box {
-			background: -webkit-linear-gradient(right, #c52020, #bf0b0b, #261515, #060606);
+			background: -webkit-linear-gradient(right, #06A3DA, #06A3DA, #06A3DA, #1B4767);
 			color: #fff;
 		}
 
@@ -290,7 +294,7 @@ if (isset($_SESSION["message2"])) {
 
 		/* Style for the modal content */
 		.modal-content {
-			background: linear-gradient(45deg, #bf0b0b, black);
+			background: linear-gradient(45deg, #1b4766, #06A3DA);
 			color: white;
 			/*background-color: #fff;*/
 			margin: 2% auto;
@@ -316,11 +320,18 @@ if (isset($_SESSION["message2"])) {
 			text-decoration: none;
 			cursor: pointer;
 		}
+
+		.header {
+			background-color: #06A3DA;
+			width: 100%;
+			height: 30%;
+		}
 	</style>
 
 </head>
 
 <body>
+	
 	<!--<video src="./img/signupvideo.mp4"></video>-->
 	<div class="wrapper">
 		<!-- ... Your HTML code ... -->
@@ -341,9 +352,10 @@ if (isset($_SESSION["message2"])) {
 
 
 
+
 		<div class="title-text">
-			<div class="title login">Smile 32</div>
-			<div class="title signup">Smile 32</div>
+			<div class="title login">Smile <span class="num">32</span></div>
+			<div class="title signup">Smile <span class="num">32</span></div>
 		</div>
 		<div class="form-container">
 			<div class="slide-controls">
