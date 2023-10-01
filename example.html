@@ -68,34 +68,34 @@
   <script>
     // Define the number of days to show in the calendar
     const numDays = 7;
-
+  
     // Get the calendar days container
     const calendarDays = document.getElementById('calendar-days');
-
+  
     // Get the previous and next buttons
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
-
+  
     // Initial date
     let currentDate = new Date();
-
+  
     // Function to generate the calendar days
     function generateCalendar() {
       calendarDays.innerHTML = '';
-
+  
       for (let i = 0; i < numDays; i++) {
         const day = new Date(currentDate);
-        day.setDate(currentDate.getDate() + i);
-
+        day.setDate(currentDate.getDate() - numDays + i); // Corrected calculation
+  
         // Check if the day is in the past
         if (i === 0 && day < currentDate) {
           // Skip "Today" if it's in the past
           continue;
         }
-
+  
         const dayButton = document.createElement('button');
         dayButton.classList.add('calendar-day');
-
+  
         if (i === 0) {
           // Display "Today" for the current date
           dayButton.classList.add('current-date');
@@ -108,41 +108,41 @@
           const options = { month: 'short', day: 'numeric' };
           dayButton.textContent = day.toLocaleDateString(undefined, options);
         }
-
+  
         // Display the day of the week
         const dayOfWeek = document.createElement('div');
         dayOfWeek.classList.add('day-of-week');
         dayOfWeek.textContent = day.toLocaleDateString(undefined, { weekday: 'short' });
-
+  
         const dayContainer = document.createElement('div');
         dayContainer.appendChild(dayButton);
         dayContainer.appendChild(dayOfWeek);
-
+  
         // Add a click event listener to each day button
         dayContainer.addEventListener('click', () => {
           // You can handle the click event for each day button here
           console.log(`Clicked on ${day.toDateString()}`);
         });
-
+  
         calendarDays.appendChild(dayContainer);
       }
     }
-
+  
     // Initial calendar generation
     generateCalendar();
-
+  
     // Add click event listener for the previous button
     prevButton.addEventListener('click', () => {
-      currentDate.setDate(currentDate.getDate() - numDays);
+      currentDate.setDate(currentDate.getDate() - numDays); // Corrected calculation
       generateCalendar();
     });
-
+  
     // Add click event listener for the next button
     nextButton.addEventListener('click', () => {
       currentDate.setDate(currentDate.getDate() + numDays);
       generateCalendar();
     });
-    
   </script>
+  
 </body>
 </html>

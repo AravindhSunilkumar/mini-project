@@ -46,7 +46,7 @@ function userLogin($username, $password)
 
     if (mysqli_num_rows($result) > 0) {
         $_SESSION['name'] = $row['user_username'];
-        return array("success" => true, "redirect" => "index.php");
+        return array("success" => true, "redirect" => "index.html");
     } else {
         $sql = "SELECT * FROM tbl_admin WHERE admin_username = '$username' AND admin_password = '$password'";
         $result = mysqli_query($conn, $sql);
@@ -74,11 +74,11 @@ if (isset($_POST["signup"])) {
         if (isset($result["redirect"])) {
             header('Location: ' . $result["redirect"]);
         } else {
-            header('Location: index.php');
+            header('Location: index.html');
         }
     } else {
         $_SESSION['message2'] = $result["message"];
-        header('Location: signup.php');
+        header('Location: signup.html');
     }
     exit();
 }
@@ -91,11 +91,11 @@ if (isset($_POST["login"])) {
         if (isset($result["redirect"])) {
             header('Location: ' . $result["redirect"]);
         } else {
-            header('Location: index.php');
+            header('Location: index.html');
         }
     } else {
         $_SESSION["message1"] = $result["message"];
-        header('Location: signup.php');
+        header('Location: signup.html');
     }
     exit();
 }
