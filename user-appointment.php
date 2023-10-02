@@ -209,23 +209,26 @@ $services = fetchTableData($conn, "tbl_services");
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-6 wow slideInUp a-cont" data-wow-delay="0.3s">
+                    <div style="color:#fff;font-size: x-large;" class="row justify-content-center text-uppercase ">
+                    <center><h1 style="color: #fff;"><u>Book appointment</u></h1></center>
+                    </div>
 
                     <form action="" method="post">
                         <div class="row g-3" style="margin-top: 4px;">
                             <div class="col-12  ">
-                                <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
+                                <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;" required>
                             </div>
                             <div class="col-12 col-sm-6 ">
-                                <input type="email" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;">
+                                <input type="email" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;" required>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="number" class="form-control border-0 bg-light px-4" placeholder="Your Phone Number" style="height: 55px;" id="phoneNumber">
+                                <input type="number" class="form-control border-0 bg-light px-4" placeholder="Your Phone Number" style="height: 55px;" id="phoneNumber" required>
                                 <div id="phoneError" class="text-danger" style="transform: rotate(360deg);animation: rotation 5s linear infinite;"></div>
                             </div>
 
                             <div class="col-12 col-sm-6 ">
-                                <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;" required>
-                                    <option selected>Choose Service</option>
+                                <select class="form-select bg-light border-0" name="service_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
+                                    <option value="default" selected>Choose Service</option>
                                     <?php
                                     foreach ($services as $index => $service) :
 
@@ -241,8 +244,8 @@ $services = fetchTableData($conn, "tbl_services");
                                 </select>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <select class="form-select bg-light border-0" name="service_id" style="height:54px;" required>
-                                    <option selected>Choose Doctor</option>
+                                <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;"  onchange="fetchAvailableTimeSlots()" required>
+                                    <option value="default" selected>Choose Doctor</option>
                                     <?php
                                     foreach ($doctors as $index => $doctor) :
 
@@ -259,37 +262,45 @@ $services = fetchTableData($conn, "tbl_services");
                             </div>
                             <div class="row  t-section">
                                 <div class="col-12 col-sm-6  " style="color:#fff">
-                                    <input type="radio" name="section" id="morning" value="morning">
+                                    <input type="radio" name="section" id="morning" value="morning" onchange="fetchAvailableTimeSlots()" required>
                                     <label for="morning">Morning 09:00 AM - 12:00 PM</label>
                                 </div>
                                 <div class="col-12 col-sm-6 " style="color:#fff">
-                                    <input type="radio" name="section" id="Afternoon" value="afternoon">
+                                    <input type="radio" name="section" id="Afternoon" value="afternoon" onchange="fetchAvailableTimeSlots()" required>
                                     <label for="Afternoon">Afternoon 12:00 PM - 02:50 PM</label>
                                 </div>
                                 <div class=" col-sm-6 l2">
-                                    <input type="radio" name="section" id="Evening" value="evening">
+                                    <input type="radio" name="section" id="Evening" value="evening" onchange="fetchAvailableTimeSlots()" required>
                                     <label for="Evening" style="margin-right:-5px;" class="l">Evening 04:20 PM - 05:00 PM</label>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 l2">
-                                <input type="date" id="appointmentDate" name="appointmentDate" class="form-control border-0 bg-light px-4" min="" required onchange="fetchAvailableTimeSlots()">
+                                <label for="date" class="text-uppercase">Choose needed date :</label>
+                                <div>
+                                    <input type="date" id="appointmentDate" name="appointmentDate" style="margin-top:3px;" class="form-control border-0 bg-light px-4" min="" required onchange="fetchAvailableTimeSlots()">
+                                </div>
+
 
                             </div>
+
 
                             <!-- Time slots container -->
-                            
-                                <div id="" class="grid-container">
+
+                            <div id="" class="grid-container">
                                 <div id="timeSlotsContainer" class="row">
-                                    
+
                                 </div>
-                                </div>  
                             </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now">
                         </div>
 
 
-                </div>
-                </form>
-                <!--<form>
+
+
+                    </form>
+                    <!--<form>
                         <div class="row g-3">
                             <div class="col-12">
                                 <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
@@ -333,187 +344,188 @@ $services = fetchTableData($conn, "tbl_services");
                         </div>
                     </form>
                 </div>-->
-                <!--<div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
+                    <!--<div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
                     <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                     <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/dir//Smile+32+Dental+Clinic/@9.9485722,76.2634294,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3b08736c06ffece7:0x6e9419692f18feb3!2m2!1d76.3458313!2d9.9485823?entry=ttu" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div> -->
-            </div>
-        </div>
-    </div>
-    <!-- Contact End -->
-
-
-    <!-- Newsletter Start -->
-    <div class="container-fluid position-relative pt-5 wow fadeInUp" data-wow-delay="0.1s" style="z-index: 1;">
-        <div class="container">
-            <div class="bg-primary p-5">
-                <form class="mx-auto" style="max-width: 600px;">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-white p-3" placeholder="Your Email">
-                        <button class="btn btn-dark px-4">Sign Up</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Newsletter End -->
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light py-5 wow fadeInUp" data-wow-delay="0.3s" style="margin-top: -75px;">
-        <div class="container pt-5">
-            <div class="row g-5 pt-4">
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="text-white mb-4">Quick Links</h3>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="text-white mb-4">Popular Links</h3>
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a>
-                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="text-white mb-4">Get In Touch</h3>
-                    <p class="mb-2"><i class="bi bi-geo-alt text-primary me-2"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="bi bi-envelope-open text-primary me-2"></i>info@example.com</p>
-                    <p class="mb-0"><i class="bi bi-telephone text-primary me-2"></i>+012 345 67890</p>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h3 class="text-white mb-4">Follow Us</h3>
-                    <div class="d-flex">
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-twitter fw-normal"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-linkedin-in fw-normal"></i></a>
-                        <a class="btn btn-lg btn-primary btn-lg-square rounded" href="#"><i class="fab fa-instagram fw-normal"></i></a>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container-fluid text-light py-4" style="background: #051225;">
-        <div class="container">
-            <div class="row g-0">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-md-0">&copy; <a class="text-white border-bottom" href="#">Your Site Name</a>. All Rights Reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0">Designed by <a class="text-white border-bottom" href="https://htmlcodex.com">HTML Codex</a></p>
+        <!-- Contact End -->
+
+
+        <!-- Newsletter Start -->
+        <div class="container-fluid position-relative pt-5 wow fadeInUp" data-wow-delay="0.1s" style="z-index: 1;">
+            <div class="container">
+                <div class="bg-primary p-5">
+                    <form class="mx-auto" style="max-width: 600px;">
+                        <div class="input-group">
+                            <input type="text" class="form-control border-white p-3" placeholder="Your Email">
+                            <button class="btn btn-dark px-4">Sign Up</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Footer End -->
+        <!-- Newsletter End -->
 
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <!-- Footer Start -->
+        <div class="container-fluid bg-dark text-light py-5 wow fadeInUp" data-wow-delay="0.3s" style="margin-top: -75px;">
+            <div class="container pt-5">
+                <div class="row g-5 pt-4">
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Quick Links</h3>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a>
+                            <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Popular Links</h3>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                            <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a>
+                            <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Get In Touch</h3>
+                        <p class="mb-2"><i class="bi bi-geo-alt text-primary me-2"></i>123 Street, New York, USA</p>
+                        <p class="mb-2"><i class="bi bi-envelope-open text-primary me-2"></i>info@example.com</p>
+                        <p class="mb-0"><i class="bi bi-telephone text-primary me-2"></i>+012 345 67890</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Follow Us</h3>
+                        <div class="d-flex">
+                            <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-twitter fw-normal"></i></a>
+                            <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
+                            <a class="btn btn-lg btn-primary btn-lg-square rounded me-2" href="#"><i class="fab fa-linkedin-in fw-normal"></i></a>
+                            <a class="btn btn-lg btn-primary btn-lg-square rounded" href="#"><i class="fab fa-instagram fw-normal"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid text-light py-4" style="background: #051225;">
+            <div class="container">
+                <div class="row g-0">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p class="mb-md-0">&copy; <a class="text-white border-bottom" href="#">Your Site Name</a>. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p class="mb-0">Designed by <a class="text-white border-bottom" href="https://htmlcodex.com">HTML Codex</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
 
 
-    <!-- JavaScript Libraries -->
-    <script>
-        // Function to fetch and update time slots based on selected options
-        function fetchAvailableTimeSlots() {
-            // Gather selected values
-            var serviceId = $("select[name='service_id']").val();
-            var doctorId = $("select[name='doctor_id']").val();
-            var section = $("input[name='section']:checked").val();
-            var appointmentDate = $("#appointmentDate").val();
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-            // Send AJAX request to fetch data
-            $.ajax({
-                type: "POST",
-                url: "fetch_data.php", // Replace with your PHP script URL
-                data: {
-                    serviceId: serviceId,
-                    doctorId: doctorId,
-                    section: section,
-                    appointmentDate: appointmentDate
-                },
 
-                success: function(response) {
-                    // Handle the response from PHP here
-                    // You can update the #timeSlotsContainer with the received data
-                    $("#timeSlotsContainer").html(response);
-                },
-                error: function() {
-                    // Handle errors here if needed
-                    console.error("An error occurred during the AJAX request.");
-                }
+        <!-- JavaScript Libraries -->
+        <script>
+            // Function to fetch and update time slots based on selected options
+            function fetchAvailableTimeSlots() {
+                // Gather selected values
+                var serviceId = $("select[name='service_id']").val();
+                var doctorId = $("select[name='doctor_id']").val();
+                var section = $("input[name='section']:checked").val();
+                var appointmentDate = $("#appointmentDate").val();
+
+                // Send AJAX request to fetch data
+                $.ajax({
+                    type: "POST",
+                    url: "update_status.php", // Replace with your PHP script URL
+                    data: {
+                        serviceId: serviceId,
+                        doctorId: doctorId,
+                        section: section,
+                        appointmentDate: appointmentDate
+                    },
+
+                    success: function(response) {
+                        // Handle the response from PHP here
+                        // You can update the #timeSlotsContainer with the received data
+                        $("#timeSlotsContainer").html(response);
+                    },
+                    error: function() {
+                        // Handle errors here if needed
+                        console.error("An error occurred during the AJAX request.");
+                    }
+                });
+            }
+
+            // Attach onchange event listeners to the relevant form elements
+            $("select[name='service_id']").change(fetchAvailableTimeSlots);
+            $("select[name='doctor_id']").change(fetchAvailableTimeSlots);
+            $("input[name='section']").change(fetchAvailableTimeSlots);
+            $("#appointmentDate").change(fetchAvailableTimeSlots);
+
+            // Initial fetch when the page loads
+            fetchAvailableTimeSlots();
+        </script>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get the input element and the error message element
+                var phoneNumberInput = document.getElementById("phoneNumber");
+                var phoneError = document.getElementById("phoneError");
+
+                // Add an input event listener to the input field
+                phoneNumberInput.addEventListener("input", function() {
+                    // Get the entered value
+                    var phoneNumber = phoneNumberInput.value;
+
+                    // Remove any non-digit characters (e.g., spaces)
+                    phoneNumber = phoneNumber.replace(/\D/g, '');
+
+                    // Check if the length is exactly 10 digits
+                    if (phoneNumber.length === 10) {
+                        // Clear any previous error message
+                        phoneError.textContent = "";
+                    } else {
+                        // Display an error message
+                        phoneError.textContent = "Please enter a 10-digit phone number.";
+                    }
+
+                    // Limit the input to exactly 10 digits
+                    if (phoneNumber.length > 10) {
+                        phoneNumber = phoneNumber.substring(0, 10);
+                        phoneNumberInput.value = phoneNumber;
+                    }
+                });
             });
-        }
+        </script>
+        <script>
+            // Get the current date in yyyy-mm-dd format    
+            const currentDate = new Date().toISOString().split('T')[0];
+            // Set the minimum date for the input field to the current date
+            document.getElementById("appointmentDate").min = currentDate;
+        </script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="lib/tempusdominus/js/moment.min.js"></script>
+        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="lib/twentytwenty/jquery.event.move.js"></script>
+        <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
 
-        // Attach onchange event listeners to the relevant form elements
-        $("select[name='service_id']").change(fetchAvailableTimeSlots);
-        $("select[name='doctor_id']").change(fetchAvailableTimeSlots);
-        $("input[name='section']").change(fetchAvailableTimeSlots);
-        $("#appointmentDate").change(fetchAvailableTimeSlots);
-
-        // Initial fetch when the page loads
-        fetchAvailableTimeSlots();
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Get the input element and the error message element
-            var phoneNumberInput = document.getElementById("phoneNumber");
-            var phoneError = document.getElementById("phoneError");
-
-            // Add an input event listener to the input field
-            phoneNumberInput.addEventListener("input", function() {
-                // Get the entered value
-                var phoneNumber = phoneNumberInput.value;
-
-                // Remove any non-digit characters (e.g., spaces)
-                phoneNumber = phoneNumber.replace(/\D/g, '');
-
-                // Check if the length is exactly 10 digits
-                if (phoneNumber.length === 10) {
-                    // Clear any previous error message
-                    phoneError.textContent = "";
-                } else {
-                    // Display an error message
-                    phoneError.textContent = "Please enter a 10-digit phone number.";
-                }
-
-                // Limit the input to exactly 10 digits
-                if (phoneNumber.length > 10) {
-                    phoneNumber = phoneNumber.substring(0, 10);
-                    phoneNumberInput.value = phoneNumber;
-                }
-            });
-        });
-    </script>
-    <script>
-        // Get the current date in yyyy-mm-dd format    
-        const currentDate = new Date().toISOString().split('T')[0];
-        // Set the minimum date for the input field to the current date
-        document.getElementById("appointmentDate").min = currentDate;
-    </script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="lib/twentytwenty/jquery.event.move.js"></script>
-    <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
 </body>
 
 </html>
