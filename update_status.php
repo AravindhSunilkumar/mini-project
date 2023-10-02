@@ -1,5 +1,35 @@
 <?php
 include("connection.php"); // Include your database connection
+function timeFetch($s,$e)
+{
+    // Define the start and end times
+    $start = strtotime($s);
+    $end = strtotime($e);
+
+    // Initialize an empty array to store the time intervals
+    $timeIntervals = [];
+
+    // Loop to generate time intervals
+    while ($start < $end) {
+        // Calculate the end time of the interval (15 minutes later)
+        $intervalEnd = strtotime('+15 minutes', $start);
+
+        // Format the times in AM/PM format
+        $formattedStart = date('g:iA', $start);
+        $formattedEnd = date('g:iA', $intervalEnd);
+
+        // Create the interval string and add it to the array
+        $timeIntervalString = $formattedStart . '-' . $formattedEnd;
+        $timeIntervals[] = $timeIntervalString;
+
+        // Move the start time to the next interval
+        $start = $intervalEnd;
+    }
+
+    // Join the time intervals into a comma-separated string
+    $timeIntervalsString = implode(', ', $timeIntervals);
+    return $timeIntervalsString;
+}
 
 if (isset($_POST['service_id']) && isset($_POST['new_status'])) {
     $service_id = $_POST['service_id'];
@@ -72,6 +102,82 @@ if (isset($_POST['service_id']) && isset($_POST['new_status'])) {
         $conn->close();
     }
 } else {
-    echo "Invalid Request."; 
+    echo "Invalid Request.";
 }
-?>
+if (isset($_POST['selectedDate']) && isset($_POST['selectedDoctorId'])) {
+    // Handle the form submission
+    $selectedDate = $_POST["selectedDate"];
+    $selectedDoctorId = $_POST["selectedDoctorId"];
+    $selectedSection = $_POST["section"];
+    // Convert the date string to a timestamp
+    $timestamp = strtotime($selectedDate);
+
+    if ($timestamp === false) {
+        echo "Invalid date format";
+    } else {
+        // Use the date() function to get the day of the week (0 = Sunday, 1 = Monday, ...)
+        $dayOfWeek = date("w", $timestamp);
+
+        // Define an array to map day of the week numbers to their names
+        $daysOfWeek = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+
+        // Get the day name based on the day of the week
+        $dayName = $daysOfWeek[$dayOfWeek];
+        if ($dayName == "Sunday") {
+            $dayNum = "0";
+        } elseif ($dayName == "Monday") {
+            $dayNum = "1";
+        } elseif ($dayName == "Tuesday") {
+            $dayNum = "2";
+        } elseif ($dayName == "Wednesday") {
+            $dayNum = "3";
+        } elseif ($dayName == "Thursday") {
+            $dayNum = "4";
+        } elseif ($dayName == "Friday") {
+            $dayNum = "5";
+        } elseif ($dayName == "Saturday") {
+            $dayNum = "6";
+        } else {
+            echo "error:";
+        }
+        $update_sql = "SELECT * FROM tbl_doctortime  
+                   WHERE doctor_id = ? AND slot_id = ? AND status = ?";
+
+        $stmt = $conn->prepare($update_sql);
+        $stmt->bind_param("sss", $selectedDate, $dayNum, "Active");
+
+        $conn->begin_transaction();
+        if ($selectedSection == "morning") {
+            $timeInterval = timeFetch("9:00AM", "12:00PM");
+        }else if($selectedSection == "afternoon") {
+            $timeInterval = timeFetch("12:00PM", "2:50PM");
+        }else if($selectedSection == "evening"){
+            $timeInterval = timeFetch("4:20PM", "5:00PM");
+        }
+
+        try {
+            if ($stmt_services->execute() && $stmt_doctortime->execute()) {
+                $conn->commit();
+                echo 'success'; // Send a success response to the AJAX request
+            } else {
+                throw new Exception("Error updating status.");
+            }
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "Error updating status: " . $e->getMessage();
+        } finally {
+            $stmt_services->close();
+            $stmt_doctortime->close();
+            $conn->close();
+        }
+        // Return the available time slots in HTML format
+        foreach ($timeInterval as $timeSlot) {
+        echo '<div class="col">';
+        echo '<a href="" class="btn btn-primary py-2 px-4 ms-3">' . $timeSlot . '</a>';
+        echo '</div>';
+    }
+    }
+
+
+   
+}

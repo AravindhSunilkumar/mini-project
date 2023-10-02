@@ -78,7 +78,7 @@ if (isset($_POST["signup"])) {
         }
     } else {
         $_SESSION['message2'] = $result["message"];
-        header('Location: signup.html');
+        header('Location: signup.php');
     }
     exit();
 }
@@ -95,7 +95,7 @@ if (isset($_POST["login"])) {
         }
     } else {
         $_SESSION["message1"] = $result["message"];
-        header('Location: signup.html');
+        header('Location: signup.php');
     }
     exit();
 }

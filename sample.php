@@ -15,7 +15,7 @@ if (isset($_POST["signup"])) {
         if (mysqli_query($conn, $sql)) {
             $_SESSION["name"] = $name;
             $_SESSION["email"] = $email;
-            header('Location: index.php');
+            header('Location: index.html');
             exit();
         } else {
             $_SESSION['message2'] = "Error: " . mysqli_error($conn);
@@ -43,7 +43,7 @@ if (isset($_POST["login"])) {
         if ($row['name'] == "admin") {
             header("Location: admin_menu.php");
         } else {
-            header('Location: index.php');
+            header('Location: index.htnl');
             exit();
         }
     } else { 

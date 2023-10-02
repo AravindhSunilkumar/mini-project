@@ -9,7 +9,7 @@ include("connection.php");
   session_destroy();
 
   // Redirect to the login page or any other desired page
-  header('Location: index.php');
+  header('Location: index.html');
   exit();
 
 ?>    

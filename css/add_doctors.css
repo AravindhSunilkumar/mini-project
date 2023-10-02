@@ -103,3 +103,47 @@
   margin-top: 16px;
 }
 /*appointment CSS Ends*/
+/*User appointment CSS Start*/
+.a-cont{
+  width: 66%;
+  background-color: #091e3e
+}
+    .t-section {
+        display: flex;
+        flex-wrap: wrap;
+        font-size: smaller;
+        margin-top: 30px;
+    }
+
+    .t-section .col-12 {
+        flex: 0 0 35%; /* Adjust this value to control the width of each radio input column */
+    }
+
+    /* Optionally, you can add some spacing and alignment to the labels */
+    .t-section label {
+        margin-right: 10px; /* Add spacing between labels */
+        align-self: center; /* Vertically align labels to the center */
+    }
+     .l2{
+      color: #fff;
+      flex: 0 0 30%;
+    }
+    @media (max-width: 900px) {
+      .a-cont{
+        width: 90%;
+        margin: 30px;
+      }
+      .t-section .col-12 {
+        flex: 0 0 71%;
+    }
+    .l2{
+      flex: 0 0 71%;
+    }
+    .t-section .col-12 .l{
+    color: #fff;
+    flex: 0 0 57%;
+    }
+  }
+
+/*appointment CSS Ends*/
+

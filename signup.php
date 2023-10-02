@@ -336,7 +336,7 @@ if (isset($_SESSION["message2"])) {
 	<div class="wrapper">
 		<!-- ... Your HTML code ... -->
 
-		<div class="modal" id="message-modal">
+		<div class="modal" id="message-modal" >
 			<div class="modal-content">
 				<span class="close" onclick="closeModal()">&times;</span>
 				<center>
@@ -344,6 +344,7 @@ if (isset($_SESSION["message2"])) {
 				</center>
 			</div>
 		</div>
+		
 
 
 		<!-- ... Your HTML code ... -->
@@ -406,6 +407,7 @@ if (isset($_SESSION["message2"])) {
 	<script>
 		// JavaScript for modal execution
 		console.log("JavaScript for modal execution");
+		
 
 		function closeModal() {
 			var modal = document.getElementById('message-modal');
@@ -442,10 +444,11 @@ if (isset($_SESSION["message2"])) {
 			return false;
 		});
 	</script>
-
+	
 	<?php
+	
 	unset($_SESSION['message1']);
-	unset($_SESSION['message1']);
+	unset($_SESSION['message2']);
 	?>
 
 </body>

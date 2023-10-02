@@ -40,7 +40,7 @@ include("connection.php");
 
 <body >
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0 ">
-        <a href="index.php" class="navbar-brand p-0">
+        <a href="index.html" class="navbar-brand p-0">
             <h1 class="m-0 text-primary"><i class="fa fa-tooth me-2"></i>Smile <span style="color:orange;">32</span></h1>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -89,7 +89,7 @@ include("connection.php");
                     <a href="signup.php" class="dropdown-item">Sign Out</a>
                 </div>
             </div>
-            <a href="index.php" class="btn btn-primary py-2 px-4 ms-3">User page</a>
+            <a href="index.html" class="btn btn-primary py-2 px-4 ms-3">User page</a>
         </div>
     </nav>
     
