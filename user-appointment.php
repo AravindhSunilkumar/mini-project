@@ -15,8 +15,114 @@ function fetchTableData($conn, $tableName)
 
     return $data;
 }
+
 $doctors = fetchTableData($conn, "tbl_doctors");
 $services = fetchTableData($conn, "tbl_services");
+function userData($user)
+{
+    global $conn;
+    $sql = "SELECT user_email FROM tbl_users WHERE user_username = '$user'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+
+    if (mysqli_num_rows($result) > 0) {
+        $email = $row['user_email'];
+    }
+    return $email;
+}
+function userId($user)
+{
+    global $conn;
+    $sql = "SELECT user_id FROM tbl_users WHERE user_username = '$user'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+
+    if (mysqli_num_rows($result) > 0) {
+        $id = $row['user_id'];
+    }
+    return $id;
+}
+//if user not logged in then 
+
+if (isset($_SESSION['name'])) {
+    global $userId;
+    $User = $_SESSION['name'];
+    $email = userData($User);
+    $userId = userId($User);
+
+    $sql = "SELECT user_id
+    FROM  tbl_patient WHERE user_id = $userId";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+
+    if (mysqli_num_rows($result) > 0) {
+        $flag = true;
+    } else {
+        $flag = false;
+        echo $flag;
+    }
+} else {
+    echo '<script>
+    if (confirm("User not logged in. Do you want to go to the signup page?")) {
+        window.location.href = "signup.php";
+    } else {
+        window.location.href = "index.html"; // Redirect to index.php if Cancel is clicked
+    }
+</script>';
+    exit; // Stop further PHP execution
+
+    // Submit patient details
+}
+if (($_SERVER["REQUEST_METHOD"] == "POST") && (isset($_POST['details']))) {
+    // Retrieve form data
+    $name = $_POST["name"];
+    $phoneNumber = $_POST["phoneNumber"];
+    $dateOfBirth = $_POST["dateOfBirth"];
+    $gender = $_POST["gender"];
+    $address = $_POST["address"];
+    $allergy = $_POST["allergy"];
+    $User = $_SESSION['name'];
+    $email = userData($User);
+    $userId = userId($User);
+
+    $sql = "SELECT user_id
+    FROM  tbl_patient WHERE user_id = $userId";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo '<script>
+    if (confirm("Useralready enter these Details")) {
+        window.location.href = "user-appointment.php";
+    }</script>';
+    } else {
+
+        $sql = "INSERT INTO tbl_patient (user_id,full_name, gender, date_of_birth, address, allergy_info,emergency_contact_phone) 
+    VALUES (?,?, ?, ?, ?, ?,?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssssss", $userId, $name, $gender, $dateOfBirth, $address, $allergy, $phoneNumber);
+
+
+
+        if ($stmt->execute()) {
+            echo '<script>
+var confirmed = confirm("Submit Your Details added successfully. Click OK to continue.");
+if (confirmed) {
+window.location.href = "user-appointment.php";
+}
+</script>';
+        } else {
+            echo "Error inserting data: " . $stmt->error;
+        }
+
+
+        $stmt->close();
+        $conn->close();
+    }
+}
+
+
 
 
 ?>
@@ -105,8 +211,8 @@ $services = fetchTableData($conn, "tbl_services");
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
                 <a href="index.html" class="nav-item nav-link">Home</a>
-                <a href="about.php" class="nav-item nav-link">About</a>
-                <a href="service.php" class="nav-item nav-link">Service</a>
+                <a href="index.html" class="nav-item nav-link">About</a>
+                <a href="index.html" class="nav-item nav-link">Service</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
@@ -117,7 +223,7 @@ $services = fetchTableData($conn, "tbl_services");
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
                 </div>
-                <a href="contact.html" class="nav-item nav-link active">Contact</a>
+                <a href="index.html" class="nav-item nav-link active">Contact</a>
             </div>
             <?php if (isset($_SESSION['name'])) { ?>
                 <div class="nav-item dropdown">
@@ -208,99 +314,102 @@ $services = fetchTableData($conn, "tbl_services");
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-lg-6 wow slideInUp a-cont" data-wow-delay="0.3s">
-                    <div style="color:#fff;font-size: x-large;" class="row justify-content-center text-uppercase ">
-                    <center><h1 style="color: #fff;"><u>Book appointment</u></h1></center>
-                    </div>
+                <?php if ($flag) { ?>
+                    <div class="col-xl-4 col-lg-6 wow slideInUp a-cont" data-wow-delay="0.3s">
+                        <div style="color:#fff;font-size: x-large;" class="row justify-content-center text-uppercase ">
+                            <center>
+                                <h1 style="color: #fff;"><u>Book appointment</u></h1>
+                            </center>
+                        </div>
 
-                    <form action="" method="post">
-                        <div class="row g-3" style="margin-top: 4px;">
-                            <div class="col-12  ">
+                        <form action="" method="post">
+                            <div class="row g-3" style="margin-top: 4px;">
+                                <!-- <div class="col-12  ">
                                 <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;" required>
                             </div>
                             <div class="col-12 col-sm-6 ">
-                                <input type="email" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;" required>
+                                <input type="email" class="form-control border-0 bg-light px-4" value="<?php echo $email; ?>" placeholder="Your Email" style="height: 55px;" required>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <input type="number" class="form-control border-0 bg-light px-4" placeholder="Your Phone Number" style="height: 55px;" id="phoneNumber" required>
                                 <div id="phoneError" class="text-danger" style="transform: rotate(360deg);animation: rotation 5s linear infinite;"></div>
-                            </div>
+                            </div>-->
 
-                            <div class="col-12 col-sm-6 ">
-                                <select class="form-select bg-light border-0" name="service_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
-                                    <option value="default" selected>Choose Service</option>
-                                    <?php
-                                    foreach ($services as $index => $service) :
+                                <div class="col-12 col-sm-6 ">
+                                    <select class="form-select bg-light border-0" name="service_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
+                                        <option value="default" selected>Choose Service</option>
+                                        <?php
+                                        foreach ($services as $index => $service) :
 
-                                        $service_id = $service["service_id"];
-                                        $service_name = $service["service_name"];
-                                        echo "<option  value=\"$service_id\" >$service_name</option>";
-
-
-                                    endforeach;
+                                            $service_id = $service["service_id"];
+                                            $service_name = $service["service_name"];
+                                            echo "<option  value=\"$service_id\" >$service_name</option>";
 
 
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;"  onchange="fetchAvailableTimeSlots()" required>
-                                    <option value="default" selected>Choose Doctor</option>
-                                    <?php
-                                    foreach ($doctors as $index => $doctor) :
-
-                                        $doctor_id = $doctor["doctor_id"];
-                                        $doctor_name = $doctor["doctor_name"];
-                                        echo "<option  value=\"$doctor_id\" >$doctor_name</option>";
+                                        endforeach;
 
 
-                                    endforeach;
-
-
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="row  t-section">
-                                <div class="col-12 col-sm-6  " style="color:#fff">
-                                    <input type="radio" name="section" id="morning" value="morning" onchange="fetchAvailableTimeSlots()" required>
-                                    <label for="morning">Morning 09:00 AM - 12:00 PM</label>
+                                        ?>
+                                    </select>
                                 </div>
-                                <div class="col-12 col-sm-6 " style="color:#fff">
-                                    <input type="radio" name="section" id="Afternoon" value="afternoon" onchange="fetchAvailableTimeSlots()" required>
-                                    <label for="Afternoon">Afternoon 12:00 PM - 02:50 PM</label>
+                                <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
+                                        <option value="default" selected>Choose Doctor</option>
+                                        <?php
+                                        foreach ($doctors as $index => $doctor) :
+
+                                            $doctor_id = $doctor["doctor_id"];
+                                            $doctor_name = $doctor["doctor_name"];
+                                            echo "<option  value=\"$doctor_id\" >$doctor_name</option>";
+
+
+                                        endforeach;
+
+
+                                        ?>
+                                    </select>
                                 </div>
-                                <div class=" col-sm-6 l2">
-                                    <input type="radio" name="section" id="Evening" value="evening" onchange="fetchAvailableTimeSlots()" required>
-                                    <label for="Evening" style="margin-right:-5px;" class="l">Evening 04:20 PM - 05:00 PM</label>
+                                <div class="row  t-section">
+                                    <div class="col-12 col-sm-6  " style="color:#fff">
+                                        <input type="radio" name="section" id="morning" value="morning" onchange="fetchAvailableTimeSlots()" required>
+                                        <label for="morning">Morning 09:00 AM - 12:00 PM</label>
+                                    </div>
+                                    <div class="col-12 col-sm-6 " style="color:#fff">
+                                        <input type="radio" name="section" id="Afternoon" value="afternoon" onchange="fetchAvailableTimeSlots()" required>
+                                        <label for="Afternoon">Afternoon 12:00 PM - 02:50 PM</label>
+                                    </div>
+                                    <div class=" col-sm-6 l2">
+                                        <input type="radio" name="section" id="Evening" value="evening" onchange="fetchAvailableTimeSlots()" required>
+                                        <label for="Evening" style="margin-right:-5px;" class="l">Evening 04:20 PM - 05:00 PM</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6 l2">
-                                <label for="date" class="text-uppercase">Choose needed date :</label>
-                                <div>
-                                    <input type="date" id="appointmentDate" name="appointmentDate" style="margin-top:3px;" class="form-control border-0 bg-light px-4" min="" required onchange="fetchAvailableTimeSlots()">
-                                </div>
+                                <div class="col-12 col-sm-6 l2">
+                                    <label for="date" class="text-uppercase">Choose needed date :</label>
+                                    <div>
+                                        <input type="date" id="appointmentDate" name="appointmentDate" style="margin-top:3px;" class="form-control border-0 bg-light px-4" min="" required onchange="fetchAvailableTimeSlots()">
+                                    </div>
 
-
-                            </div>
-
-
-                            <!-- Time slots container -->
-
-                            <div id="" class="grid-container">
-                                <div id="timeSlotsContainer" class="row">
 
                                 </div>
+
+
+                                <!-- Time slots container -->
+
+                                <div id="" class="grid-container">
+                                    <div id="timeSlotsContainer" class="row">
+
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row justify-content-center">
-                            <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now">
-                        </div>
+                            <div class="row justify-content-center">
+                                <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now">
+                            </div>
 
 
 
 
-                    </form>
-                    <!--<form>
+                        </form>
+                        <!--<form>
                         <div class="row g-3">
                             <div class="col-12">
                                 <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
@@ -344,11 +453,76 @@ $services = fetchTableData($conn, "tbl_services");
                         </div>
                     </form>
                 </div>-->
-                    <!--<div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
+                        <!--<div class="col-xl-4 col-lg-12 wow slideInUp" data-wow-delay="0.6s">
                     <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                     <iframe class="position-relative rounded w-100 h-100" src="https://www.google.com/maps/dir//Smile+32+Dental+Clinic/@9.9485722,76.2634294,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3b08736c06ffece7:0x6e9419692f18feb3!2m2!1d76.3458313!2d9.9485823?entry=ttu" frameborder="0" style="min-height: 400px; border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div> -->
-                </div>
+                    </div>
+                <?php } else { ?>
+                    <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" style="width:66%" data-wow-delay="0.6s">
+                        <h1 class="text-white mb-4">Submit Your Details</h1>
+                        <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
+                            <div class="row g-3">
+                                <!-- <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" style="height: 55px;">
+                                        <option selected>Select A Service</option>
+                                        <option value="1">Service 1</option>
+                                        <option value="2">Service 2</option>
+                                        <option value="3">Service 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" style="height: 55px;">
+                                        <option selected>Select Doctor</option>
+                                        <option value="1">Doctor 1</option>
+                                        <option value="2">Doctor 2</option>
+                                        <option value="3">Doctor 3</option>
+                                    </select>
+                                </div>-->
+                                <div class="col-12 col-sm-6">
+                                    <input type="text" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;" name="name">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="number" class="form-control border-0 bg-light px-4" name="phoneNumber" placeholder="Your Phone Number" style="height: 55px;" id="phoneNumber" required>
+                                    <div id="phoneError" class="text-danger" style="transform: rotate(360deg);animation: rotation 5s linear infinite;"></div>
+                                </div>
+                                <div class="row" style="color: #fff;">
+                                    <label for="" style="width: 160px;">Date Of Birth</label>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="date" class="form-control bg-light border-0" name="dateOfBirth" placeholder="Your " style="height: 55px;">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" name="gender" style="height: 55px;">
+                                        <option selected>Male</option>
+                                        <option value="">Female</option>
+                                        <option value="">Other</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="date" id="" data-target-input="nearest">
+                                        <!--<input type="textarea" class="form-control bg-light border-0 datetimepicker-input" placeholder="Enter Your Address" data-target="#date1" data-toggle="datetimepicker" style="height: 55px;">-->
+                                        <textarea class="form-control bg-light border-0 datetimepicker-input" name="allergy" placeholder="Allergy Information" style="height: 55px;"></textarea>
+
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="date" id="" data-target-input="nearest">
+                                        <!--<input type="textarea" class="form-control bg-light border-0 datetimepicker-input" placeholder="Enter Your Address" data-target="#date1" data-toggle="datetimepicker" style="height: 55px;">-->
+                                        <textarea class="form-control bg-light border-0 datetimepicker-input" name="address" placeholder="Enter Your Address" style="height: 55px;"></textarea>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="btn btn-dark w-100 py-3" type="submit" name="details">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                <?php } ?>
+
             </div>
         </div>
         <!-- Contact End -->
@@ -472,6 +646,54 @@ $services = fetchTableData($conn, "tbl_services");
 
             // Initial fetch when the page loads
             fetchAvailableTimeSlots();
+
+            // JavaScript function to handle form submission
+            function submitForm() {
+                // Get form data
+                // var name = document.querySelector('input[name="name"]').value;
+                // var email = document.querySelector('input[name="email"]').value;
+                //var phoneNumber = document.querySelector('input[name="phoneNumber"]').value;
+                var serviceId = document.querySelector('select[name="service_id"]').value;
+                var doctorId = document.querySelector('select[name="doctor_id"]').value;
+                var section = document.querySelector('input[name="section"]:checked').value;
+                var appointmentDate = document.querySelector('input[name="appointmentDate"]').value;
+                var name = document.querySelector('input[name="book_now"]').value;
+
+
+                // Create a FormData object to send data as a POST request
+                book = true;
+                var formData = new FormData();
+                //formData.append('name', name);
+                //formData.append('email', email);
+                //formData.append('phoneNumber', phoneNumber);
+                formData.append('service_id', serviceId);
+                formData.append('doctor_id', doctorId);
+                formData.append('section', section);
+                formData.append('appointmentDate', appointmentDate);
+                formData.append('book_now', book_now);
+
+                // Create a new XMLHttpRequest
+                var xhr = new XMLHttpRequest();
+
+                // Define the POST request details
+                xhr.open('POST', 'update_status.php', true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Handle the response from update_status.php here
+                        var response = xhr.responseText;
+                        alert(response.message); // Display the response message in an alert // You can do something with the response
+                    }
+                };
+
+                // Send the POST request
+                xhr.send(formData);
+            }
+
+            // Attach the submitForm function to the form's submit event
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                submitForm(); // Call the submitForm function to handle the submission
+            });
         </script>
 
 

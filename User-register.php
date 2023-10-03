@@ -1,6 +1,38 @@
 <?php
 session_start();
 include("connection.php");
+ 
+if (($_SERVER["REQUEST_METHOD"] == "POST") && (isset($_POST['details']))) {
+    // Retrieve form data
+    $name = $_POST["name"];
+    $phoneNumber = $_POST["phoneNumber"];
+    $dateOfBirth = $_POST["dateOfBirth"];
+    $gender = $_POST["gender"];
+    $address = $_POST["address"];
+    $allergy = $_POST["allergy"];
+    $sql = "INSERT INTO tbl_patient (full_name, gender, date_of_birth, address, allergy_info,emergency_contact_phone) 
+    VALUES (?, ?, ?, ?, ?,?)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssss", $name, $gender, $dateOfBirth, $address,$allergy, $phoneNumber);
+
+
+
+    if ($stmt->execute()) {
+        echo '<script>
+var confirmed = confirm("Submit Your Details added successfully. Click OK to continue.");
+if (confirmed) {
+window.location.href = "user-register.php";
+}
+</script>';
+    } else {
+        echo "Error inserting data: " . $stmt->error;
+    }
+
+
+    $stmt->close();
+    $conn->close();
+}
 
 ?>
 <!DOCTYPE html>
@@ -10,8 +42,8 @@ include("connection.php");
     <meta charset="utf-8">
     <title>DentCare - Dental Clinic Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
@@ -163,59 +195,72 @@ include("connection.php");
                     </div>
                 </div>
                 <div class="col-lg-7">
-                    <div class="section-title mb-5">
-                        <h5 class="position-relative d-inline-block text-primary text-uppercase">Our Services</h5>
-                        <h1 class="display-5 mb-0">We Offer The Best Quality Dental Services</h1>
+                <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+                        <h1 class="text-white mb-4">Submit Your Details</h1>
+                        <form action="<?php $_SERVER["PHP_SELF"];?>" method="post">
+                            <div class="row g-3">
+                               <!-- <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" style="height: 55px;">
+                                        <option selected>Select A Service</option>
+                                        <option value="1">Service 1</option>
+                                        <option value="2">Service 2</option>
+                                        <option value="3">Service 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0" style="height: 55px;">
+                                        <option selected>Select Doctor</option>
+                                        <option value="1">Doctor 1</option>
+                                        <option value="2">Doctor 2</option>
+                                        <option value="3">Doctor 3</option>
+                                    </select>
+                                </div>-->
+                                <div class="col-12 col-sm-6">
+                                    <input type="text" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;" name="name">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                <input type="number" class="form-control border-0 bg-light px-4" name="phoneNumber" placeholder="Your Phone Number" style="height: 55px;" id="phoneNumber" required>
+                                <div id="phoneError" class="text-danger" style="transform: rotate(360deg);animation: rotation 5s linear infinite;"></div>
+                                </div>
+                                <div class="row" style="color: #fff;">
+                                    <label for="" style="width: 160px;">Date Of Birth</label>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="date" class="form-control bg-light border-0" name="dateOfBirth" placeholder="Your " style="height: 55px;">
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <select class="form-select bg-light border-0"  name="gender"style="height: 55px;">
+                                        <option selected>Male</option>
+                                        <option value="">Female</option>
+                                        <option value="">Other</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="row-12 col-sm-6">
+                                    <div class="date" id="" data-target-input="nearest" style="margin-right: -276px;">
+                                        <!--<input type="textarea" class="form-control bg-light border-0 datetimepicker-input" placeholder="Enter Your Address" data-target="#date1" data-toggle="datetimepicker" style="height: 55px;">-->
+                                        <textarea class="form-control bg-light border-0 datetimepicker-input" name="allergy" placeholder="Allergy Information" style="height: 55px;"></textarea>
+
+                                    </div>
+                                </div>
+                                <div class="row-12 col-sm-6">
+                                    <div class="date" id="" data-target-input="nearest" style="margin-right: -276px;">
+                                        <!--<input type="textarea" class="form-control bg-light border-0 datetimepicker-input" placeholder="Enter Your Address" data-target="#date1" data-toggle="datetimepicker" style="height: 55px;">-->
+                                        <textarea class="form-control bg-light border-0 datetimepicker-input" name="address" placeholder="Enter Your Address" style="height: 55px;"></textarea>
+
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <button class="btn btn-dark w-100 py-3" type="submit" name="details">Submit</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="row g-5">
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.6s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="img/service-1.jpg" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Cosmetic Dentistry</h5>
-                            </div>
-                        </div>
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.9s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="img/service-2.jpg" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Dental Implants</h5>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
-            <div class="row g-5 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="col-lg-7">
-                    <div class="row g-5">
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.3s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="img/service-3.jpg" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Dental Bridges</h5>
-                            </div>
-                        </div>
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.6s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="img/service-4.jpg" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Teeth Whitening</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5 service-item wow zoomIn" data-wow-delay="0.9s">
-                    <div class="position-relative bg-primary rounded h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-                        <h3 class="text-white mb-3">Make Appointment</h3>
-                        <p class="text-white mb-3">Clita ipsum magna kasd rebum at ipsum amet dolor justo dolor est magna stet eirmod</p>
-                        <h2 class="text-white mb-0">+012 345 6789</h2>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
     <!-- Service End -->
@@ -299,6 +344,37 @@ include("connection.php");
 
 
     <!-- JavaScript Libraries -->
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get the input element and the error message element
+                var phoneNumberInput = document.getElementById("phoneNumber");
+                var phoneError = document.getElementById("phoneError");
+
+                // Add an input event listener to the input field
+                phoneNumberInput.addEventListener("input", function() {
+                    // Get the entered value
+                    var phoneNumber = phoneNumberInput.value;
+
+                    // Remove any non-digit characters (e.g., spaces)
+                    phoneNumber = phoneNumber.replace(/\D/g, '');
+
+                    // Check if the length is exactly 10 digits
+                    if (phoneNumber.length === 10) {
+                        // Clear any previous error message
+                        phoneError.textContent = "";
+                    } else {
+                        // Display an error message
+                        phoneError.textContent = "Please enter a 10-digit phone number.";
+                    }
+
+                    // Limit the input to exactly 10 digits
+                    if (phoneNumber.length > 10) {
+                        phoneNumber = phoneNumber.substring(0, 10);
+                        phoneNumberInput.value = phoneNumber;
+                    }
+                });
+            });
+        </script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>

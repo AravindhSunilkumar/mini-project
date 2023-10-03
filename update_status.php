@@ -219,6 +219,51 @@ if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['sec
 //$response .= "</ul>";
 
 // Send the response back to the JavaScript
+if (($_SERVER['REQUEST_METHOD'] === 'POST') && (isset($_POST['book_now']))) {
+    // Retrieve data from the POST request
+    //$name = $_POST['name'];
+   // $email = $_POST['email'];
+   // $phoneNumber = $_POST['phoneNumber'];
+    $serviceId = $_POST['service_id'];
+    $doctorId = $_POST['doctor_id'];
+    $section = $_POST['section'];
+    $appointmentDate = $_POST['appointmentDate'];
+
+    // Perform any necessary validation on the data here
+
+    
+    
+
+    
+
+    // Prepare and execute the SQL INSERT query
+    $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id, status, appointmentneed_date, created_at)
+            VALUES (?, ?,?, ?, 'pending', ?, NOW())";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iisss", $patient_id, $doctor_id,$email,$service_id, $appointment_date);
+
+    // You may need to determine the patient_id based on the email or other criteria.
+    // For this example, I'm assuming you have a patients table with an email column.
+   
+    
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+       
+       
+        $response = "Appointment booked successfully!";
+    } else {
+        $response = "Error: Patient not found.";
+    }
+
+    // Close the database connection
+    $stmt->close();
+    $conn->close();
+} 
+
 
 ?>
 <style>
