@@ -171,25 +171,40 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
 
 
                     ?></td>
-                <td><?php
-                    $dt_id = $appmt['doctortime_id'];
-                    $dt_times = fetchName($conn, $dt_id, 'doctortime_id', "tbl_doctortime");
-                    foreach ($dt_times as $index => $dt_time) :
-                      $A_start_time = $dt_time['A_start_time'];
-                      $A_end_time = $dt_time['A_end_time'];
-                      echo $A_start_time . "-" . $A_end_time;
-                    endforeach;
+                    <td><?php
+                    $p_email = $appmt['patient_email'];
+                    
+                    
+                      echo $p_email;
+                      
+                   
 
 
 
                     ?></td>
                 <td><?php
-                    $need_date = $appmt['appointmentneed_date'];
-                    echo $need_date;
+                    $section = $appmt['section'];
+                    echo $section;
+                    
+                    
+                      
+                    
+                   
+
+
+
+                    ?></td>
+                <td><?php
+                    $appo_time = $appmt['appo_time'];
+                    echo $appo_time;
                     ?></td>
                 <td><?php
                     $status = $appmt['status'];
                     echo $status;
+                    ?></td>
+                    <td><?php
+                    $appointmentneed_date = $appmt['appointmentneed_date'];
+                    echo $appointmentneed_date;
                     ?></td>
                 <td><?php
                     $applied_date = $appmt['created_at'];

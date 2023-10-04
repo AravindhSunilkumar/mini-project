@@ -5,6 +5,24 @@ $qualification = "";
 $services = "";
 $gender = "";
 $age = "";
+function slot($conn, $day)
+{
+    $sql = "SELECT * FROM tbl_timeslot WHERE days=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $day);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $id = $row['slot_id'];
+    }
+    
+    $stmt->close();
+    
+    return $id;
+}
+
 if (isset($_POST["timeslot"])) {
     timeSlot();
 }
@@ -16,48 +34,76 @@ function timeSlot()
         $service_id = $_POST["servicename"];
         $doctor_id = $_POST["doctor_id"];
         $availability_days = isset($_POST["availability_days"]) ? $_POST["availability_days"] : [];
+        $sqld = "SELECT * FROM tbl_doctortime WHERE service_id = $service_id AND doctor_id=$doctor_id";
+        $result1 = mysqli_query($conn, $sqld);
+
+
+        if (mysqli_num_rows($result1)) {
+            echo '<script>
+            if (confirm("Doctor time was already added ")) {
+                window.location.href = "add_doctors.php";
+            }
+        </script>';
+            
+        } else {
+            
         if (empty($availability_days)) {
             echo '<script>alert("Please choose at least one available day");</script>';
         } else {
-
-            // Loop through selected days and insert into tbl_doctortime
+            // Loop through selected days and insert into tbl_appointment
             foreach ($availability_days as $day) {
-                $sql = "SELECT * FROM tbl_timeslot WHERE days='$day'";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
-                    $slot_id = $row['slot_id'];
-
-                    $start_time = $_POST[$day . "_start"];
-                    $end_time = $_POST[$day . "_end"];
-
-                    // Insert data into tbl_doctortime with 'start_time' and 'end_time' columns
-                    $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id,slot_id, A_start_time, A_end_time,status, created_at) 
-                    VALUES (?, ?,?, ?, ?,'Active', NOW())";
-
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("iiiss", $doctor_id, $service_id, $slot_id, $start_time, $end_time);
-
-                    if ($stmt->execute()) {
-                        echo '<script>
-                        var confirmed = confirm("Doctor availability added successfully. Click OK to continue.");
-                        if (confirmed) {
-                            window.location.href = "services.php";
-                        }
-                    </script>';
-                    } else {
-                        echo "Error inserting data: " . $stmt->error;
-                    }
-
-                    $stmt->close();
+                // Check if checkboxes for morning, afternoon, and evening are checked
+                $id = slot($conn, $day);
+                //$morning_checked = isset($_POST[$day . "_morning"]) ? 1 : 0;
+                //$afternoon_checked = isset($_POST[$day . "_afternoon"]) ? 1 : 0;
+                //$evening_checked = isset($_POST[$day . "_evening"]) ? 1 : 0;
+                if (isset($_POST[$day . "_morning"])) {
+                    $m_active = "Active";
+                } else {
+                    $m_active = "deactive";
                 }
+                if (isset($_POST[$day . "_afternoon"])) {
+                    $a_active = "Active";
+                } else {
+                    $a_active = "deactive";
+                }
+                if (isset($_POST[$day . "_afternoon"])) {
+                    $e_active = "Active";
+                } else {
+                    $e_active = "deactive";
+                }
+                // Insert data into tbl_appointment
+                $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id, slot_id, morning, afternoon, evening, status, created_at) 
+                    VALUES ( ?, ?, ?, ?, ?, ?, 'Active', NOW())";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iiisss", $doctor_id, $service_id, $id, $m_active, $a_active, $e_active);
+
+                if ($stmt->execute()) {
+                    // Handle success
+                } else {
+                    echo "Error inserting data: " . $stmt->error;
+                }
+
+                $stmt->close();
+                $m_active = "deactive";
+                $a_active = "deactive";
+                $e_active = "deactive";
+                $id=""; 
             }
+
+            echo '<script>
+                    if (confirm("Doctor availability added successfully. Click OK to continue.")) {
+                        window.location.href = "add_doctors.php";
+                         }
+                </script>';
         }
 
         $conn->close();
+        }
     }
 }
+
 
 if (isset($_POST["add_doctor"])) {
     $doctorName = $_POST["doctorName"];
@@ -283,7 +329,7 @@ if (isset($_POST["add_doctor"])) {
                     <div class="d-flex">
                         <label for="available_days">Available Days:</label> <label for="" class="range">Time Start & Ends</label>
                     </div>
-                    <div class="checkbox">
+                    <!--<div class="checkbox">
 
                         <input type="checkbox" id="monday" name="availability_days[]" value="Monday" />
                         <label for="monday">Monday</label>
@@ -316,11 +362,88 @@ if (isset($_POST["add_doctor"])) {
                         <input type="text" id="Saturday_start" name="Saturday_start" placeholder="starting time" />
                         <input type="text" id="Saturday_end" name="Saturday_end" placeholder="Ending time" />
 
-                        <!-- Repeat for other days -->
+                        Repeat for other days 
+                    </div>-->
+                    <div class="checkbox">
+                        <input type="checkbox" id="monday" name="availability_days[]" value="Monday" />
+                        <label for="monday">Monday</label>
+
+                        <input type="checkbox" id="monday_morning" name="Monday_morning" value="Morning" />
+                        <label for="monday_morning">Morning</label>
+
+                        <input type="checkbox" id="monday_afternoon" name="Monday_afternoon" value="Afternoon" />
+                        <label for="monday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="monday_evening" name="Monday_evening" value="Evening" />
+                        <label for="monday_evening">Evening</label>
+                    </div>
+
+                    <div class="checkbox">
+                        <input type="checkbox" id="tuesday" name="availability_days[]" value="Tuesday" />
+                        <label for="tuesday">Tuesday</label>
+
+                        <input type="checkbox" id="tuesday_morning" name="Tuesday_morning" value="Morning" />
+                        <label for="tuesday_morning">Morning</label>
+
+                        <input type="checkbox" id="tuesday_afternoon" name="Tuesday_afternoon" value="Afternoon" />
+                        <label for="tuesday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="tuesday_evening" name="Tuesday_evening" value="Evening" />
+                        <label for="tuesday_evening">Evening</label>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" id="wednesday" name="availability_days[]" value="Wednesday" />
+                        <label for="wednesday">Wednesday</label>
+
+                        <input type="checkbox" id="wednesday_morning" name="Wednesday_morning" value="Morning" />
+                        <label for="wednesday_morning">Morning</label>
+
+                        <input type="checkbox" id="wednesday_afternoon" name="Wednesday_afternoon" value="Afternoon" />
+                        <label for="wednesday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="wednesday_evening" name="Wednesday_evening" value="Evening" />
+                        <label for="wednesday_evening">Evening</label>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" id="Thursday" name="availability_days[]" value="Thursday" />
+                        <label for="Thursday">Thursday</label>
+
+                        <input type="checkbox" id="Thursday_morning" name="Thursday_morning" value="Morning" />
+                        <label for="tuesday_morning">Morning</label>
+
+                        <input type="checkbox" id="Thursday_afternoon" name="Thursday_afternoon" value="Afternoon" />
+                        <label for="tuesday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="Thursday_evening" name="Thursday_evening" value="Evening" />
+                        <label for="tuesday_evening">Evening</label>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" id="Friday" name="availability_days[]" value="Friday" />
+                        <label for="Friday">Friday</label>
+
+                        <input type="checkbox" id="Friday_morning" name="Friday_morning" value="Morning" />
+                        <label for="Friday_morning">Morning</label>
+
+                        <input type="checkbox" id="tuesday_afternoon" name="Friday_afternoon" value="Afternoon" />
+                        <label for="Friday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="Friday_evening" name="Friday_evening" value="Evening" />
+                        <label for="Friday_evening">Evening</label>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" id="Saturday" name="availability_days[]" value="Saturday" />
+                        <label for="Saturday">Saturday</label>
+
+                        <input type="checkbox" id="Saturday_morning" name="Saturday_morning" value="Morning" />
+                        <label for="Saturday_morning">Morning</label>
+
+                        <input type="checkbox" id="Saturday_afternoon" name="Saturday_afternoon" value="Afternoon" />
+                        <label for="Saturday_afternoon">Afternoon</label>
+
+                        <input type="checkbox" id="Saturday_evening" name="Saturday_evening" value="Evening" />
+                        <label for="Saturday_evening">Evening</label>
                     </div>
                     <br /><br />
-
-
                     <center>
                         <input type="submit" class="btn btn-primary py-2 px-4 ms-3" name="timeslot" value="Submit" />
                     </center>

@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("connection.php"); // Include your database connection
 
 
@@ -103,10 +104,11 @@ function timeFetch($s, $e)
     $timeIntervalsString = implode(', ', $timeIntervals);
     return $timeIntervalsString;
 }
-if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['section'])  && isset($_POST['appointmentDate'])) {
-    if (isset($_POST['serviceId']) == "default") {
-        if (isset($_POST['doctorId']) == "default") {
-            if (isset($_POST['section'])) {
+
+if (isset($_POST['serviceId']) == "default") {
+    if (isset($_POST['doctorId']) == "default") {
+        if (isset($_POST['section'])) {
+            if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['section'])  && isset($_POST['appointmentDate'])) {
                 $serviceId = $_POST['serviceId'];
                 $doctorId = $_POST['doctorId'];
 
@@ -167,7 +169,7 @@ if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['sec
 
                     // Check if any data is fetched
                     if ($result->num_rows > 0) {
-
+                        $htmlContent = '';
                         // echo "Update successful<br>";
                         // Split the $timeInterval string into an array of time slots
                         $timeSlots = explode(', ', $timeInterval);
@@ -175,14 +177,13 @@ if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['sec
 
                         // Return the available time slots in HTML format
                         foreach ($timeSlots as $timeSlot) {
-                            //$response = "<p>Available time slots for $section on $appointmentDate: for $serviceId</p>";
-
-                            $response = '<div class="col-3">';
-
-                            $response .= '<button type="button" class="btn btn-primary py-2 px-4 ms-3 time-slot-button" data-time-slot="' . $timeSlot . '" style="width:137px;height:81%;font-size:x-small">' . $timeSlot . '</button>';
-                            $response .= '</div>';
-                            echo $response;
+                            $htmlContent .= '<div class="col-3" style="width:207px;">';
+                            $htmlContent .= '<input type="radio" class="btn btn-primary py-2 px-4 ms-3 time-slot-button" value="' . $timeSlot . '" style="height:81%;font-size:x-small" name="time" > <label for="" style="margin-left:2px;margin-top:7px;color:#fff;">' . $timeSlot . '</label>';
+                            $htmlContent .= '</div>';
                         }
+
+                        // Send the generated HTML content as the response
+                        echo $htmlContent;
                     } else {
 
                         $response = '<div style="color:red;" class="col-3">';
@@ -217,77 +218,83 @@ if (isset($_POST['serviceId']) && isset($_POST['doctorId']) && isset($_POST['sec
 // $response .= "<li>10:30 AM - 11:30 AM</li>";
 // Add more time slots here based on your data
 //$response .= "</ul>";
+function userId($user)
+{
+    global $conn;
+    $sql = "SELECT user_id FROM tbl_users WHERE user_username = '$user'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
 
+    if (mysqli_num_rows($result) > 0) {
+        $id = $row['user_id'];
+    }
+    return $id;
+}
 // Send the response back to the JavaScript
-if (($_SERVER['REQUEST_METHOD'] === 'POST') && (isset($_POST['book_now']))) {
+if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
     // Retrieve data from the POST request
     //$name = $_POST['name'];
-   // $email = $_POST['email'];
-   // $phoneNumber = $_POST['phoneNumber'];
+    // $email = $_POST['email'];
+    // $phoneNumber = $_POST['phoneNumber'];
     $serviceId = $_POST['service_id'];
     $doctorId = $_POST['doctor_id'];
     $section = $_POST['section'];
     $appointmentDate = $_POST['appointmentDate'];
+    $selectedTimeSlot = $_POST['selectedTimeSlot'];
 
-    // Perform any necessary validation on the data here
+    //echo $selectedTimeSlot . " " . $appointmentDate;
+    $user = $_SESSION['name'];
 
-    
-    
+    $userId = userId($user);
 
-    
-
-    // Prepare and execute the SQL INSERT query
-    $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id, status, appointmentneed_date, created_at)
-            VALUES (?, ?,?, ?, 'pending', ?, NOW())";
+    $sql = "SELECT * FROM tbl_patient WHERE user_id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iisss", $patient_id, $doctor_id,$email,$service_id, $appointment_date);
-
-    // You may need to determine the patient_id based on the email or other criteria.
-    // For this example, I'm assuming you have a patients table with an email column.
-   
-    
-
+    $stmt->bind_param("i", $userId);
     $stmt->execute();
-
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-       
-       
-        $response = "Appointment booked successfully!";
+        // If there are rows in the result, fetch and use the data here
+        while ($row = $result->fetch_assoc()) {
+            // Access data from the row
+            $patient_id = $row['patient_id'];
+            $email = $_SESSION['email'];
+            $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
+            VALUES (?, ?,?, ?,?,?, 'pending', ?, NOW())";
+            $stmt2 = $conn->prepare($sql);
+            $stmt2->bind_param("iisssss", $patient_id, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
+
+            // You may need to determine the patient_id based on the email or other criteria.
+            // For this example, I'm assuming you have a patients table with an email column.
+
+
+
+            $stmt2->execute();
+
+            //$result2 = $stmt2->get_result();
+
+
+
+
+
+        }
+        // Echo the success message directly
+        echo "Appointment booked successfully!";
     } else {
-        $response = "Error: Patient not found.";
+        echo json_encode(["message" => "somthing went wrong"]);
     }
 
     // Close the database connection
     $stmt->close();
+    $stmt2->close();
     $conn->close();
-} 
+}
+
+// Perform any necessary validation on the data here
 
 
-?>
-<style>
-    .selected-time-slot {
-        background-color: #ff0000;
-        /* Change to your desired color */
-        color: #ffffff;
-        /* Change text color if needed */
-    }
-</style>
-<script>
-    // Get all buttons with the class 'time-slot-button'
-    const buttons = document.querySelectorAll('.time-slot-button');
 
-    // Add a click event listener to each button
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Reset the color of all buttons to the default color
-            buttons.forEach(btn => {
-                btn.classList.remove('selected-time-slot');
-            });
 
-            // Change the color of the clicked button
-            button.classList.add('selected-time-slot');
-        });
-    });
-</script>
+
+
+// Prepare and execute the SQL INSERT query

@@ -1,5 +1,9 @@
 <?php
 session_start();
+
+
+
+$timeSlots = "";
 include("connection.php");
 function fetchTableData($conn, $tableName)
 {
@@ -121,9 +125,77 @@ window.location.href = "user-appointment.php";
         $conn->close();
     }
 }
+if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
+    $serviceId = $_POST['service_id'];
+    $doctorId = $_POST['doctor_id'];
+    $section = $_POST['section'];
+    $appointmentDate = $_POST['appointmentDate'];
+
+    $selectedTimeSlot = $_SESSION['selectedTimeSlot'];
+    $user = $_SESSION['name'];
+
+    $userId = userId($user);
+    echo $userId;
+    $sql = "SELECT * FROM tbl_patient WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // If there are rows in the result, fetch and use the data here
+        while ($row = $result->fetch_assoc()) {
+            // Access data from the row
+            $patient_id = $row['patient_id'];
+            $email = $_SESSION['email'];
+            $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
+            VALUES (?, ?,?, ?,?,?, 'pending', ?, NOW())";
+            $stmt2 = $conn->prepare($sql);
+            $stmt2->bind_param("iisssss", $patient_id, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
+
+            // You may need to determine the patient_id based on the email or other criteria.
+            // For this example, I'm assuming you have a patients table with an email column.
 
 
 
+            $stmt2->execute();
+
+            $result = $stmt2->get_result();
+
+            if ($result->num_rows > 0) {
+
+
+                $response = "Appointment booked successfully!";
+            } else {
+                $response = "Error: Patient not found.";
+            }
+
+            // Close the database connection
+            $stmt->close();
+            $stmt2->close();
+            $conn->close();
+        }
+    }
+
+    // Perform any necessary validation on the data here
+
+
+
+
+
+
+    // Prepare and execute the SQL INSERT query
+}
+
+$selectedTimeSlot = '';
+if (isset($_POST['selectedTimeSlot'])) {
+    // Handle the selected time slot if it's received from a previous form submission
+    $selectedTimeSlot = $_POST['selectedTimeSlot'];
+    echo $selectedTimeSlot;
+
+    // You can perform server-side processing with the selectedTimeSlot here
+    // For demonstration purposes, we'll simply store it in a variable
+}
 
 ?>
 <!DOCTYPE html>
@@ -269,7 +341,7 @@ window.location.href = "user-appointment.php";
                 <h1 class="display-3 text-white animated zoomIn">Appointment</h1>
                 <a href="index.html" class="h4 text-white">Home</a>
                 <i class="far fa-circle text-white px-2"></i>
-                <a href="contact.php" class="h4 text-white">Appointment</a>
+                <a href="user-appointment.php" class="h4 text-white">Appointment</a>
             </div>
         </div>
     </div>
@@ -322,7 +394,7 @@ window.location.href = "user-appointment.php";
                             </center>
                         </div>
 
-                        <form action="" method="post">
+                        <form>
                             <div class="row g-3" style="margin-top: 4px;">
                                 <!-- <div class="col-12  ">
                                 <input type="text" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;" required>
@@ -399,10 +471,34 @@ window.location.href = "user-appointment.php";
                                     <div id="timeSlotsContainer" class="row">
 
                                     </div>
+                                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                    <!--<script>
+                                        // JavaScript code goes here
+                                        $(document).on("click", ".time-slot-button", function() {
+                                            var selectedTimeSlot = $(this).data("time-slot");
+
+                                            // Send the selectedTimeSlot to the server using AJAX
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "user-appointment.php", // Replace with the name of this PHP file
+                                                data: {
+                                                    selectedTimeSlot: selectedTimeSlot
+                                                },
+                                                success: function(response) {
+                                                    // Handle the response from the server (if needed)
+                                                    console.log("Selected time slot sent to the server: " + selectedTimeSlot);
+                                                },
+                                                error: function() {
+                                                    // Handle errors here if needed
+                                                    console.error("An error occurred during the AJAX request.");
+                                                }
+                                            });
+                                        });
+                                    </script>-->
                                 </div>
                             </div>
                             <div class="row justify-content-center">
-                                <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now">
+                                <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now" >
                             </div>
 
 
@@ -658,6 +754,7 @@ window.location.href = "user-appointment.php";
                 var section = document.querySelector('input[name="section"]:checked').value;
                 var appointmentDate = document.querySelector('input[name="appointmentDate"]').value;
                 var name = document.querySelector('input[name="book_now"]').value;
+                var selectedTimeSlot = $("input[name='time']:checked").val();
 
 
                 // Create a FormData object to send data as a POST request
@@ -670,9 +767,9 @@ window.location.href = "user-appointment.php";
                 formData.append('doctor_id', doctorId);
                 formData.append('section', section);
                 formData.append('appointmentDate', appointmentDate);
-                formData.append('book_now', book_now);
+                formData.append('selectedTimeSlot', selectedTimeSlot);
+                formData.append('book_now', name);
 
-                // Create a new XMLHttpRequest
                 var xhr = new XMLHttpRequest();
 
                 // Define the POST request details
@@ -681,7 +778,9 @@ window.location.href = "user-appointment.php";
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         // Handle the response from update_status.php here
                         var response = xhr.responseText;
-                        alert(response.message); // Display the response message in an alert // You can do something with the response
+
+                        // Display the response message in an alert
+                        alert(response); // This will show the "Appointment booked successfully!" message
                     }
                 };
 
@@ -694,6 +793,9 @@ window.location.href = "user-appointment.php";
                 event.preventDefault(); // Prevent the default form submission
                 submitForm(); // Call the submitForm function to handle the submission
             });
+        </script>
+        <!-- Add this JavaScript code to the HTML file where the buttons are displayed -->
+
         </script>
 
 

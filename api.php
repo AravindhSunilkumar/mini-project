@@ -72,7 +72,7 @@ if (isset($_POST["signup"])) {
     $confpassword = $_POST['confpassword'];
 
     $result = userSignUp($username, $email, $password, $confpassword);
-    
+        
 
 
     if ($result["success"]) {
