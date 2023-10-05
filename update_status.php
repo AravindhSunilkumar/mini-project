@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("connection.php"); // Include your database connection
+include("connection.php"); // Include your database connectionok
 
 
 if (isset($_POST['service_id']) && isset($_POST['new_status'])) {

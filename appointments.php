@@ -115,12 +115,13 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
               <th>appointment_id</th>
               <th>Patient Name</th>
               <th>doctor Name</th>
-
               <th>service Name</th>
-              <th>Time Needed</th>
+              <th>Patient Email</th>
+              <th>Needed Section</th>
+              <th>Needed Time</th>
               <th>Needed Date</th>
+              <th>Booked Date & Time</th>
               <th>Status</th>
-              <th>Applied Date</th>
               <th>View</th>
             </tr>
           </thead>
@@ -198,10 +199,7 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                     $appo_time = $appmt['appo_time'];
                     echo $appo_time;
                     ?></td>
-                <td><?php
-                    $status = $appmt['status'];
-                    echo $status;
-                    ?></td>
+                
                     <td><?php
                     $appointmentneed_date = $appmt['appointmentneed_date'];
                     echo $appointmentneed_date;
@@ -209,6 +207,10 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                 <td><?php
                     $applied_date = $appmt['created_at'];
                     echo $applied_date;
+                    ?></td>
+                    <td><?php
+                    $status = $appmt['status'];
+                    echo $status;
                     ?></td>
                 <div class="d-flex">
                   <!-- ... your existing table rows ... -->
