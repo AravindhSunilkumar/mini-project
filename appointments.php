@@ -51,6 +51,11 @@ $patients = fetchTableData($conn, "tbl_patient");
 $doctors = fetchTableData($conn, "tbl_doctors");
 $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
 
+//Status edit
+if(isset($_GET['status'])){
+  $appo_id=$_GET['id'];
+  $statussql="SELECT * FROM  tbl_appointments WHERE appointment_id = '$appo_id' ";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,6 +98,48 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
   <div class="nav-admin">
     <?php include("admin_menu.php"); ?>
   </div>
+   <!-- Modal for editing doctor details -->
+   <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Doctor Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <script>
+                            function showEditForm(doctorId, doctorName, age, gender, services, qualification) {
+                                var modal = document.getElementById("editModal");
+                                var modalBody = modal.querySelector(".modal-body");
+
+                                var form = `
+            <form action="" method="post">
+                <input type="hidden" name="doctor_id" value="${doctorId}">
+                <label>Doctor Name:</label>
+                <input type="text" name="new_doctor_name" value="${doctorName}" required><br>
+                <label>Age:</label>
+                <input type="text" name="new_age" value="${age}" required><br>
+                <label>Gender:</label>
+                <input type="text" name="new_gender" value="${gender}" required><br>
+                <label>Services:</label>
+                <input type="text" name="new_services" value="${services}" required><br>
+                <label>Qualification:</label>
+                <input type="text" name="new_qualification" value="${qualification}" required><br>
+                <button type="submit" name="update_doctor" class="btn btn-success">Update</button>
+                
+            </form>
+        `;
+
+                                modalBody.innerHTML = form;
+                                $(modal).modal("show");
+                            }
+                        </script>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
   <div class="appmt1">
 
 
@@ -125,18 +172,13 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
               <th>View</th>
             </tr>
           </thead>
-
           <tbody>
             <?php foreach ($appmts as $index => $appmt) : ?>
               <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
                 <td>
-
                   <?php
                   $a_id = $appmt['appointment_id'];
                   echo $a_id; ?>
-
-
-
                 </td>
                 <td><?php
                     $p_id = $appmt['patient_id'];
@@ -145,10 +187,6 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                       echo $name['full_name'];
                       $fullname = $name['full_name'];
                     endforeach;
-
-
-
-
                     ?></td>
                 <td><?php
                     $d_id = $appmt['doctor_id'];
@@ -157,9 +195,6 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                       echo $d_name['doctor_name'];
                       $d = $d_name['doctor_name'];
                     endforeach;
-
-
-
                     ?></td>
                 <td><?php
                     $s_id = $appmt['service_id'];
@@ -168,32 +203,14 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                       echo $s_name['service_name'];
                       $s = $s_name['service_name'];
                     endforeach;
-
-
-
                     ?></td>
                     <td><?php
                     $p_email = $appmt['patient_email'];
-                    
-                    
-                      echo $p_email;
-                      
-                   
-
-
-
+                      echo $p_email;  
                     ?></td>
                 <td><?php
                     $section = $appmt['section'];
                     echo $section;
-                    
-                    
-                      
-                    
-                   
-
-
-
                     ?></td>
                 <td><?php
                     $appo_time = $appmt['appo_time'];
@@ -210,7 +227,10 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
                     ?></td>
                     <td><?php
                     $status = $appmt['status'];
-                    echo $status;
+                    echo ' <a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(
+                      <?= $a_id ?>
+                  )">' . $status . '</a>';
+
                     ?></td>
                 <div class="d-flex">
                   <!-- ... your existing table rows ... -->
@@ -244,7 +264,7 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
 
 
   </div>
-  <!-- The  View Documents-->
+  <!-- The  View Documents
   <div id="documentModal" class="modal">
     <div class="modal-content table-success table-striped" style="width:50%;margin:108px;margin-left :350px;">
       <div class="row">
@@ -295,7 +315,7 @@ $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
   </div>
   <div class="appmt2">
     <div style="width: 100%;

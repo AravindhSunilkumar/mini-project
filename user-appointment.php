@@ -125,7 +125,7 @@ window.location.href = "user-appointment.php";
         $conn->close();
     }
 }
-if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
+/*if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
     $serviceId = $_POST['service_id'];
     $doctorId = $_POST['doctor_id'];
     $section = $_POST['section'];
@@ -185,7 +185,7 @@ if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
 
 
     // Prepare and execute the SQL INSERT query
-}
+}*/
 
 $selectedTimeSlot = '';
 if (isset($_POST['selectedTimeSlot'])) {
@@ -208,7 +208,7 @@ if (isset($_POST['selectedTimeSlot'])) {
     <meta content="" name="keywords">
     <meta content="" name="description">
 
-    <!-- Favicon -->
+    <!-- Favicon njjn-->
     <link rel="icon" href="./img/tooth.png" type="image/png">
 
     <!-- Google Web Fonts -->
@@ -498,7 +498,7 @@ if (isset($_POST['selectedTimeSlot'])) {
                                 </div>
                             </div>
                             <div class="row justify-content-center">
-                                <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now" >
+                                <input type="submit" style="width:160px;margin-top:18px;" value="Book Now" class="btn btn-primary py-2 px-4 ms-3 " name="book_now">
                             </div>
 
 
@@ -781,6 +781,7 @@ if (isset($_POST['selectedTimeSlot'])) {
 
                         // Display the response message in an alert
                         alert(response); // This will show the "Appointment booked successfully!" message
+                        
                     }
                 };
 
@@ -793,6 +794,19 @@ if (isset($_POST['selectedTimeSlot'])) {
                 event.preventDefault(); // Prevent the default form submission
                 submitForm(); // Call the submitForm function to handle the submission
             });
+            // Assuming you have a function that handles the booking process and you want to reset the form after a successful booking
+            function handleBookingSuccess() {
+                // Clear all form inputs and reset them to their default values
+                $("form")[0].reset();
+
+                // Clear the #timeSlotsContainer if needed
+                $("#timeSlotsContainer").html("");
+
+                // You may also want to reset any other variables or UI elements as needed
+            }
+
+            // Call this function when the booking is successful
+            handleBookingSuccess();
         </script>
         <!-- Add this JavaScript code to the HTML file where the buttons are displayed -->
 

@@ -236,11 +236,13 @@ function userId($user)
     }
     return $id;
 }
-if (isset($_POST['serviceId']) == "default") {
-    if (isset($_POST['doctorId']) == "default") {
-        if (isset($_POST['section'])) {
-            // Send the response back to the JavaScript
-            if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
+if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
+    if ($_POST['service_id'] != "default") {
+        if ($_POST['doctor_id'] != "default") {
+            if (($_POST['selectedTimeSlot']) !== 'undefined') { //
+
+                // Send the response back to the JavaScript
+
                 // Retrieve data from the POST request
                 //$name = $_POST['name'];
                 // $email = $_POST['email'];
@@ -267,50 +269,58 @@ if (isset($_POST['serviceId']) == "default") {
                     while ($row = $result->fetch_assoc()) {
                         // Access data from the row
                         $patient_id = $row['patient_id'];
-                        $email = $_SESSION['email'];
-                        $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
-            VALUES (?, ?,?, ?,?,?, 'pending', ?, NOW())";
-                        $stmt2 = $conn->prepare($sql);
-                        $stmt2->bind_param("iisssss", $patient_id, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
+                        $patient_name = $row['full_name'];
+                        $appo_sql = "SELECT * FROM tbl_appointments WHERE patient_id =? AND appointmentneed_date=?";
+                        $stmt3 = $conn->prepare($appo_sql);
+                        $stmt3->bind_param("is", $patient_id, $appointmentDate);
+                        $stmt3->execute();
+                        $result3 = $stmt3->get_result();
+                        if ($result3->num_rows > 0) {
+                            echo "" . $patient_name . " is Already Book An Appointment on date " . $appointmentDate;
+                            $stmt3->close();
+                        } else {
+                            $email = $_SESSION['email'];
+                            $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
+                            VALUES (?, ?,?, ?,?,?, 'pending', ?, NOW())";
+                            $stmt2 = $conn->prepare($sql);
+                            $stmt2->bind_param("iisssss", $patient_id, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
 
-                        // You may need to determine the patient_id based on the email or other criteria.
-                        // For this example, I'm assuming you have a patients table with an email column.
+                            // You may need to determine the patient_id based on the email or other criteria.
+                            // For this example, I'm assuming you have a patients table with an email column.
 
 
 
-                        $stmt2->execute();
+                            $stmt2->execute();
 
-                        //$result2 = $stmt2->get_result();
-
-
+                            //$result2 = $stmt2->get_result();
 
 
+                            // Echo the success message directly
+                            echo "Appointment booked successfully!";
 
+                            //header("location: user-appointment.php");
+                            unset($_POST['selectedTimeSlot']);
+                            // Close the database connection
+                            $stmt->close();
+                            $stmt2->close();
+                            $conn->close();
+                        }
                     }
-                    // Echo the success message directly
-                    echo "Appointment booked successfully!";
-                    header("location: user-appointment.php");
                 } else {
                     echo json_encode(["message" => "somthing went wrong"]);
                 }
-
-                // Close the database connection
-                $stmt->close();
-                $stmt2->close();
-                $conn->close();
+            } else {
+                echo "Please choose a time";
             }
-        }else {
-            echo "<script>alert(Please choose a section)</script>";
+        } else {
+            echo "Please choose a Doctor";
         }
-    }else {
-        echo "<script>alert(Please choose a Doctor)</script>";
+    } else {
+        echo "Please choose a service";
     }
-}else {
-    echo "<script>alert(Please choose a service)</script>";
+    // Perform any necessary validation on the data here
+
 }
-// Perform any necessary validation on the data here
-
-
 
 
 
