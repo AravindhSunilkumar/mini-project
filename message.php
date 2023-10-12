@@ -1,5 +1,5 @@
 <?php
-function email(){
+function email($toemail,$subject,$body){
 require 'vendor/autoload.php';
     //Create an instance; passing `true` enables exceptions
     $mail = new PHPMailer\PHPMailer\PHPMailer();
@@ -20,17 +20,17 @@ require 'vendor/autoload.php';
     $mail->setFrom('aravindhsunilkumar3@gmail.com', 'Your Name');
     
     // Add a recipient email address
-    $mail->addAddress('aravindhsunilkumar3@gmail.com');
+    $mail->addAddress($toemail);
     
     // Email subject and body
-    $mail->Subject = 'Test Email';
-    $mail->Body = 'sv jewellery vaikom http://localhost/PROJECT%202023/MINIPROJECT/code/loginpage.php';
+    $mail->Subject = $subject;
+    $mail->Body = $body;
     
     // Send email
     if (!$mail->send()) {
         echo 'Mailer Error: ' . $mail->ErrorInfo;
     } else {
-        echo 'Message sent!';
+        echo '';
     }
 }
     ?>

@@ -25,6 +25,7 @@ function userSignUp($username, $email, $password, $confpassword)
             if (mysqli_query($conn, $sql)) {
                 $_SESSION["name"] = $username;
                 $_SESSION["email"] = $email;
+                $_SESSION['password'] = $password; 
 
                 return array("success" => true, "message" => "User registered successfully.");
             } else {
@@ -49,6 +50,7 @@ function userLogin($username, $password)
         
         $_SESSION['name'] = $row['user_username'];  
         $_SESSION['email'] = $row['user_email'];  
+        $_SESSION['password'] = $row['user_password'];  
         return array("success" => true, "redirect" => "index.html");
     } else {
         $sql = "SELECT * FROM tbl_admin WHERE admin_username = '$username' AND admin_password = '$password'";
