@@ -179,11 +179,55 @@ include('connection.php');
                 <div class="w3-twothird">
 
                     <div class="w3-container w3-card w3-white w3-margin-bottom">
-                        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Work Experience</h2>
+                        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Patient Details</h2>
                         <div class="w3-container">
-                            <h5 class="w3-opacity"><b>Front End Developer / w3schools.com</b></h5>
-                            <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Jan 2015 - <span class="w3-tag w3-teal w3-round">Current</span></h6>
-                            <p>Lorem ipsum dolor sit amet. Praesentium magnam consectetur vel in deserunt aspernatur est reprehenderit sunt hic. Nulla tempora soluta ea et odio, unde doloremque repellendus iure, iste.</p>
+                        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+                <div class="flex">
+                    <label for="full_name">Full Name:</label>
+                    <input type="text" class="form-control bg-light border-0" id="full_name" name="full_name" required><br><br>
+                </div>
+                <div class="flex">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" class="form-select bg-light border-0" name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select><br><br>
+                </div>
+
+                <label for="date_of_birth">Date of Birth:</label>
+                <input type="date" class="form-select bg-light border-0" id="date_of_birth" name="date_of_birth" required><br><br>
+
+                <label for="address">Address:</label>
+                <input type="text" class="form-select bg-light border-0" id="address" name="address" size="50"><br><br>
+
+                <label for="profile_picture">Profile Picture:</label>
+                <input type="file" class="form-select bg-light border-0" id="profile_picture" name="profile_picture"><br><br>
+
+                <label>Allergy Info:</label>
+                
+
+                <div id="allergy_input" style="display: none;">
+                    <label for="allergy_info">Type Allergy Info:</label>
+                    <input class="form-select bg-light border-0" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
+                </div>
+
+
+
+                <label for="emergency_contact_phone">Emergency Contact Phone:</label>
+                <input type="text"  id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
+                <span id="phoneMessage" style="color: red;"></span><br><br>
+
+                <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                    <strong>Phone number</strong> should only contain 10 digits.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+
+
+                <input type="submit" name="insert" value="Add Patient ">
+            </form>
+                          
                             <hr>
                         </div>
                         <div class="w3-container">
@@ -255,6 +299,41 @@ include('connection.php');
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="lib/twentytwenty/jquery.event.move.js"></script>
     <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+    
+    <script>
+        function checkPhoneNumber() {
+            const phoneNumberInput = document.getElementById('emergency_contact_phone');
+            const phoneMessage = document.getElementById('phoneMessage');
+            const phoneAlert = document.getElementById('phoneAlert');
+            const phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+            if (phoneNumberInput.value.length > 10 || phoneNumberInput.value.length < 10) {
+                phoneMessage.textContent = '';
+                phoneAlert.style.display = 'block';
+            } else {
+                phoneMessage.textContent = '';
+                phoneAlert.style.display = 'none';
+            }
+        }
+
+
+        const loginText = document.querySelector(".title-text .login");
+        const loginForm = document.querySelector("form.login");
+        const loginBtn = document.querySelector("label.login");
+        const signupBtn = document.querySelector("label.signup");
+        const signupLink = document.querySelector("form .signup-link a");
+        signupBtn.onclick = (() => {
+            loginForm.style.marginLeft = "-50%";
+            loginText.style.marginLeft = "-50%";
+        });
+        loginBtn.onclick = (() => {
+            loginForm.style.marginLeft = "0%";
+            loginText.style.marginLeft = "0%";
+        });
+        signupLink.onclick = (() => {
+            signupBtn.click();
+            return false;
+        });
+    </script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
