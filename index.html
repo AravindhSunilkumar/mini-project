@@ -111,7 +111,7 @@ $services = fetchTableData($conn, "tbl_services");
         <a href="#about" class="nav-item nav-link">About Us</a>
         <a href="#services" class="nav-item nav-link">Service</a>
         <a href="#dentist" class="nav-item nav-link">Our Dentist</a>
-        <div class="nav-item dropdown">
+        <!-- <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0">
             <a href="price.php" class="dropdown-item">Pricing Plan</a>
@@ -119,9 +119,10 @@ $services = fetchTableData($conn, "tbl_services");
             <a href="testimonial.php" class="dropdown-item">Testimonial</a>
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
-        </div>
-
-        <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+        </div>-->
+        
+          <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+        
 
       </div>
       <?php if (isset($_SESSION['name'])) { ?>
@@ -136,7 +137,7 @@ $services = fetchTableData($conn, "tbl_services");
         <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
       <?php } ?>
 
-      <a href="appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+      <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
     </div>
   </nav>
   <!-- Navbar End -->
@@ -228,14 +229,10 @@ $services = fetchTableData($conn, "tbl_services");
             </h1>
           </div>
           <h4 class="text-body fst-italic mb-4">
-            Diam dolor diam ipsum sit. Clita erat ipsum et lorem stet no lorem
-            sit clita duo justo magna dolore
+
           </h4>
           <p class="mb-4">
-            Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor
-            sit. Aliqu diam amet diam et eos labore. Clita erat ipsum et lorem
-            et sit, sed stet no labore lorem sit. Sanctus clita duo justo et
-            tempor eirmod magna dolore erat amet
+
           </p>
           <div class="row g-3">
             <div class="col-sm-6 wow zoomIn" data-wow-delay="0.3s">
@@ -345,17 +342,17 @@ $services = fetchTableData($conn, "tbl_services");
                 We Offer The Best Quality Dental Services
               </h1>
               <div class="service-item wow zoomIn" style="margin-top: 42px;" data-wow-delay="0.9s">
-            <a href="user-appointment.php">
-              <div class="position-relative bg-primary rounded h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-                <h3 class="text-white mb-3">Make Appointment</h3>
-                <p class="text-white mb-3">
-                Clita ipsum magna kasd rebum at ipsum amet dolor justo dolor
-                  est magna stet eirmod
-                </p>
-                <h2 class="text-white mb-0">+012 345 6789</h2>
+                <a href="user-appointment.php">
+                  <div class="position-relative bg-primary rounded h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+                    <h3 class="text-white mb-3">Make Appointment</h3>
+                    <p class="text-white mb-3">
+                      Clita ipsum magna kasd rebum at ipsum amet dolor justo dolor
+                      est magna stet eirmod
+                    </p>
+                    <h2 class="text-white mb-0">+012 345 6789</h2>
+                  </div>
+                </a>
               </div>
-            </a>
-          </div>
             </div>
             <!--<img
                 class="position-absolute w-100 h-100"
@@ -457,7 +454,7 @@ $services = fetchTableData($conn, "tbl_services");
         </div>-->
         <div class="col-lg-7">
           <div class="row g-5">
-            <?php foreach ($services as $index => $service) :?>
+            <?php foreach ($services as $index => $service) : ?>
               <div class="col-md-6 service-item wow zoomIn" data-wow-delay="<?php echo $service['service_name']; ?>">
                 <a href="user-appointment.php">
                   <div class="rounded-top overflow-hidden">
@@ -547,7 +544,7 @@ $services = fetchTableData($conn, "tbl_services");
                 <div class="position-relative">
                   <img class="img-fluid rounded-top" src="img/price-1.jpg" alt="" />
                   <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
-                    <h2 class="text-primary m-0">$35</h2>
+                    <h2 class="text-primary m-0">Rs300</h2>
                   </div>
                 </div>
                 <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
@@ -569,7 +566,7 @@ $services = fetchTableData($conn, "tbl_services");
                 <div class="position-relative">
                   <img class="img-fluid rounded-top" src="img/price-2.jpg" alt="" />
                   <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
-                    <h2 class="text-primary m-0">$49</h2>
+                    <h2 class="text-primary m-0">Rs100</h2>
                   </div>
                 </div>
                 <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
@@ -591,7 +588,7 @@ $services = fetchTableData($conn, "tbl_services");
                 <div class="position-relative">
                   <img class="img-fluid rounded-top" src="img/price-3.jpg" alt="" />
                   <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
-                    <h2 class="text-primary m-0">$99</h2>
+                    <h2 class="text-primary m-0">Rs200</h2>
                   </div>
                 </div>
                 <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
@@ -616,7 +613,7 @@ $services = fetchTableData($conn, "tbl_services");
     </div>
     <!-- Pricing End -->
 
-    <!-- Testimonial Start -->
+    <!-- Testimonial Start 
     <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
       <div class="container py-5">
         <div class="row justify-content-center">
@@ -625,9 +622,7 @@ $services = fetchTableData($conn, "tbl_services");
               <div class="testimonial-item text-center text-white">
                 <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-1.jpg" alt="" />
                 <p class="fs-5">
-                  Dolores sed duo clita justo dolor et stet lorem kasd dolore
-                  lorem ipsum. At lorem lorem magna ut et, nonumy labore diam
-                  erat. Erat dolor rebum sit ipsum.
+                  
                 </p>
                 <hr class="mx-auto w-25" />
                 <h4 class="text-white mb-0">Client Name</h4>
@@ -647,7 +642,7 @@ $services = fetchTableData($conn, "tbl_services");
         </div>
       </div>
     </div>
-    <!-- Testimonial End -->
+     Testimonial End -->
 
     <!-- Team Start -->
     <div class="container-fluid py-5" id="dentist" style="background-color: #f57e57">
@@ -676,7 +671,7 @@ $services = fetchTableData($conn, "tbl_services");
                 </div>
               </div>
               <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
-                <h4 class="mb-2">Dr. John Doe</h4>
+                <h4 class="mb-2">Dr. Thomas </h4>
                 <p class="text-primary mb-0">Implant Surgeon</p>
               </div>
             </div>
@@ -693,12 +688,12 @@ $services = fetchTableData($conn, "tbl_services");
                 </div>
               </div>
               <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
-                <h4 class="mb-2">Dr. John Doe</h4>
+                <h4 class="mb-2">Dr. Sabu</h4>
                 <p class="text-primary mb-0">Implant Surgeon</p>
               </div>
             </div>
           </div>
-          <div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">
+          <!--<div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">
             <div class="team-item">
               <div class="position-relative rounded-top" style="z-index: 1">
                 <img class="img-fluid rounded-top w-100" src="img/team-3.jpg" alt="" />
@@ -748,7 +743,7 @@ $services = fetchTableData($conn, "tbl_services");
                 <p class="text-primary mb-0">Implant Surgeon</p>
               </div>
             </div>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>

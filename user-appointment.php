@@ -285,7 +285,9 @@ if (isset($_POST['selectedTimeSlot'])) {
                 <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="index.html" class="nav-item nav-link">About</a>
                 <a href="index.html" class="nav-item nav-link">Service</a>
-                <div class="nav-item dropdown">
+                <a href="index.html" class="nav-item nav-link">Our Dentist</a>
+                <a href="index.html" class="nav-item nav-link">Appointment</a>
+                <!--<div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
                         <a href="price.php" class="dropdown-item active">Pricing Plan</a>
@@ -294,8 +296,8 @@ if (isset($_POST['selectedTimeSlot'])) {
 
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
-                </div>
-                <a href="index.html" class="nav-item nav-link active">Contact</a>
+                </div>-->
+                <!--<a href="index.html" class="nav-item nav-link active">Contact</a>-->
             </div>
             <?php if (isset($_SESSION['name'])) { ?>
                 <div class="nav-item dropdown">

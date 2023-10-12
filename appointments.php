@@ -50,11 +50,47 @@ $appmts = fetchTableData($conn, "tbl_appointments");
 $patients = fetchTableData($conn, "tbl_patient");
 $doctors = fetchTableData($conn, "tbl_doctors");
 $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
+// Fetch appointment data
+$sql = "SELECT * FROM tbl_appointments";
+$result = $conn->query($sql);
+$appmts = [];
 
+if ($result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $appmts[] = $row;
+  }
+}
+// Handle status update
+if (isset($_POST['update_status'])) {
+  $appointment_id = $_POST['appointment_id'];
+  $status = $_POST['status'];
+
+
+  $update_sql = "UPDATE tbl_appointments SET 
+                 status = '$status'
+                 WHERE appointment_id = '$appointment_id'";
+
+  if ($conn->query($update_sql) === TRUE) {
+    // Update successful
+    // echo "Update successful!";
+    //header("Location: doctors_list.php");
+    //exit();
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+  } else {
+    // Update failed
+    //  echo "Error updating record: " . $conn->error;
+  }
+
+
+  // Redirect back to the doctor list page after updating
+  //header("Location: doctors_list.php");
+  //exit();
+}
 //Status edit
-if(isset($_GET['status'])){
-  $appo_id=$_GET['id'];
-  $statussql="SELECT * FROM  tbl_appointments WHERE appointment_id = '$appo_id' ";
+if (isset($_GET['status'])) {
+  $appo_id = $_GET['id'];
+  $statussql = "SELECT * FROM  tbl_appointments WHERE appointment_id = '$appo_id' ";
 }
 ?>
 <!DOCTYPE html>
@@ -91,6 +127,7 @@ if(isset($_GET['status'])){
   <!-- Template Stylesheet -->
   <link href="css/style.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/add_doctors.css" />
+
 </head>
 
 <body>
@@ -98,48 +135,45 @@ if(isset($_GET['status'])){
   <div class="nav-admin">
     <?php include("admin_menu.php"); ?>
   </div>
-   <!-- Modal for editing doctor details -->
-   <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Edit Doctor Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <script>
-                            function showEditForm(doctorId, doctorName, age, gender, services, qualification) {
-                                var modal = document.getElementById("editModal");
-                                var modalBody = modal.querySelector(".modal-body");
-
-                                var form = `
-            <form action="" method="post">
-                <input type="hidden" name="doctor_id" value="${doctorId}">
-                <label>Doctor Name:</label>
-                <input type="text" name="new_doctor_name" value="${doctorName}" required><br>
-                <label>Age:</label>
-                <input type="text" name="new_age" value="${age}" required><br>
-                <label>Gender:</label>
-                <input type="text" name="new_gender" value="${gender}" required><br>
-                <label>Services:</label>
-                <input type="text" name="new_services" value="${services}" required><br>
-                <label>Qualification:</label>
-                <input type="text" name="new_qualification" value="${qualification}" required><br>
-                <button type="submit" name="update_doctor" class="btn btn-success">Update</button>
-                
-            </form>
-        `;
-
-                                modalBody.innerHTML = form;
-                                $(modal).modal("show");
-                            }
-                        </script>
-
-
-                    </div>
-                </div>
-            </div>
+  <!-- Modal for editing doctor details -->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Edit Doctor Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <script>
+            function showEditForm(a_id, status) {
+              var modal = document.getElementById("editModal");
+              var modalBody = modal.querySelector(".modal-body");
+              //alert('Clicked! Appointment ID: ' + a_id + ', Status: ' + status);
+
+              var form = `
+                <form action="" method="post">
+                    <input type="hidden" name="appointment_id" value="${a_id}">
+                    <label for="status">Select Status:</label>
+                    <select id="status" name="status">
+                        <option value="${status}" selected>${status}</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select><br>
+                    <button type="submit" name="update_status" class="btn btn-success">Update</button>
+                </form>
+            `;
+
+              modalBody.innerHTML = form;
+              $(modal).modal("show");
+            }
+          </script>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="appmt1">
 
 
@@ -169,15 +203,16 @@ if(isset($_GET['status'])){
               <th>Needed Date</th>
               <th>Booked Date & Time</th>
               <th>Status</th>
-              <th>View</th>
+
             </tr>
           </thead>
-          <tbody>
+          <tbody id="table-body">
             <?php foreach ($appmts as $index => $appmt) : ?>
               <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
                 <td>
                   <?php
                   $a_id = $appmt['appointment_id'];
+                  
                   echo $a_id; ?>
                 </td>
                 <td><?php
@@ -198,15 +233,19 @@ if(isset($_GET['status'])){
                     ?></td>
                 <td><?php
                     $s_id = $appmt['service_id'];
+                    
+                    
                     $s_names = fetchName($conn, $s_id, 'service_id', "tbl_services");
+
                     foreach ($s_names as $index => $s_name) :
-                      echo $s_name['service_name'];
                       $s = $s_name['service_name'];
+                      echo $s;
                     endforeach;
+
                     ?></td>
-                    <td><?php
+                <td><?php
                     $p_email = $appmt['patient_email'];
-                      echo $p_email;  
+                    echo $p_email;
                     ?></td>
                 <td><?php
                     $section = $appmt['section'];
@@ -216,8 +255,8 @@ if(isset($_GET['status'])){
                     $appo_time = $appmt['appo_time'];
                     echo $appo_time;
                     ?></td>
-                
-                    <td><?php
+
+                <td><?php
                     $appointmentneed_date = $appmt['appointmentneed_date'];
                     echo $appointmentneed_date;
                     ?></td>
@@ -225,39 +264,23 @@ if(isset($_GET['status'])){
                     $applied_date = $appmt['created_at'];
                     echo $applied_date;
                     ?></td>
-                    <td><?php
+                <td><?php
                     $status = $appmt['status'];
-                    echo ' <a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(
-                      <?= $a_id ?>
-                  )">' . $status . '</a>';
+                    echo '<a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(' . $a_id . ', \'' . $status . '\')">' . $status . '</a>';
+
+
 
                     ?></td>
-                <div class="d-flex">
-                  <!-- ... your existing table rows ... -->
 
-                  <td><a href="#" onclick="openDocumentPopup('img/about-1.jpg')">View Document</a></td>
-
-                </div>
-
-                <!-- JavaScript functions to open and close the documents -->
-                <script>
-                  function openDocumentPopup(imageSrc) {
-                    var modal = document.getElementById("documentModal");
-                    var image = document.getElementById("documentImage");
-
-                    image.src = imageSrc;
-                    modal.style.display = "block";
-                  }
-
-                  function closeDocumentPopup() {
-                    var modal = document.getElementById("documentModal");
-                    modal.style.display = "none";
-                  }
-                </script>
       </div>
     <?php endforeach; ?>
     </tr>
     </tbody>
+    <div class="pagination">
+      <button onclick="previousPage()">Previous</button>
+      <button onclick="nextPage()">Next</button>
+    </div>
+
     </table>
 
     </div>
@@ -318,12 +341,7 @@ if(isset($_GET['status'])){
   </div>-->
   </div>
   <div class="appmt2">
-    <div style="width: 100%;
-    background-image: url(img/carousel-2.jpg);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 80vh;">
+    <div style="width: 100%;  background-image: url(img/carousel-2.jpg);  background-size: cover;  background-position: center;  background-repeat: no-repeat;  height: 80vh;">
       <div class="appmt-form">
         <div class="box">
           <div class="container ">
@@ -427,6 +445,7 @@ if(isset($_GET['status'])){
 
 
 
+
   <script>
     function handleSearch() {
       var searchInput = document.getElementById("searchInput").value.toLowerCase();
@@ -454,6 +473,9 @@ if(isset($_GET['status'])){
   <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
   <script src="lib/twentytwenty/jquery.event.move.js"></script>
   <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+  <!-- Add this script at the end of your HTML, before the closing </body> tag -->
+
+
 
 
 
