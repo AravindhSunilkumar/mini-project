@@ -83,8 +83,59 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
             font-family: "Roboto", sans-serif
         }
     </style>
+    
+  <style>
+    /* CSS for the modal dialog */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: black;
+    }
+</style>
+</head>
+
+<body class="w3-light-grey">
+    <?php if ($_SESSION['name'] === 'admin') {
+        header('location:admin_menu.php');
+    } else {
+        foreach ($patients as $index => $patient) {
+    ?>
     <?php 
+     $otp='';
+    // Function to generate a random OTP (replace with your implementation)
+    function generateRandomOTP() {
+        // Generate and return a random OTP
+        return rand(1000, 9999);
+    } 
+    
     if(isset($_POST['reset_password'])) {
+       
         // Get the submitted username and password
         $submittedUsername = $_POST['username'];
         $submittedPassword = $_POST['password'];
@@ -94,34 +145,44 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
         $storedPassword = $_SESSION['password'];
     
         // Initialize $v as false to indicate whether the OTP was verified
-        $v = 0;
+        
     
          // Check if the submitted username and password match the stored values
          if ($submittedUsername !== $storedUsername || $submittedPassword !== $storedPassword) {
             // No changes, display confirmation box with OTP input field
-            $otp = generateRandomOTP(); // Generate a random OTP
-    
-            echo "<script>
-            var otp = prompt('OTP sent to your registered Email ID. Please enter the OTP sent to your email:', '');
-            if (otp === '" . $otp . "') {
-                alert('OTP verified. ');
-                $v = 1;
-                // You can add further actions here if the OTP is correct.
-            } else {
-                alert('OTP verification failed. Please try again.');
-                $v = 0;
-            }
-        </script>";
+            $otp = generateRandomOTP(); // Generate a random OTp
             // Send the OTP via email
-            email($_SESSION['email'], 'OTP Verification for changing password / username', 'Your OTP is: ' . $otp);
+            email($_SESSION['email'], 'OTP Verification for changing password / username'.$otp.'', 'Your OTP is: ' . $otp);
+            echo "<script>
+        // Create and display a custom modal dialog
+        var modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = '<div class=\"modal-content\">' +
+            '<span class=\"close\">&times;</span>' +
+            '<form id=\"otp-form\" method=\"post\">' +
+            '<label for=\"otp-input\">Please enter the OTP sent to your email:</label>' +
+            '<input type=\"text\" id=\"otp-input\" name=\"otp-input\" />' +
+            '<input type=\"submit\" value=\"Submit OTP\" />' +
+            '</form></div>';
+        document.body.appendChild(modal);
+        
+        var closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+        // Show the modal
+        modal.style.display = 'block';
+    </script>";
+       
+
+           
+        
+            
+        
     
-            if($v == 1){
-                // Perform the SQL update only if OTP was verified
-                $sql = "UPDATE tbl_users SET user_username='$submittedUsername', user_password='$submittedPassword'";
-                if($conn->query($sql)) {
-                    echo "<script>alert('Your username and password are reset.'); </script>";
-                }
-            }
+            
+            
+           
         } else {
             // Changes detected, you can perform actions or redirect to a different page
             // For example, you can update the username and password here
@@ -131,19 +192,28 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
         }
     }
     
-    // Function to generate a random OTP (replace with your implementation)
-    function generateRandomOTP() {
-        // Generate and return a random OTP
-        return rand(1000, 9999);
-    }   ?>
-</head>
-
-<body class="w3-light-grey">
-    <?php if ($_SESSION['name'] === 'admin') {
-        header('location:admin_menu.php');
+    // Check the OTP form submission
+if (isset($_POST['otp-input'])) {
+    $enteredOTP = $_POST['otp-input'];
+    
+    // Check the entered OTP against the generated OTP
+    if ($enteredOTP === $otp) {
+        // OTP verification succeeded
+        // Perform the SQL update only if OTP was verified
+        $sql = "UPDATE tbl_users SET user_username='$submittedUsername', user_password='$submittedPassword'";
+        if ($conn->query($sql)) {
+            echo "<script>alert('Your username and password are reset.');</script>";
+        }
+      
+       
     } else {
-        foreach ($patients as $index => $patient) {
-    ?>
+        // OTP verification failed
+        echo "<script>alert('Entered OTP is Incorrect');</script>";
+        // Handle the case where the OTP is incorrect
+    }
+}
+    
+  ?>
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
                 <a href="contact.php" class="navbar-brand p-0">

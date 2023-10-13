@@ -82,7 +82,7 @@ include("connection.php");
 
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="img/person.png" alt="icon" class="icon">
+                 <img src="img/person.png" alt="icon" class="icon">
                 </a>
                 <div class="dropdown-menu m-0">
                     <a href="#" class="dropdown-item"><?php echo $_SESSION['name'] ?></a>
