@@ -628,7 +628,7 @@ if (isset($_POST['selectedTimeSlot'])) {
 
         <!-- Newsletter Start -->
         <div class="container-fluid position-relative pt-5 wow fadeInUp" data-wow-delay="0.1s" style="z-index: 1;">
-            <div class="container">
+           <!-- <div class="container">
                 <div class="bg-primary p-5">
                     <form class="mx-auto" style="max-width: 600px;">
                         <div class="input-group">
@@ -637,7 +637,7 @@ if (isset($_POST['selectedTimeSlot'])) {
                         </div>
                     </form>
                 </div>
-            </div>
+            </div>-->
         </div>
         <!-- Newsletter End -->
 
@@ -691,7 +691,7 @@ if (isset($_POST['selectedTimeSlot'])) {
                         <p class="mb-md-0">&copy; <a class="text-white border-bottom" href="#">Your Site Name</a>. All Rights Reserved.</p>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
-                        <p class="mb-0">Designed by <a class="text-white border-bottom" href="https://htmlcodex.com">HTML Codex</a></p>
+                        <p class="mb-0">Designed by <a class="text-white border-bottom" href="">Aravindh sunilkumar</a></p>
                     </div>
                 </div>
             </div>

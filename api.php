@@ -8,9 +8,11 @@ function userSignUp($username, $email, $password, $confpassword)
 {
     global $conn;
     $sql = "SELECT user_username FROM tbl_users WHERE user_username = '$username'";
+    $sql2 = "SELECT user_email FROM tbl_users WHERE user_email = '$email'";
     $result = $conn->query($sql);
+    $result2 = $conn->query($sql2);
 
-    if ($result->num_rows > 0) {
+    if (($result->num_rows > 0) &&($result2->num_rows>0)) {
         // Name exists in the table
         echo '<script>alert("Name found in the database.");</script>';
     } else {
@@ -29,7 +31,7 @@ function userSignUp($username, $email, $password, $confpassword)
 
                 return array("success" => true, "message" => "User registered successfully.");
             } else {
-                return array("success" => false, "message" => "Error: " . mysqli_error($conn));
+                return array("success" => false, "message" => "you already registered with this email address");
             }
         } else {
             return array("success" => false, "message" => "Passwords do not match.");
