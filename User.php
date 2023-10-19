@@ -3,6 +3,8 @@ session_start();
 include('connection.php');
 // Include the message.php file
 include('message.php');
+$vali = '2';
+$otp = 0;
 
 $username = $_SESSION['name'];
 $password = $_SESSION['password'];
@@ -83,41 +85,41 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
             font-family: "Roboto", sans-serif
         }
     </style>
-    
-  <style>
-    /* CSS for the modal dialog */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.7);
-    }
 
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 50%;
-    }
+    <style>
+        /* CSS for the modal dialog */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
 
-    .close:hover {
-        color: black;
-    }
-</style>
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+    </style>
 </head>
 
 <body class="w3-light-grey">
@@ -125,95 +127,67 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
         header('location:admin_menu.php');
     } else {
         foreach ($patients as $index => $patient) {
-    ?>
-    <?php 
-     $otp='';
-    // Function to generate a random OTP (replace with your implementation)
-    function generateRandomOTP() {
-        // Generate and return a random OTP
-        return rand(1000, 9999);
-    } 
-    
-    if(isset($_POST['reset_password'])) {
-       
-        // Get the submitted username and password
-        $submittedUsername = $_POST['username'];
-        $submittedPassword = $_POST['password'];
-    
-        // Get the stored username and password from the session
-        $storedUsername = $_SESSION['name'];
-        $storedPassword = $_SESSION['password'];
-    
-        // Initialize $v as false to indicate whether the OTP was verified
-        
-    
-         // Check if the submitted username and password match the stored values
-         if ($submittedUsername !== $storedUsername || $submittedPassword !== $storedPassword) {
-            // No changes, display confirmation box with OTP input field
-            $otp = generateRandomOTP(); // Generate a random OTp
-            // Send the OTP via email
-            email($_SESSION['email'], 'OTP Verification for changing password / username'.$otp.'', 'Your OTP is: ' . $otp);
-            echo "<script>
-        // Create and display a custom modal dialog
-        var modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = '<div class=\"modal-content\">' +
-            '<span class=\"close\">&times;</span>' +
-            '<form id=\"otp-form\" method=\"post\">' +
-            '<label for=\"otp-input\">Please enter the OTP sent to your email:</label>' +
-            '<input type=\"text\" id=\"otp-input\" name=\"otp-input\" />' +
-            '<input type=\"submit\" value=\"Submit OTP\" />' +
-            '</form></div>';
-        document.body.appendChild(modal);
-        
-        var closeBtn = modal.querySelector('.close');
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
-        };
-        // Show the modal
-        modal.style.display = 'block';
-    </script>";
-       
 
-           
-        
-            
-        
-    
-            
-            
-           
-        } else {
-            // Changes detected, you can perform actions or redirect to a different page
-            // For example, you can update the username and password here
-            // Redirect to a different page
-            //header("Location: update_password.php");
-           // exit();
-        }
-    }
-    
-    // Check the OTP form submission
-if (isset($_POST['otp-input'])) {
-    $enteredOTP = $_POST['otp-input'];
-    
-    // Check the entered OTP against the generated OTP
-    if ($enteredOTP === $otp) {
-        // OTP verification succeeded
-        // Perform the SQL update only if OTP was verified
-        $sql = "UPDATE tbl_users SET user_username='$submittedUsername', user_password='$submittedPassword'";
-        if ($conn->query($sql)) {
-            echo "<script>alert('Your username and password are reset.');</script>";
-        }
-      
-       
-    } else {
-        // OTP verification failed
-        echo "<script>alert('Entered OTP is Incorrect');</script>";
-        // Handle the case where the OTP is incorrect
-    }
-}
-    
-  ?>
+
+
+            // Function to generate a random OTP (replace with your implementation)
+            function generateRandomOTP()
+            {
+                // Generate and return a random OTP
+                return rand(1000, 9999);
+            }
+
+            if (isset($_POST['reset_password'])) {
+
+
+                // Get the submitted username and password
+                $submittedUsername = $_POST['username'];
+                $submittedPassword = $_POST['password'];
+
+                // Get the stored username and password from the session
+                $storedUsername = $_SESSION['name'];
+                $storedPassword = $_SESSION['password'];
+
+                // Initialize $v as false to indicate whether the OTP was verified
+
+
+                // Check if the submitted username and password match the stored values
+                if ($submittedUsername !== $storedUsername || $submittedPassword !== $storedPassword) {
+                    // No changes, display confirmation box with OTP input field
+                    $otp = generateRandomOTP(); // Generate a random OTp
+                    echo $otp;
+                    // Send the OTP via email
+                    email($_SESSION['email'], 'OTP Verification for changing password / username' . $otp . '', 'Your OTP is: ' . $otp);
+                    $vali = '1';
+                } else {
+                    // Changes detected, you can perform actions or redirect to a different page
+                    // For example, you can update the username and password here
+                    // Redirect to a different page
+                    //header("Location: update_password.php");
+                    // exit();
+                }
+            }
+
+            // Check the OTP form submission
+            if (isset($_POST['submit_otp'])) {
+                $enteredOTP = $_POST['otp-input'];
+
+                // Check the entered OTP against the generated OTP
+                if ($enteredOTP === $otp) {
+                    // OTP verification succeeded
+                    // Perform the SQL update only if OTP was verified
+                    $sql = "UPDATE tbl_users SET user_username='$submittedUsername', user_password='$submittedPassword'";
+                    if ($conn->query($sql)) {
+                        echo "<script>alert('Your username and password are reset.');</script>";
+                    }
+                } else {
+                    // OTP verification failed
+                    echo "<script>alert('Entered OTP is Incorrect');</script>";
+                    // Handle the case where the OTP is incorrect
+                }
+            }
+
+    ?>
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
                 <a href="contact.php" class="navbar-brand p-0">
@@ -255,6 +229,17 @@ if (isset($_POST['otp-input'])) {
                 </div>
             </nav>
             <!-- Navbar End -->
+            <?php if ($vali == '1') { ?>
+                <div class='modal-content'>
+                    <span class='close'>&times;</span>
+                    <form id='otp-form' action='<?php echo $_SERVER["PHP_SELF"]; ?>' method='post'>
+                        <label for='otp-input'>Please enter the OTP sent to your email:</label>
+                        <input type='text' id="otp-input" name='otp-input'>
+                        <input type='submit' value='Submit OTP' name='submit_otp'>
+                    </form>
+                </div>;
+            <?php } ?>
+
 
 
 
@@ -292,21 +277,21 @@ if (isset($_POST['otp-input'])) {
                                 <p><i class="fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i><?php echo $_SESSION['email']; ?></p>
                                 <p><i class=" fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i><?php echo $patient['emergency_contact_phone']; ?></p>
                                 <hr>
-                                <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
-                                <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-teal"></i>Reset Username and Password </b></p>
-                                <p>Username</p>
-                                <div class=" w3-round-xlarge w3-small">
-                                    <input type="text" class="form-control bg-light border-0" id="username" value="<?php echo $_SESSION['name'] ?>" name="username" required><br><br>
-                                </div>
-                                <p>Password</p>
-                                <div class=" w3-round-xlarge w3-small">
-                                    <input type="password" class="form-control bg-light border-0" value="<?php echo $_SESSION['password'] ?>" id="password" name="password" required><br><br>
-                                </div>
+                                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                                    <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-teal"></i>Reset Username and Password </b></p>
+                                    <p>Username</p>
+                                    <div class=" w3-round-xlarge w3-small">
+                                        <input type="text" class="form-control bg-light border-0" id="username" value="<?php echo $_SESSION['name'] ?>" name="username" required><br><br>
+                                    </div>
+                                    <p>Password</p>
+                                    <div class=" w3-round-xlarge w3-small">
+                                        <input type="password" class="form-control bg-light border-0" value="<?php echo $_SESSION['password'] ?>" id="password" name="password" required><br><br>
+                                    </div>
 
-                                <br>
-                                <div style=" width: 152px; margin-left: 116px; margin-top: -12px;">
-                                    <input type="submit" class="btn btn-dark w-100 py-3" value="Update" name="reset_password">
-                                </div>
+                                    <br>
+                                    <div style=" width: 152px; margin-left: 116px; margin-top: -12px;">
+                                        <input type="submit" class="btn btn-dark w-100 py-3" value="Update" name="reset_password">
+                                    </div>
                                 </form>
                             </div>
                         </div><br>
@@ -424,9 +409,8 @@ if (isset($_POST['otp-input'])) {
             <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
 
         </footer>
-    <?php
-    }
-    ?>
+    <?php } ?>
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -454,6 +438,7 @@ if (isset($_POST['otp-input'])) {
                 phoneAlert.style.display = 'none';
             }
         }
+
 
 
         const loginText = document.querySelector(".title-text .login");
