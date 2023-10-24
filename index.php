@@ -120,8 +120,13 @@ $services = fetchTableData($conn, "tbl_services");
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
         </div>-->
-        
-          <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+        <?php if((isset($_SESSION['user'])) == 'doctor'){ ?>
+         
+          
+          <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
+          <?php }else{ ?>
+            <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+            <?php  } ?>
         
 
       </div>
@@ -176,8 +181,13 @@ $services = fetchTableData($conn, "tbl_services");
               <h1 class="display-1 text-white mb-md-4 animated zoomIn">
                 Take The Best Quality Dental Treatment
               </h1>
+              <?php if((isset($_SESSION['user'])) == 'doctor'){ ?>
+              <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
+              <?php }else{ ?>
               <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
+              
               <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+              <?php } ?>
             </div>
           </div>
         </div>
@@ -191,8 +201,13 @@ $services = fetchTableData($conn, "tbl_services");
               <h1 class="display-1 text-white mb-md-4 animated zoomIn">
                 Take The Best Quality Dental Treatment
               </h1>
+              <?php if((isset($_SESSION['user'])) == 'doctor'){ ?>
+              <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
+              <?php }else{ ?>
               <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
+              
               <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+              <?php } ?>
             </div>
           </div>
         </div>

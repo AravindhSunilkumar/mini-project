@@ -12,14 +12,14 @@ function slot($conn, $day)
     $stmt->bind_param("s", $day);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         $id = $row['slot_id'];
     }
-    
+
     $stmt->close();
-    
+
     return $id;
 }
 
@@ -44,62 +44,61 @@ function timeSlot()
                 window.location.href = "add_doctors.php";
             }
         </script>';
-            
         } else {
-            
-        if (empty($availability_days)) {
-            echo '<script>alert("Please choose at least one available day");</script>';
-        } else {
-            // Loop through selected days and insert into tbl_appointment
-            foreach ($availability_days as $day) {
-                // Check if checkboxes for morning, afternoon, and evening are checked
-                $id = slot($conn, $day);
-                //$morning_checked = isset($_POST[$day . "_morning"]) ? 1 : 0;
-                //$afternoon_checked = isset($_POST[$day . "_afternoon"]) ? 1 : 0;
-                //$evening_checked = isset($_POST[$day . "_evening"]) ? 1 : 0;
-                if (isset($_POST[$day . "_morning"])) {
-                    $m_active = "Active";
-                } else {
-                    $m_active = "deactive";
-                }
-                if (isset($_POST[$day . "_afternoon"])) {
-                    $a_active = "Active";
-                } else {
-                    $a_active = "deactive";
-                }
-                if (isset($_POST[$day . "_afternoon"])) {
-                    $e_active = "Active";
-                } else {
-                    $e_active = "deactive";
-                }
-                // Insert data into tbl_appointment
-                $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id, slot_id, morning, afternoon, evening, status, created_at) 
+
+            if (empty($availability_days)) {
+                echo '<script>alert("Please choose at least one available day");</script>';
+            } else {
+                // Loop through selected days and insert into tbl_appointment
+                foreach ($availability_days as $day) {
+                    // Check if checkboxes for morning, afternoon, and evening are checked
+                    $id = slot($conn, $day);
+                    //$morning_checked = isset($_POST[$day . "_morning"]) ? 1 : 0;
+                    //$afternoon_checked = isset($_POST[$day . "_afternoon"]) ? 1 : 0;
+                    //$evening_checked = isset($_POST[$day . "_evening"]) ? 1 : 0;
+                    if (isset($_POST[$day . "_morning"])) {
+                        $m_active = "Active";
+                    } else {
+                        $m_active = "deactive";
+                    }
+                    if (isset($_POST[$day . "_afternoon"])) {
+                        $a_active = "Active";
+                    } else {
+                        $a_active = "deactive";
+                    }
+                    if (isset($_POST[$day . "_afternoon"])) {
+                        $e_active = "Active";
+                    } else {
+                        $e_active = "deactive";
+                    }
+                    // Insert data into tbl_appointment
+                    $sql = "INSERT INTO tbl_doctortime (doctor_id, service_id, slot_id, morning, afternoon, evening, status, created_at) 
                     VALUES ( ?, ?, ?, ?, ?, ?, 'Active', NOW())";
 
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iiisss", $doctor_id, $service_id, $id, $m_active, $a_active, $e_active);
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iiisss", $doctor_id, $service_id, $id, $m_active, $a_active, $e_active);
 
-                if ($stmt->execute()) {
-                    // Handle success
-                } else {
-                    echo "Error inserting data: " . $stmt->error;
+                    if ($stmt->execute()) {
+                        // Handle success
+                    } else {
+                        echo "Error inserting data: " . $stmt->error;
+                    }
+
+                    $stmt->close();
+                    $m_active = "deactive";
+                    $a_active = "deactive";
+                    $e_active = "deactive";
+                    $id = "";
                 }
 
-                $stmt->close();
-                $m_active = "deactive";
-                $a_active = "deactive";
-                $e_active = "deactive";
-                $id=""; 
-            }
-
-            echo '<script>
+                echo '<script>
                     if (confirm("Doctor availability added successfully. Click OK to continue.")) {
                         window.location.href = "add_doctors.php";
                          }
                 </script>';
-        }
+            }
 
-        $conn->close();
+            $conn->close();
         }
     }
 }
@@ -180,6 +179,23 @@ if (isset($_POST["add_doctor"])) {
         }
     }
 }
+//doctor login username and password 
+if (isset($_POST['d-username']) ) {
+    $d_id=$_POST['doctor_id'];
+    $d_username = $_POST['d-username'];
+    $d_password = $_POST['d-password'];
+    $dsql = "UPDATE tbl_doctors SET username = '$d_username', password = '$d_password' WHERE doctor_id = '$d_id'";
+
+    if ($conn->query($dsql) === true) {
+        // Display success message or perform any other desired actions
+        echo '<script>
+var confirmed = confirm("Doctor Login Password set successfully.");
+if (confirmed) {
+    window.location.href = "doctors_list.php";
+}
+</script>';
+    }
+}
 ?>
 
 
@@ -235,6 +251,10 @@ if (isset($_POST["add_doctor"])) {
                         <div class="form-group">
                             <label for="doctorName">Doctor Name:</label><br>
                             <input type="text" class="form-doctors" id="doctorName" name="doctorName" value="<?php echo $doctorName; ?>" required><br>
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorEmail">Doctor Email:</label><br>
+                            <input type="email" class="form-doctors" id="doctorName" name="doctorName" value="" required><br>
                         </div>
                         <div class="form-group">
                             <label for="age">Age:</label><br>
@@ -447,6 +467,41 @@ if (isset($_POST["add_doctor"])) {
                     <center>
                         <input type="submit" class="btn btn-primary py-2 px-4 ms-3" name="timeslot" value="Submit" />
                     </center>
+                </form>
+            </div>
+        </div>
+        <div class="d-logging ">
+            <center>
+                <h1>Set Doctor username and Password</h1>
+            </center>
+            <div class="d-flex justify-content-center">
+                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+                    <label for="doctor_id">Select Doctor:</label>
+                    <select id="doctor_id" name="doctor_id" required>
+                        <?php
+
+                        // Fetch doctor IDs and names from tbl_doctors
+                        $sql = "SELECT * FROM tbl_doctors";
+                        $result = $conn->query($sql);
+
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                $doctor_id = $row["doctor_id"];
+                                $doctor_name = $row["doctor_name"];
+                                echo "<option value=\"$doctor_id\">$doctor_name</option>";
+                            }
+                        } else {
+                            echo "<option value=\"\">No doctors available</option>";
+                        }
+
+
+                        ?>
+                    </select>
+                    <label for="username">User-name</label>
+                    <input type="text" name="d-username">
+                    <label for="password">Password</label>
+                    <input type="password" name="d-password">
+                    <input type="submit" value="submit" name="set-username">
                 </form>
             </div>
         </div>

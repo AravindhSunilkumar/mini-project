@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 03, 2023 at 08:16 PM
+-- Generation Time: Oct 24, 2023 at 01:39 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `tbl_admin` (
   `admin_id` int(11) NOT NULL,
   `admin_username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `admin_password` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -38,8 +39,8 @@ CREATE TABLE `tbl_admin` (
 -- Dumping data for table `tbl_admin`
 --
 
-INSERT INTO `tbl_admin` (`admin_id`, `admin_username`, `admin_password`, `created_at`) VALUES
-(1, 'admin', 'admin', '2023-08-17 19:36:51');
+INSERT INTO `tbl_admin` (`admin_id`, `admin_username`, `email`, `admin_password`, `created_at`) VALUES
+(1, 'admin', 'Admin@gmail.com', 'admin', '2023-08-17 19:36:51');
 
 -- --------------------------------------------------------
 
@@ -53,7 +54,8 @@ CREATE TABLE `tbl_appointments` (
   `patient_email` varchar(255) NOT NULL,
   `doctor_id` int(11) NOT NULL,
   `service_id` int(11) NOT NULL,
-  `doctortime_id` int(11) NOT NULL,
+  `section` varchar(255) NOT NULL,
+  `appo_time` varchar(255) NOT NULL,
   `status` varchar(20) NOT NULL,
   `appointmentneed_date` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -63,9 +65,11 @@ CREATE TABLE `tbl_appointments` (
 -- Dumping data for table `tbl_appointments`
 --
 
-INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `patient_email`, `doctor_id`, `service_id`, `doctortime_id`, `status`, `appointmentneed_date`, `created_at`) VALUES
-(1, 8, 'abc@gmail.com', 22, 5, 12, 'Active', '09-05-2023', '2023-09-07 15:48:38'),
-(4, 9, 'defg@gmail.com', 26, 5, 11, 'pending', '04-06-2023', '2023-09-19 15:10:33');
+INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `patient_email`, `doctor_id`, `service_id`, `section`, `appo_time`, `status`, `appointmentneed_date`, `created_at`) VALUES
+(57, 9, 'useremail@gmail.com', 22, 1, 'afternoon', '1:00PM-1:15PM', 'pending', '2023-10-28', '2023-10-12 05:30:39'),
+(58, 18, 'aravindhsunilkumar@gmail.com', 22, 1, 'afternoon', '12:30PM-12:45PM', 'approved', '2023-10-27', '2023-10-17 06:23:49'),
+(59, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'afternoon', '12:00PM-12:15PM', 'approved', '2023-10-19', '2023-10-17 08:42:54'),
+(60, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'evening', '4:35PM-4:50PM', 'pending', '2023-10-18', '2023-10-17 09:14:43');
 
 -- --------------------------------------------------------
 
@@ -75,6 +79,8 @@ INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `patient_email`,
 
 CREATE TABLE `tbl_doctors` (
   `doctor_id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `doctor_name` varchar(255) NOT NULL,
   `age` int(11) NOT NULL,
   `gender` varchar(10) NOT NULL,
@@ -89,9 +95,10 @@ CREATE TABLE `tbl_doctors` (
 -- Dumping data for table `tbl_doctors`
 --
 
-INSERT INTO `tbl_doctors` (`doctor_id`, `doctor_name`, `age`, `gender`, `services`, `qualification`, `doctor_image`, `status`, `doctor_created_at`) VALUES
-(22, 'SABU', 34, 'Male', 'Cosmetic Dentistry', 'BDS', 'img/doctors/64ea24299a982.jpg', 'Active', '2023-08-17 19:37:50'),
-(26, 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', 'Active', '2023-08-26 21:11:49');
+INSERT INTO `tbl_doctors` (`doctor_id`, `email`, `password`, `doctor_name`, `age`, `gender`, `services`, `qualification`, `doctor_image`, `status`, `doctor_created_at`) VALUES
+(22, 'Sabu@gmail.com', 'Sabu', 'SABU', 34, 'Male', 'Cosmetic Dentistry', 'BDS', 'img/doctors/64ea24299a982.jpg', 'Active', '2023-08-17 19:37:50'),
+(26, 'thomas@gmail.com', 'thomas', 'Thomas', 40, 'Male', 'tooth cleaning ', 'MDS', 'img/doctors/64ea4e7506ed9.jpg', 'Active', '2023-08-26 21:11:49'),
+(27, 'aarji@gmail.com', 'aarji', 'Aarji', 25, 'Male', ' Teeth Whitening', 'MDS', 'img/doctors/65278be5a13dc.jpg', 'Active', '2023-10-12 08:02:13');
 
 -- --------------------------------------------------------
 
@@ -116,14 +123,13 @@ CREATE TABLE `tbl_doctortime` (
 --
 
 INSERT INTO `tbl_doctortime` (`doctortime_id`, `doctor_id`, `service_id`, `slot_id`, `morning`, `afternoon`, `evening`, `status`, `created_at`) VALUES
-(10, 22, 5, 2, 'active', 'active', 'active', 'Inactive', '2023-09-01 17:11:10'),
-(11, 22, 5, 3, 'active', 'active', 'inactive', 'active', '2023-09-01 17:11:10'),
-(12, 22, 5, 4, 'active', 'active', 'inactive', 'Inactive', '2023-09-01 17:11:10'),
-(13, 22, 6, 5, 'active', 'active', 'active', 'Active', '2023-09-01 17:11:10'),
-(14, 22, 1, 6, 'active', 'active', 'active', 'Active', '2023-09-01 17:11:10'),
-(15, 22, 1, 1, 'active', 'active', 'active', 'Active', '2023-09-01 17:14:12'),
-(16, 26, 1, 6, 'active', 'active', 'active', 'Active', '2023-09-01 18:14:04'),
-(17, 26, 6, 1, 'active', 'active', 'active', 'Active', '2023-09-07 13:47:30');
+(49, 22, 5, 1, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(50, 22, 5, 2, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(51, 22, 5, 3, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(52, 22, 5, 4, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(53, 22, 5, 5, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(54, 22, 5, 6, 'Active', 'Active', 'Active', 'Active', '2023-10-04 18:46:04'),
+(55, 22, 1, 1, 'Active', 'deactive', 'deactive', 'Active', '2023-10-12 06:07:27');
 
 -- --------------------------------------------------------
 
@@ -149,9 +155,14 @@ CREATE TABLE `tbl_patient` (
 --
 
 INSERT INTO `tbl_patient` (`user_id`, `patient_id`, `full_name`, `gender`, `date_of_birth`, `address`, `profile_picture`, `allergy_info`, `emergency_contact_phone`, `created_at`) VALUES
-(1, 8, 'aravindh ', 'Male', '2023-08-09', 'kochi', 'img/patients/64e5d247abd8a.jpg', 'infection', '8137977159', '2023-08-22 22:18:45'),
-(6, 9, 'Arun', 'Male', '2023-08-04', 'kochi', 'img/patients/64e8b4fdc19df.jpg', 'skin', '8137977159', '2023-08-25 19:34:45'),
-(7, 15, 'admin', '', '2023-10-20', 'dffd', NULL, 'wqee', '7878788890', '2023-10-03 23:31:28');
+(10, 16, 'sooraj ', 'Male', '2023-10-12', 'velllichapattil(h),pulimchuvadu', NULL, 'no', '7994426297', '2023-10-05 12:11:56'),
+(17, 18, 'aravindh', 'Male', '2023-10-13', 'herjehjfhd', NULL, 'none\r\n', '3764676766', '2023-10-17 11:52:22'),
+(18, 19, 'admin', 'Male', '2023-10-19', 'dfdgffg', NULL, 'sdd', '1232434354', '2023-10-17 14:12:29'),
+(0, 20, 'Aravindh sunilkumar', 'Male', '2023-10-04', 'kochi', 'img/patients/6537754a12479.jpg', NULL, '8137977159', '2023-10-24 13:12:02'),
+(0, 21, 'Arun', 'Male', '2023-07-05', 'kochi', 'img/patients/653775920c495.jpg', NULL, '8137977159', '2023-10-24 13:13:14'),
+(0, 22, 'Anna', 'Male', '2023-10-01', 'kochi', 'img/patients/653775dab37c8.jpg', NULL, '8137977159', '2023-10-24 13:14:26'),
+(0, 23, 'Aromal', 'Male', '2023-10-20', 'kochi', 'img/patients/6537795e28579.jfif', 'infection', '8137977159', '2023-10-24 13:29:26'),
+(0, 24, 'Aromal', 'Male', '2023-10-20', 'kochi', 'img/patients/65377a05024be.jfif', 'infection', '8137977159', '2023-10-24 13:32:13');
 
 -- --------------------------------------------------------
 
@@ -173,7 +184,10 @@ CREATE TABLE `tbl_services` (
 --
 
 INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `status`, `created_at`) VALUES
-(5, 'Cosmetic Dentistry', 'img/service_images/heart.png', 'adsdfff', 'Inactive', '2023-09-06 20:48:47');
+(1, 'Cosmetic Dentistry', 'img/services/65243b59d0a71.jpg', 'Cosmetic Dentistry', 'Active', '2023-10-09 23:11:45'),
+(2, 'Dental Implants', 'img/services/65243bae78003.jpg', 'Dental Implants', 'Active', '2023-10-09 23:13:10'),
+(3, 'Dental Bridges', 'img/services/65243bd5ea986.jpg', 'Dental Bridges', 'Active', '2023-10-09 23:13:49'),
+(4, 'Teeth Whitening', 'img/services/65243c9536b76.jfif', 'Teeth Whitening', 'Active', '2023-10-09 23:17:01');
 
 -- --------------------------------------------------------
 
@@ -220,9 +234,10 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`user_id`, `user_username`, `user_email`, `user_password`, `created_at`) VALUES
-(1, 'aravindh', 'email@gmail.com', '123', '2023-08-17 19:45:24'),
-(6, 'User2', 'useremail@gmail.com', '123', '2023-08-17 20:07:39'),
-(7, 'user3', 'email3@gmail.com', '123', '2023-10-03 22:57:27');
+(17, 'aravindh', 'aravindhsunilkumar@gmail.com', 'ara', '2023-10-17 11:42:14'),
+(18, 'user', 'aravindsunilkumar4@gmail.com', '123', '2023-10-17 14:11:52'),
+(19, 'Anna', '', 'Anna', '2023-10-24 13:14:26'),
+(20, 'Aromal', 'mail@gmail.com', 'Aromal', '2023-10-24 13:32:13');
 
 --
 -- Indexes for dumped tables
@@ -293,28 +308,34 @@ ALTER TABLE `tbl_admin`
   MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `tbl_appointments`
+--
+ALTER TABLE `tbl_appointments`
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+
+--
 -- AUTO_INCREMENT for table `tbl_doctors`
 --
 ALTER TABLE `tbl_doctors`
-  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `tbl_doctortime`
 --
 ALTER TABLE `tbl_doctortime`
-  MODIFY `doctortime_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `doctortime_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `tbl_patient`
 --
 ALTER TABLE `tbl_patient`
-  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `tbl_services`
 --
 ALTER TABLE `tbl_services`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `tbl_timeslot`
@@ -326,7 +347,7 @@ ALTER TABLE `tbl_timeslot`
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

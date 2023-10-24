@@ -8,13 +8,14 @@ function userSignUp($username, $email, $password, $confpassword)
 {
     global $conn;
     $sql = "SELECT user_username FROM tbl_users WHERE user_username = '$username'";
-    $sql2 = "SELECT user_email FROM tbl_users WHERE user_email = '$email'";
+    $sql2 = "SELECT * FROM tbl_users WHERE user_email = '$email'";
     $result = $conn->query($sql);
     $result2 = $conn->query($sql2);
 
-    if (($result->num_rows > 0) &&($result2->num_rows>0)) {
+    if (($result->num_rows > 0) || ($result2->num_rows>0)) {
         // Name exists in the table
-        echo '<script>alert("Name found in the database.");</script>';
+       // echo '<script>alert("Patient With Same email is already exist");</script>';
+        return array("success" => false, "message" => "Patient With Same email is already exist");
     } else {
         // Name doesn't exist in the table
         //echo '<script>alert("Name not found in the database.");</script>';
@@ -40,30 +41,44 @@ function userSignUp($username, $email, $password, $confpassword)
 }
 
 // Function for user login
-function userLogin($username, $password)
+function userLogin($useremail, $password)
 {
     global $conn;
 
-    $sql = "SELECT * FROM tbl_users WHERE user_username = '$username' AND user_password = '$password'";
+    $sql = "SELECT * FROM tbl_users WHERE user_email = '$useremail' AND user_password = '$password'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
 
     if (mysqli_num_rows($result) > 0) {
         
         $_SESSION['name'] = $row['user_username'];  
+        $_SESSION['user']='user';
+
         $_SESSION['email'] = $row['user_email'];  
         $_SESSION['password'] = $row['user_password'];  
         return array("success" => true, "redirect" => "index.html");
     } else {
-        $sql = "SELECT * FROM tbl_admin WHERE admin_username = '$username' AND admin_password = '$password'";
+        $sql = "SELECT * FROM tbl_admin WHERE email = '$useremail' AND admin_password = '$password'";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
 
         if (mysqli_num_rows($result) > 0) {
-            $_SESSION['name'] = $row['admin_username'];
+        $_SESSION['user']='admin';
+        $_SESSION['name'] = $row['admin_username'];
             return array("success" => true, "redirect" => "admin_menu.php");
         } else {
-            return array("success" => false, "message" => "Invalid email or password");
+            $sql = "SELECT * FROM tbl_doctors WHERE email = '$useremail' AND password = '$password'";
+            $result = mysqli_query($conn, $sql);
+            $row = mysqli_fetch_assoc($result);
+    
+            if (mysqli_num_rows($result) > 0) {
+                $_SESSION['user']='doctor';
+                $_SESSION['name'] = $row['doctor_name'];
+                return array("success" => true, "redirect" => "index.html");
+            } else {
+                return array("success" => false, "message" => "Invalid email or password");
+            }
+           
         }
     }
 }
@@ -92,9 +107,9 @@ if (isset($_POST["signup"])) {
     exit();
 }
 if (isset($_POST["login"])) {
-    $username = $_POST['name'];
+    $useremail = $_POST['email'];
     $password = $_POST['password'];
-    $result = userLogin($username, $password);
+    $result = userLogin($useremail, $password);
 
     if ($result["success"]) {
         if (isset($result["redirect"])) {

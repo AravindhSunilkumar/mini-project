@@ -11,10 +11,11 @@ if (isset($_POST['insert'])) {
     if ((strlen($phone) > 10 || strlen($phone) < 10)) {
         echo '<script>alert("Please enter exact 10 digit phone  number ");</script>';
     } else {
-        $check_sql = "SELECT * FROM tbl_patient WHERE full_name = '$name'";
+        $email=$_POST['Email'];
+        $check_sql = "SELECT * FROM tbl_users WHERE user_email = '$email'";
         $check_result = $conn->query($check_sql);
         if ($check_result->num_rows > 0) {
-            echo '<script>alert("A patient with the same name already exists.");</script>';
+            echo '<script>alert("A patient with the same Email already exists.");window.location.href = "add_patient.php";</script>';
         } else {
 
             if (isset($_FILES["profile_picture"]) && $_FILES["profile_picture"]["error"] == UPLOAD_ERR_OK) {
@@ -43,6 +44,21 @@ if (isset($_POST['insert'])) {
 
 
                         if ($stmt->execute()) {
+                            //doctor login username and password 
+                            
+                               
+                                $dsql = "INSERT INTO tbl_users (user_username,user_email,user_password) VALUES('$name','$email','$name')";
+
+                                if ($conn->query($dsql) === true) {
+                                    // Display success message or perform any other desired actions
+                                    echo '<script>
+                                        var confirmed = confirm("Login Password set successfully.");
+                                        if (confirmed) {
+                                            window.location.href = "doctors_list.php";
+                                        }
+                                        </script>';
+                                }
+                            
                             echo '<script>
             var confirmed = confirm("Patient added successfully. Click OK to continue.");
             if (confirmed) {
@@ -107,6 +123,10 @@ if (isset($_POST['insert'])) {
                 <div class="flex">
                     <label for="full_name">Full Name:</label>
                     <input type="text" id="full_name" name="full_name" required><br><br>
+                </div> 
+                <div class="flex">
+                    <label for="Email">Email:</label>
+                    <input type="email" id="Email" name="Email" required><br><br>
                 </div>
                 <div class="flex">
                     <label for="gender">Gender:</label>
@@ -149,6 +169,7 @@ if (isset($_POST['insert'])) {
 
 
                 <input type="submit" name="insert" value="Add Patient ">
+
             </form>
 
         </div>

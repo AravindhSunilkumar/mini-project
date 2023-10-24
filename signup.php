@@ -369,7 +369,7 @@ if (isset($_SESSION["message2"])) {
 			<div class="form-inner">
 				<form action="api.php" method="post" class="login">
 					<div class="field">
-						<input type="text" class="input-box" placeholder="User Name" name="name" required>
+					<input type="text" class="input-box" placeholder="Email Address" name="email" required>
 					</div>
 					<div class="field">
 						<input type="password" class="input-box" placeholder="Password" name="password" required>
