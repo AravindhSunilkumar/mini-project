@@ -64,11 +64,15 @@ include("connection.php");
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
         </div>-->
+                <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
 
-                <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-                <?php if ((isset($_SESSION['user'])) == 'doctor') { ?>
+
+
+                    <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+                <?php } else { ?>
                     <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
-                <?php } ?>
+                <?php  } ?>
+
 
 
             </div>
@@ -83,17 +87,40 @@ include("connection.php");
             <?php } else { ?>
                 <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
             <?php } ?>
-
-            <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+            <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
+                <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+            <?php } ?>
         </div>
     </nav>
     <!-- Navbar End -->
-    <div class="d-flex d-name ">
-        <div class="d-flex justify-content-center" style="width:100%;height:100%;float:left;">
-            <h2 class='text-uppercase'>welcome back dr <?php echo $_SESSION['name'] ?></h2>
+    <div style="display: grid;row-gap: 13px;margin-top: 10px;">
+        <div class="d-flex d-name ">
+            <div class="d-flex justify-content-center" style="width:100%;height:100%;float:left;">
+                <h2 class='text-uppercase'>welcome back dr <?php echo $_SESSION['name'] ?></h2>
+            </div>
+
+
         </div>
+        <div style="width: 100%;display: flex;height: 100%;background-color: #d7cccc;justify-content: center;">
+            <table class="col-* table table-success table-striped shadow-lg t-hover" style="width:75%;margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th>Patient Image</th>                        
+                        <th>Patient Name</th>                        
+                        <th>Age</th>                        
+                        <th>Gender</th>                        
+                        <th>Services</th>                        
+                        <th>Qualification</th>                        
+                        <th>Status</th>                        
+                        <th>Doctor Joined Date</th>                        
+                        <th>Update</th>                        
 
-
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+        </div>
     </div>
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

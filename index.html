@@ -120,13 +120,15 @@ $services = fetchTableData($conn, "tbl_services");
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
         </div>-->
-        <?php if((isset($_SESSION['user'])) == 'doctor'){ ?>
+        <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user'){?>
          
           
-          <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
+          
+          <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
           <?php }else{ ?>
-            <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+            <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
             <?php  } ?>
+            
         
 
       </div>
@@ -141,8 +143,9 @@ $services = fetchTableData($conn, "tbl_services");
       <?php } else { ?>
         <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
       <?php } ?>
-
+      <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user'){?>
       <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+      <?php } ?>
     </div>
   </nav>
   <!-- Navbar End -->

@@ -72,7 +72,7 @@ function userLogin($useremail, $password)
             $row = mysqli_fetch_assoc($result);
     
             if (mysqli_num_rows($result) > 0) {
-                $_SESSION['user']='doctor';
+                $_SESSION['user']='d';
                 $_SESSION['name'] = $row['doctor_name'];
                 return array("success" => true, "redirect" => "index.html");
             } else {
