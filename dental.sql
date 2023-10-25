@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2023 at 01:39 PM
+-- Generation Time: Oct 25, 2023 at 08:05 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -58,7 +58,7 @@ CREATE TABLE `tbl_appointments` (
   `appo_time` varchar(255) NOT NULL,
   `status` varchar(20) NOT NULL,
   `appointmentneed_date` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -66,10 +66,13 @@ CREATE TABLE `tbl_appointments` (
 --
 
 INSERT INTO `tbl_appointments` (`appointment_id`, `patient_id`, `patient_email`, `doctor_id`, `service_id`, `section`, `appo_time`, `status`, `appointmentneed_date`, `created_at`) VALUES
-(57, 9, 'useremail@gmail.com', 22, 1, 'afternoon', '1:00PM-1:15PM', 'pending', '2023-10-28', '2023-10-12 05:30:39'),
-(58, 18, 'aravindhsunilkumar@gmail.com', 22, 1, 'afternoon', '12:30PM-12:45PM', 'approved', '2023-10-27', '2023-10-17 06:23:49'),
-(59, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'afternoon', '12:00PM-12:15PM', 'approved', '2023-10-19', '2023-10-17 08:42:54'),
-(60, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'evening', '4:35PM-4:50PM', 'pending', '2023-10-18', '2023-10-17 09:14:43');
+(57, 9, 'useremail@gmail.com', 22, 1, 'afternoon', '1:00PM-1:15PM', 'pending', '2023-10-28', '2023-10-12'),
+(58, 18, 'aravindhsunilkumar@gmail.com', 22, 1, 'afternoon', '12:30PM-12:45PM', 'approved', '2023-10-27', '2023-10-17'),
+(59, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'afternoon', '12:00PM-12:15PM', 'approved', '2023-10-19', '2023-10-17'),
+(60, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'evening', '4:35PM-4:50PM', 'pending', '2023-10-18', '2023-10-17'),
+(61, 19, 'aravindsunilkumar4@gmail.com', 22, 1, 'afternoon', '12:00PM-12:15PM', 'pending', '2023-10-25', '2023-10-24'),
+(62, 25, 'aravindsunilkumar4@gmail.com', 22, 2, 'morning', '9:15AM-9:30AM', 'pending', '2023-10-26', '2023-10-25'),
+(63, 25, 'aravindsunilkumar4@gmail.com', 22, 1, 'morning', '9:15AM-9:30AM', 'pending', '2023-10-25', '2023-10-25');
 
 -- --------------------------------------------------------
 
@@ -147,6 +150,10 @@ CREATE TABLE `tbl_patient` (
   `profile_picture` varchar(255) DEFAULT NULL,
   `allergy_info` text DEFAULT NULL,
   `emergency_contact_phone` varchar(20) DEFAULT NULL,
+  `services` text NOT NULL,
+  `Details` text NOT NULL,
+  `prescription` text NOT NULL,
+  `status` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -154,15 +161,12 @@ CREATE TABLE `tbl_patient` (
 -- Dumping data for table `tbl_patient`
 --
 
-INSERT INTO `tbl_patient` (`user_id`, `patient_id`, `full_name`, `gender`, `date_of_birth`, `address`, `profile_picture`, `allergy_info`, `emergency_contact_phone`, `created_at`) VALUES
-(10, 16, 'sooraj ', 'Male', '2023-10-12', 'velllichapattil(h),pulimchuvadu', NULL, 'no', '7994426297', '2023-10-05 12:11:56'),
-(17, 18, 'aravindh', 'Male', '2023-10-13', 'herjehjfhd', NULL, 'none\r\n', '3764676766', '2023-10-17 11:52:22'),
-(18, 19, 'admin', 'Male', '2023-10-19', 'dfdgffg', NULL, 'sdd', '1232434354', '2023-10-17 14:12:29'),
-(0, 20, 'Aravindh sunilkumar', 'Male', '2023-10-04', 'kochi', 'img/patients/6537754a12479.jpg', NULL, '8137977159', '2023-10-24 13:12:02'),
-(0, 21, 'Arun', 'Male', '2023-07-05', 'kochi', 'img/patients/653775920c495.jpg', NULL, '8137977159', '2023-10-24 13:13:14'),
-(0, 22, 'Anna', 'Male', '2023-10-01', 'kochi', 'img/patients/653775dab37c8.jpg', NULL, '8137977159', '2023-10-24 13:14:26'),
-(0, 23, 'Aromal', 'Male', '2023-10-20', 'kochi', 'img/patients/6537795e28579.jfif', 'infection', '8137977159', '2023-10-24 13:29:26'),
-(0, 24, 'Aromal', 'Male', '2023-10-20', 'kochi', 'img/patients/65377a05024be.jfif', 'infection', '8137977159', '2023-10-24 13:32:13');
+INSERT INTO `tbl_patient` (`user_id`, `patient_id`, `full_name`, `gender`, `date_of_birth`, `address`, `profile_picture`, `allergy_info`, `emergency_contact_phone`, `services`, `Details`, `prescription`, `status`, `created_at`) VALUES
+(10, 16, 'sooraj ', 'Male', '2023-10-12', 'velllichapattil(h),pulimchuvadu', NULL, 'no', '7994426297', '1', 'First appointment to teeth whitening', 'no prescription', 'completed', '2023-10-05 12:11:56'),
+(0, 20, 'Aravindh sunilkumar', 'Male', '2023-10-04', 'kochi', 'img/patients/6537754a12479.jpg', NULL, '8137977159', '2', '', '', '', '2023-10-24 13:12:02'),
+(0, 21, 'Arun', 'Male', '2023-07-05', 'kochi', 'img/patients/653775920c495.jpg', NULL, '8137977159', '3', '', '', '', '2023-10-24 13:13:14'),
+(0, 22, 'Anna', 'Male', '2023-10-01', 'kochi', 'img/patients/653775dab37c8.jpg', NULL, '8137977159', '1', '', '', '', '2023-10-24 13:14:26'),
+(18, 25, 'aravindh', 'Male', '2023-09-06', 'adsafsdfdfg', NULL, 'dsfdfdffd', '1243334345', '', '', '', '', '2023-10-25 21:22:30');
 
 -- --------------------------------------------------------
 
@@ -311,7 +315,7 @@ ALTER TABLE `tbl_admin`
 -- AUTO_INCREMENT for table `tbl_appointments`
 --
 ALTER TABLE `tbl_appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `tbl_doctors`
@@ -329,7 +333,7 @@ ALTER TABLE `tbl_doctortime`
 -- AUTO_INCREMENT for table `tbl_patient`
 --
 ALTER TABLE `tbl_patient`
-  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `tbl_services`
