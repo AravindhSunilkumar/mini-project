@@ -92,6 +92,7 @@ if (isset($_GET['status'])) {
   $appo_id = $_GET['id'];
   $statussql = "SELECT * FROM  tbl_appointments WHERE appointment_id = '$appo_id' ";
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

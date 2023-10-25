@@ -65,7 +65,7 @@ function userLogin($useremail, $password)
         if (mysqli_num_rows($result) > 0) {
         $_SESSION['user']='admin';
         $_SESSION['name'] = $row['admin_username'];
-            return array("success" => true, "redirect" => "admin_menu.php");
+            return array("success" => true, "redirect" => "admin_mainpage.php");
         } else {
             $sql = "SELECT * FROM tbl_doctors WHERE email = '$useremail' AND password = '$password'";
             $result = mysqli_query($conn, $sql);

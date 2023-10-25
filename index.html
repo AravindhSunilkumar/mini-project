@@ -125,9 +125,11 @@ $services = fetchTableData($conn, "tbl_services");
           
           
           <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-          <?php }else{ ?>
-            <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
-            <?php  } ?>
+          <?php }elseif(isset($_SESSION['d']) && $_SESSION['user'] == 'd'){ ?>
+            <a href="doctor-patients.php?id=<?= 5 ?>" class="nav-item nav-link">Patients</a>
+            <?php  }else{ ?>
+              <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+              <?php  } ?>
             
         
 
@@ -184,7 +186,7 @@ $services = fetchTableData($conn, "tbl_services");
               <h1 class="display-1 text-white mb-md-4 animated zoomIn">
                 Take The Best Quality Dental Treatment
               </h1>
-              <?php if((isset($_SESSION['user'])) == 'doctor'){ ?>
+              <?php if((isset($_SESSION['user'])) &&( $_SESSION['user'] == 'd')){ ?>
               <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
               <?php }else{ ?>
               <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>

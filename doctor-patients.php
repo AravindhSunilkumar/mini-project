@@ -1,6 +1,92 @@
 <?php
 session_start();
 include("connection.php");
+function fetchTableData($conn, $tableName, $service)
+{
+    
+    $sql = "SELECT * FROM $tableName WHERE services='$service'";
+    if ($service == '5') {
+        $sql = "SELECT * FROM $tableName";
+    }
+    $result = $conn->query($sql);
+    $data = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+
+    return $data;
+}
+if ((isset($_GET['id'])) && ($_GET['id'] == '1')) {
+    $patients = fetchTableData($conn, 'tbl_patient', '1');
+} elseif ((isset($_GET['id'])) && ($_GET['id'] == '2')) {
+
+    $patients = fetchTableData($conn, 'tbl_patient', '2');
+} elseif ((isset($_GET['id'])) && ($_GET['id'] == '3')) {
+    $patients = fetchTableData($conn, 'tbl_patient', '3');
+} elseif ((isset($_GET['id'])) && ($_GET['id'] == '4')) {
+    $patients = fetchTableData($conn, 'tbl_patient', '4');
+} else {
+    $patients = fetchTableData($conn, 'tbl_patient', '5');
+}
+
+// Handle doctor update
+if (isset($_POST['update_patient'])) {
+    $patient_id = $_POST['patientId'];
+    $prescription = $_POST['prescription'];
+    $Details = $_POST['Details'];
+    $status = $_POST['status'];
+
+
+    $update_sql = "UPDATE tbl_patient SET 
+                   prescription = '$prescription', 
+                   Details = '$Details', 
+                   status = '$status'
+                   WHERE patient_id = '$patient_id'";
+
+    if ($conn->query($update_sql) === TRUE) {
+        // Update successful
+        // echo "Update successful!";
+        //header("Location: doctors_list.php");
+        //exit();
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    } else {
+        // Update failed
+        //  echo "Error updating record: " . $conn->error;
+    }
+
+
+    // Redirect back to the doctor list page after updating
+    //header("Location: doctors_list.php");
+    //exit();
+}
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patient_id'])) {
+    $patient_id = $_GET['patient_id'];
+
+    // Get the image path and delete the image file
+    $get_image_sql = "SELECT profile_picture FROM tbl_patient WHERE patient_id = '$patient_id'";
+    $image_result = $conn->query($get_image_sql);
+    if ($image_result->num_rows === 1) {
+        $image_path = $image_result->fetch_assoc()['profile_picture'];
+        if ($image_path && file_exists($image_path)) {
+            unlink($image_path); // Delete the image file
+        }
+    }
+
+    // Delete the doctor from the database
+    $delete_sql = "DELETE FROM tbl_patient WHERE patient_id = '$patient_id'";
+    if ($conn->query($delete_sql) === TRUE) {
+        // Deletion successful
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    } else {
+        // Deletion failed
+        echo "Error deleting record: " . $conn->error;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,11 +137,11 @@ include("connection.php");
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="index.html" class="nav-item nav-link active">Home</a>
+                <!-- <a href="index.html" class="nav-item nav-link active">Home</a>
                 <a href="#about" class="nav-item nav-link">About Us</a>
                 <a href="#services" class="nav-item nav-link">Service</a>
                 <a href="#dentist" class="nav-item nav-link">Our Dentist</a>
-                <!-- <div class="nav-item dropdown">
+                <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0">
             <a href="price.php" class="dropdown-item">Pricing Plan</a>
@@ -64,14 +150,15 @@ include("connection.php");
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
         </div>-->
-                <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
+
+
+                <a href="doctor-patients.php?id=<?= 1 ?>" class="nav-item nav-link">Cosmetic Dentistry</a>
+                <a href="doctor-patients.php?id=<?= 2 ?>" class="nav-item nav-link">Dental Implant</a>
+                <a href="doctor-patients.php?id=<?= 3 ?>" class="nav-item nav-link">Dental Bridges</a>
+                <a href="doctor-patients.php?id=<?= 4 ?>" class="nav-item nav-link">Teeth Whitening</a>
 
 
 
-                    <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-                <?php } else { ?>
-                    <a href="doctor-patients.php" class="nav-item nav-link">Patients</a>
-                <?php  } ?>
 
 
 
@@ -84,12 +171,10 @@ include("connection.php");
                         <a href="logout.php" class="dropdown-item">SignOut</a>
                     </div>
                 </div>
-            <?php } else { ?>
-                <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
-            <?php } ?>
-            <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
-                <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
-            <?php } ?>
+            <?php }  ?>
+
+
+
         </div>
     </nav>
     <!-- Navbar End -->
@@ -105,21 +190,109 @@ include("connection.php");
             <table class="col-* table table-success table-striped shadow-lg t-hover" style="width:75%;margin-top: 10px;">
                 <thead>
                     <tr>
-                        <th>Patient Image</th>                        
-                        <th>Patient Name</th>                        
-                        <th>Age</th>                        
-                        <th>Gender</th>                        
-                        <th>Services</th>                        
-                        <th>Qualification</th>                        
-                        <th>Status</th>                        
-                        <th>Doctor Joined Date</th>                        
-                        <th>Update</th>                        
+                        <th>Patient Image</th>
+                        <th>Patient Name</th>
+                        <th>DOB</th>
+                        <th>Gender</th>
+                        <th>Services</th>
+                        <th>prescription</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                        <th>update </th>
+
 
                     </tr>
                 </thead>
+                <?php if (!empty($patients)) : ?>
                 <tbody>
-                    
+                    <?php foreach ($patients as $index => $patient) : ?>
+                        <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
+                            <td><img src="<?= $patient['profile_picture']; ?>" alt="Not available" class="img-icon"></td>
+                            <td><?= $patient['full_name']; ?></td>
+                            <td><?= $patient['date_of_birth']; ?></td>
+                            <td><?= $patient['gender']; ?></td>
+                            <td>
+
+                                <?php if ($patient['services'] == '1') {
+                                    echo "Cosmetic Dentistry";
+                                } elseif ($patient['services'] == '2') {
+                                    echo "Dental Implants";
+                                } elseif ($patient['services'] == '3') {
+                                    echo 'Dental Bridges';
+                                } elseif ($patient['services'] == '4') {
+                                    echo 'Teeth Whitening';
+                                }
+                                ?></td>
+                            <td><?= $patient['prescription']; ?></td>
+                            <td><?= $patient['Details']; ?></td>
+                            <td><?= $patient['status']; ?></td>
+                            <div class="d-flex">
+                                <!-- ... your existing table rows ... -->
+                                <td class="wrapper">
+                                    <a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(
+        '<?= $patient['patient_id']; ?>',
+        '<?= $patient['prescription']; ?>',
+        '<?= $patient['Details']; ?>',
+        '<?= $patient['status']; ?>'
+        
+    )">Edit</a>
+                                    <a href="<?= $_SERVER["PHP_SELF"] ?>?action=delete&patient_id=<?= $patient['patient_id']; ?>" class="btn btn-danger">Del</a>
+                                </td>
+
+                            </div>
+                        <?php endforeach; ?>
+                        <?php else : ?>
+                           
+                            <td>No patients to display. </td>
+<?php endif; ?>
+
                 </tbody>
+               
+            </table>
+
+        </div>
+    </div>
+    <!-- Modal for editing doctor details -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit patient Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <script>
+                        function showEditForm(patientId, prescription, Details, status) {
+                            var modal = document.getElementById("editModal");
+                            var modalBody = modal.querySelector(".modal-body");
+
+                            var form = `
+            <form action="" method="post">
+                <input type="hidden" name="patientId" value="${patientId}">
+                <label>prescription:</label>
+                <input type="text" name="prescription" value="${prescription}" required><br>
+                <label>Details:</label>
+                <input type="text" name="Details" value="${Details}" required><br>
+                <label for="status">Select Status:</label>
+                    <select id="status" name="status">
+                        <option value="${status}" selected>${status}</option>
+                        <option value="completed">completed</option>
+                        <option value="pending">pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select><br>
+                <button type="submit" name="update_patient" class="btn btn-success">Update</button>
+                
+            </form>
+        `;
+
+                            modalBody.innerHTML = form;
+                            $(modal).modal("show");
+                        }
+                    </script>
+
+
+                </div>
+            </div>
         </div>
     </div>
     <!-- JavaScript Libraries -->
