@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 25, 2023 at 08:05 PM
+-- Generation Time: Oct 26, 2023 at 07:55 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -179,6 +179,7 @@ CREATE TABLE `tbl_services` (
   `service_name` varchar(255) NOT NULL,
   `service_image` varchar(255) DEFAULT NULL,
   `additional_info` text DEFAULT NULL,
+  `price` int(11) NOT NULL,
   `status` varchar(20) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -187,11 +188,11 @@ CREATE TABLE `tbl_services` (
 -- Dumping data for table `tbl_services`
 --
 
-INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `status`, `created_at`) VALUES
-(1, 'Cosmetic Dentistry', 'img/services/65243b59d0a71.jpg', 'Cosmetic Dentistry', 'Active', '2023-10-09 23:11:45'),
-(2, 'Dental Implants', 'img/services/65243bae78003.jpg', 'Dental Implants', 'Active', '2023-10-09 23:13:10'),
-(3, 'Dental Bridges', 'img/services/65243bd5ea986.jpg', 'Dental Bridges', 'Active', '2023-10-09 23:13:49'),
-(4, 'Teeth Whitening', 'img/services/65243c9536b76.jfif', 'Teeth Whitening', 'Active', '2023-10-09 23:17:01');
+INSERT INTO `tbl_services` (`service_id`, `service_name`, `service_image`, `additional_info`, `price`, `status`, `created_at`) VALUES
+(1, 'Cosmetic Dentistry', 'img/services/65243b59d0a71.jpg', 'Cosmetic Dentistry', 2000, 'Active', '2023-10-09 23:11:45'),
+(2, 'Dental Implants', 'img/services/65243bae78003.jpg', 'Dental Implants', 25000, 'Active', '2023-10-09 23:13:10'),
+(3, 'Dental Bridges', 'img/services/65243bd5ea986.jpg', 'Dental Bridges', 3000, 'Active', '2023-10-09 23:13:49'),
+(4, 'Teeth Whitening', 'img/services/65243c9536b76.jfif', 'Teeth Whitening', 1500, 'Active', '2023-10-09 23:17:01');
 
 -- --------------------------------------------------------
 

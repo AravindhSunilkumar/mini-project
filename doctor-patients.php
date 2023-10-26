@@ -152,6 +152,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
         </div>-->
 
 
+                <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="doctor-patients.php?id=<?= 1 ?>" class="nav-item nav-link">Cosmetic Dentistry</a>
                 <a href="doctor-patients.php?id=<?= 2 ?>" class="nav-item nav-link">Dental Implant</a>
                 <a href="doctor-patients.php?id=<?= 3 ?>" class="nav-item nav-link">Dental Bridges</a>
