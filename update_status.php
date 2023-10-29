@@ -248,6 +248,7 @@ if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
                 // $email = $_POST['email'];
                 // $phoneNumber = $_POST['phoneNumber'];
                 $serviceId = $_POST['service_id'];
+                $_SESSION['s_id']=$serviceId;
                 $doctorId = $_POST['doctor_id'];
                 $section = $_POST['section'];
                 $appointmentDate = $_POST['appointmentDate'];
