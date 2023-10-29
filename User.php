@@ -30,13 +30,107 @@ function fetchTableData($conn, $tableName, $userid)
     return $data;
 }
 $patients = fetchTableData($conn, "tbl_patient", $userid);
+if (isset($_POST['insert'])) {
+    $name = $_POST['full_name'];
+    $gender = $_POST['gender'];
+    $dob = $_POST['date_of_birth'];
+    $allergyinfo = empty($_POST['allergy_info']) ? NULL : $_POST['allergy_info'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
+    $userId = $_SESSION['id'];
 
 
 
 
 
+    if (isset($_FILES["profile_picture"]) && $_FILES["profile_picture"]["error"] == UPLOAD_ERR_OK) {
+
+        $targetDir = "img/patients/";
+        $targetFile = $targetDir . basename($_FILES["profile_picture"]["name"]);
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        // Generate a unique filename
+        $newFilename = uniqid() . '.' . $fileType;
+
+        // Move the uploaded file to the target directory
+        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetDir . $newFilename)) {
+            // File was successfully uploaded
+            // Now insert the file address into the table
+            $fileAddress = $targetDir . $newFilename;
+        } else {
+            echo "<script>alert(Error moving file to target directory.)</script>";
+        }
+    } else {
+        //echo "Error uploading file.";
+    }
 
 
+    // Process phone number to remove non-numeric characters
+    $phone = preg_replace('/\D/', '', $phone);
+    // Insert data into the table
+    $sql = "UPDATE tbl_patient
+            SET full_name = ?,gender = ?,date_of_birth = ?,address = ?,profile_picture = ?,allergy_info = ?,emergency_contact_phone = ? WHERE user_id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssssssi", $name, $gender, $dob, $address, $fileAddress, $allergyinfo, $phone, $userId);
+
+
+
+    if ($stmt->execute()) {
+        echo '<script>
+                var confirmed = confirm("Patient details edited successfully. Click OK to continue.");
+                if (confirmed) {
+                    window.location.href = "User.php";
+                }
+                </script>';
+    } else {
+        echo "Error inserting data: " . $stmt->error;
+    }
+
+
+
+    if (isset($_POST['profile'])) {
+        echo "<script>alert('Upload a profile picture.')</script>";
+        if (isset($_FILES["profile_image"]) && $_FILES["profile_image"]["error"] == UPLOAD_ERR_OK) {
+            $targetDir = "img/patients/";
+            $targetFile = $targetDir . basename($_FILES["profile_image"]["name"]);
+            $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+            // Generate a unique filename
+            $newFilename = uniqid() . '.' . $fileType;
+
+            // Move the uploaded file to the target directory
+            if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetDir . $newFilename)) {
+                // File was successfully uploaded
+
+                // Sanitize and validate user input here
+
+                $userId = $_SESSION['id'];
+                $fileAddress = $targetDir . $newFilename;
+
+                // Perform SQL update
+                $sql = "UPDATE tbl_patient SET profile_picture = ? WHERE user_id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $fileAddress, $userId);
+
+                if ($stmt->execute()) {
+                    echo '<script>
+                        var confirmed = confirm("Patient profile edited successfully. Click OK to continue.");
+                        if (confirmed) {
+                            window.location.href = "User.php";
+                        }
+                    </script>';
+                } else {
+                    echo "Error updating data: " . $stmt->error;
+                }
+            } else {
+                echo "<script>alert('Error moving file to target directory.')</script>";
+            }
+        } else {
+            echo "<script>alert('Upload a profile picture.')</script>";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -118,6 +212,37 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
 
         .close:hover {
             color: black;
+        }
+
+        /*image style */
+        /* Style for the label */
+        .file-label {
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            width: 70%;
+            height: auto;
+            margin-left: 60px;
+        }
+
+        /* Style for the hidden file input */
+        .file-input {
+            display: none;
+        }
+
+        /* Style for the label when the file input is clicked */
+        .file-input+.file-label {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        /* Style for the label on hover */
+        .file-label:hover {
+            background-color: #060606;
+            color: #fff;
+            width: 70%;
+
         }
     </style>
 </head>
@@ -255,7 +380,13 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
 
                         <div class="w3-white w3-text-grey w3-card-4 ">
                             <div class="d-flex justify-content-center    w3-display-container">
-                                <img src="img/person.png" style="width:70%" alt="Avatar" class="img-fluid rounded-circle">
+                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+                                    <label for="fileInput" class="file-label">
+                                        <img src="img/person.png" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
+                                    </label>
+                                    <input type="file" id="fileInput" name="profile_image" class="file-input" accept="image/*">
+                                    <input type="submit" value="Change" name="profile" style="margin-left: 173px;">
+                                </form>
 
 
 
@@ -301,167 +432,144 @@ $patients = fetchTableData($conn, "tbl_patient", $userid);
 
                     <!-- Right Column -->
                     <div class="w3-twothird">
+                        <?php foreach ($patients as $index => $patient) : ?>
 
-                        <div class="w3-container w3-card w3-white w3-margin-bottom">
-                            <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Patient Details</h2>
-                            <div class="w3-container">
-                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
-                                    <div class="flex">
-                                        <label for="full_name">Full Name:</label>
-                                        <input type="text" class="form-control bg-light border-0" id="full_name" name="full_name" required><br><br>
-                                    </div>
-                                    <div class="flex">
-                                        <label for="gender">Gender:</label>
-                                        <select id="gender" class="form-select bg-light border-0" name="gender">
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select><br><br>
-                                    </div>
+                            <div class="w3-container w3-card w3-white w3-margin-bottom">
+                                <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Patient Details</h2>
+                                <div class="w3-container">
+                                    <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+                                        <div class="flex">
+                                            <label for="full_name">Full Name:</label>
+                                            <input type="text" class="form-control bg-light border-0" value="<?php echo $patient['full_name']; ?>" id="full_name" name="full_name" required><br><br>
+                                        </div>
+                                        <div class="flex">
+                                            <label for="gender">Gender:</label>
+                                            <select id="gender" value="<?php echo $patient['gender']; ?>" class="form-select bg-light border-0" name="gender">
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select><br><br>
+                                        </div>
 
-                                    <label for="date_of_birth">Date of Birth:</label>
-                                    <input type="date" class="form-select bg-light border-0" id="date_of_birth" name="date_of_birth" required><br><br>
+                                        <label for="date_of_birth">Date of Birth:</label>
+                                        <input type="date" class="form-select bg-light border-0" value="<?php echo $patient['date_of_birth']; ?>" id="date_of_birth" name="date_of_birth" required><br><br>
 
-                                    <label for="address">Address:</label>
-                                    <input type="text" class="form-select bg-light border-0" id="address" name="address" size="50"><br><br>
+                                        <label for="address">Address:</label>
+                                        <input type="text" class="form-select bg-light border-0" value="<?php echo $patient['address']; ?>" id="address" name="address" size="50"><br><br>
 
-                                    <label for="profile_picture">Profile Picture:</label>
-                                    <input type="file" class="form-select bg-light border-0" id="profile_picture" name="profile_picture"><br><br>
+                                        <label for="profile_picture">Profile Picture:</label>
+                                        <input type="file" class="form-select bg-light border-0" id="profile_picture" value="<?php echo $patient['profile_picture']; ?>" name="profile_picture"><br><br>
+                                        <label for="emergency_contact_phone">Emergency Contact Phone:</label>
+                                        <input type="text" id="emergency_contact_phone" value="<?php echo $patient['emergency_contact_phone']; ?>" name="phone" oninput="checkPhoneNumber()">
+                                        <span id="phoneMessage" style="color: red;"></span><br><br>
 
-                                    <label>Allergy Info:</label>
+                                        <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                                            <strong>Phone number</strong> should only contain 10 digits.
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+
+                                        <label>Allergy Info:</label>
 
 
-                                    <div id="allergy_input" style="display: none;">
-                                        <label for="allergy_info">Type Allergy Info:</label>
-                                        <input class="form-select bg-light border-0" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
-                                    </div>
-
-
-
-                                    <label for="emergency_contact_phone">Emergency Contact Phone:</label>
-                                    <input type="text" id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
-                                    <span id="phoneMessage" style="color: red;"></span><br><br>
-
-                                    <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
-                                        <strong>Phone number</strong> should only contain 10 digits.
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
+                                        <div id="allergy_input" style="display: none;">
+                                            <label for="allergy_info">Type Allergy Info:</label>
+                                            <input class="form-select bg-light border-0" value="<?php echo $patient['allergy_info']; ?>" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
+                                        </div>
 
 
 
-                                    <input type="submit" name="insert" value="Add Patient ">
-                                </form>
+
+                                        <input type="text" id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
+                                        <span id="phoneMessage" style="color: red;"></span><br><br>
+
+                                        <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                                            <strong>Phone number</strong> should only contain 10 digits.
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+
+
+
+                                        <input type="submit" name="insert" value="Update Details ">
+                                    </form>
+                                <?php endforeach; ?>
 
                                 <hr>
-                            </div>
-                            <div class="w3-container">
-                                <h5 class="w3-opacity"><b>Web Developer / something.com</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Mar 2012 - Dec 2014</h6>
-                                <p>Consectetur adipisicing elit. Praesentium magnam consectetur vel in deserunt aspernatur est reprehenderit sunt hic. Nulla tempora soluta ea et odio, unde doloremque repellendus iure, iste.</p>
-                                <hr>
-                            </div>
-                            <div class="w3-container">
-                                <h5 class="w3-opacity"><b>Graphic Designer / designsomething.com</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Jun 2010 - Mar 2012</h6>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p><br>
-                            </div>
-                        </div>
+                                </div>
 
-                        <div class="w3-container w3-card w3-white">
-                            <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Education</h2>
-                            <div class="w3-container">
-                                <h5 class="w3-opacity"><b>W3Schools.com</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>Forever</h6>
-                                <p>Web Development! All I need to know in one place</p>
-                                <hr>
-                            </div>
-                            <div class="w3-container">
-                                <h5 class="w3-opacity"><b>London Business School</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2013 - 2015</h6>
-                                <p>Master Degree</p>
-                                <hr>
-                            </div>
-                            <div class="w3-container">
-                                <h5 class="w3-opacity"><b>School of Coding</b></h5>
-                                <h6 class="w3-text-teal"><i class="fa fa-calendar fa-fw w3-margin-right"></i>2010 - 2013</h6>
-                                <p>Bachelor Degree</p><br>
-                            </div>
-                        </div>
 
-                        <!-- End Right Column -->
+                                <!-- End Right Column -->
+                            </div>
+
+                            <!-- End Grid -->
                     </div>
 
-                    <!-- End Grid -->
+                    <!-- End Page Container -->
                 </div>
+            <?php } ?>
 
-                <!-- End Page Container -->
-            </div>
+            <footer class="w3-container w3-teal w3-center w3-margin-top">
+                <p>Find me on social media.</p>
+                <i class="fa fa-facebook-official w3-hover-opacity"></i>
+                <i class="fa fa-instagram w3-hover-opacity"></i>
+                <i class="fa fa-snapchat w3-hover-opacity"></i>
+                <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+                <i class="fa fa-twitter w3-hover-opacity"></i>
+                <i class="fa fa-linkedin w3-hover-opacity"></i>
+                <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+
+            </footer>
         <?php } ?>
 
-        <footer class="w3-container w3-teal w3-center w3-margin-top">
-            <p>Find me on social media.</p>
-            <i class="fa fa-facebook-official w3-hover-opacity"></i>
-            <i class="fa fa-instagram w3-hover-opacity"></i>
-            <i class="fa fa-snapchat w3-hover-opacity"></i>
-            <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-            <i class="fa fa-twitter w3-hover-opacity"></i>
-            <i class="fa fa-linkedin w3-hover-opacity"></i>
-            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="lib/tempusdominus/js/moment.min.js"></script>
+        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="lib/twentytwenty/jquery.event.move.js"></script>
+        <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
 
-        </footer>
-    <?php } ?>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="lib/twentytwenty/jquery.event.move.js"></script>
-    <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
-
-    <script>
-        function checkPhoneNumber() {
-            const phoneNumberInput = document.getElementById('emergency_contact_phone');
-            const phoneMessage = document.getElementById('phoneMessage');
-            const phoneAlert = document.getElementById('phoneAlert');
-            const phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
-            if (phoneNumberInput.value.length > 10 || phoneNumberInput.value.length < 10) {
-                phoneMessage.textContent = '';
-                phoneAlert.style.display = 'block';
-            } else {
-                phoneMessage.textContent = '';
-                phoneAlert.style.display = 'none';
+        <script>
+            function checkPhoneNumber() {
+                const phoneNumberInput = document.getElementById('emergency_contact_phone');
+                const phoneMessage = document.getElementById('phoneMessage');
+                const phoneAlert = document.getElementById('phoneAlert');
+                const phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+                if (phoneNumberInput.value.length > 10 || phoneNumberInput.value.length < 10) {
+                    phoneMessage.textContent = '';
+                    phoneAlert.style.display = 'block';
+                } else {
+                    phoneMessage.textContent = '';
+                    phoneAlert.style.display = 'none';
+                }
             }
-        }
 
 
+            const loginText = document.querySelector(".title-text .login");
+            const loginForm = document.querySelector("form.login");
+            const loginBtn = document.querySelector("label.login");
+            const signupBtn = document.querySelector("label.signup");
+            const signupLink = document.querySelector("form .signup-link a");
+            signupBtn.onclick = (() => {
+                loginForm.style.marginLeft = "-50%";
+                loginText.style.marginLeft = "-50%";
+            });
+            loginBtn.onclick = (() => {
+                loginForm.style.marginLeft = "0%";
+                loginText.style.marginLeft = "0%";
+            });
+            signupLink.onclick = (() => {
+                signupBtn.click();
+                return false;
+            });
+        </script>
 
-        const loginText = document.querySelector(".title-text .login");
-        const loginForm = document.querySelector("form.login");
-        const loginBtn = document.querySelector("label.login");
-        const signupBtn = document.querySelector("label.signup");
-        const signupLink = document.querySelector("form .signup-link a");
-        signupBtn.onclick = (() => {
-            loginForm.style.marginLeft = "-50%";
-            loginText.style.marginLeft = "-50%";
-        });
-        loginBtn.onclick = (() => {
-            loginForm.style.marginLeft = "0%";
-            loginText.style.marginLeft = "0%";
-        });
-        signupLink.onclick = (() => {
-            signupBtn.click();
-            return false;
-        });
-    </script>
-
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
 </body>
 
 </html>

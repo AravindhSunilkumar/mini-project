@@ -40,7 +40,7 @@ include("connection.php");
 
 <body >
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0 ">
-        <a href="index.html" class="navbar-brand p-0">
+        <a href="admin_mainpage.php" class="navbar-brand p-0">
             <h1 class="m-0 text-primary"><i class="fa fa-tooth me-2"></i>Smile <span style="color:orange;">32</span></h1>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -48,7 +48,7 @@ include("connection.php");
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="admin_menu.php" class="nav-item nav-link active" data-section="content-dashboard">Dashboard</a>
+                <a href="admin_mainpage.php" class="nav-item nav-link active" data-section="content-dashboard">Dashboard</a>
 
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctors</a>
@@ -75,7 +75,7 @@ include("connection.php");
                 </div>
 
                 <!--<a href="services.html" class="nav-item nav-link" data-section="content-patient">Services</a>-->
-                <a href="appointments.php" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
+                <a href="appointments.php?display=1" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
                 <!--<a href="Service.php" class="nav-item nav-link" data-section="content-services">Services</a>-->
                 
             </div>

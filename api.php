@@ -53,6 +53,7 @@ function userLogin($useremail, $password)
         
         $_SESSION['name'] = $row['user_username'];  
         $_SESSION['user']='user';
+        $_SESSION['id']=$row['user_id'];
 
         $_SESSION['email'] = $row['user_email'];  
         $_SESSION['password'] = $row['user_password'];  

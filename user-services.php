@@ -52,8 +52,8 @@ $services = fetchTableData($conn, "tbl_services");
 </head>
 
 <body>
-     <!-- Spinner Start -->
-     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-grow text-primary m-1" role="status">
             <span class="sr-only">Loading...</span>
         </div>
@@ -122,8 +122,8 @@ $services = fetchTableData($conn, "tbl_services");
         </div>
     </nav>
     <!-- Navbar End -->
-     <!-- Hero Start -->
-     <div class="container-fluid bg-primary py-5 hero-header mb-5">
+    <!-- Hero Start -->
+    <div class="container-fluid bg-primary py-5 hero-header mb-5">
         <div class="row py-3">
             <div class="col-12 text-center">
                 <h1 class="display-3 text-white animated zoomIn">Services</h1>
@@ -135,7 +135,7 @@ $services = fetchTableData($conn, "tbl_services");
     </div>
     <!-- Hero End -->
     <!-- Services -->
-    <div  class="d-flex" style="width: 100%;height:100%">
+    <div class="d-flex" style="width: 100%;height:100%">
         <div class="container" style="margin: 0px;">
             <div id="Cosmetic Dentistry" class="row container-fluid py-5 wow fadeInUp" style="width: 121%;">
                 <div class="col" style="margin:10px;height: 50vh;">
@@ -149,8 +149,8 @@ $services = fetchTableData($conn, "tbl_services");
                         Common cosmetic dental treatments include: Inlays and onlays, Composite bonding, Dental veneers, Teeth whitening, Implants.Cosmetic dentistry can improve dental aesthetics in:
                         Color, Position, Shape, Size, Alignment, Overall smile appearance.
                         Most dental restorations are not permanent. However, some, like porcelain veneers, may last for 10 or more years. Porcelain crowns can last even longer.</p>
-                        <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
-                    </div>
+                    <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
+                </div>
 
             </div>
             <div class="row container-fluid py-5 wow fadeInUp" style="width: 121%;margin-top: 130px;">
@@ -161,8 +161,8 @@ $services = fetchTableData($conn, "tbl_services");
                         Dental implants are permanent metal screws that are inserted into the jawbone.
                         The procedure is performed with either general or local anesthesia to numb the mouth. After the numbness wears off, the patient may experience mild pain. However, people who have undergone the procedure say the pain is less than the pain of tooth extraction.
                         The implant screw itself can last a lifetime with regular brushing and flossing, and regular dental check-ups every 6 months. The crown, however, usually only lasts about 10 to 15 years before it may need a replacement due to wear and tear.</p>
-                        <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
-                    </div>
+                    <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
+                </div>
                 <div class="col" style="margin:10px;height: 50vh;">
 
                     <iframe style="margin-top: 0px;width: 100%;height: 99%;" width="853" height="480" src="https://www.youtube.com/embed/DZ2lDxO4LCc" title="Dental Implant Procedure" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
@@ -191,8 +191,8 @@ $services = fetchTableData($conn, "tbl_services");
                         Bridges don't correct bone loss in the jaw
                         Bridges don't last as long as implants
                         Installing a dental bridge is not painful. However, you may experience some discomfort and sensitivity after the treatment. Preparing your teeth for dental bridges can also be quite painful.</p>
-                        <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
-                    </div>
+                    <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
+                </div>
 
             </div>
             <div class="row container-fluid py-5 wow fadeInUp" style="width: 121%;margin-top: 130px;">
@@ -216,22 +216,43 @@ $services = fetchTableData($conn, "tbl_services");
                 </div>
 
             </div>
+            <div  id="dental Braces" class="row container-fluid py-5 wow fadeInUp" style="width: 121%;margin-top: 130px;">
+                <div class="col" style="margin:10px;height: 50vh;">
+
+                    <iframe style="margin-top: 0px;width: 100%;height: 99%;" width="853" height="480" src="https://www.youtube.com/embed/RU-YnYTd1qk" title="How Does Braces Works" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+                </div>
+
+                <div id="" class="col justify-content-center" style="margin:10px;height: 50vh;display:grid;">
+                    <h2>Dental Braces</h2>
+                    <p>Dental braces are devices used in orthodontics to align and straighten teeth. They can correct a wide range of dental issues, including: Crooked teeth, Gapped teeth, Rotated teeth, Crowded teeth.
+                        Traditional braces involve brackets and wires, usually made out of metal, which are attached to the teeth and allow their positioning to be altered as required.
+                        The actual time depends on the patient's specific needs, but many adult patients can look to have braces anywhere from 18 months to about three years.
+                        Braces do not hurt at all when they are applied to the teeth, but there will be mild soreness or discomfort after the orthodontic wire is engaged into the newly placed brackets, which may last for a few days to a week.
+                        Braces can improve your smile's health, function and appearance. However, they can also result in an increased risk of dental cavities.
+
+                    </p>
+                    <center><a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" style="width: 217px;height: 69px;" data-wow-delay="0.6s">book Now</a></center>
+                </div>
+
+
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="lib/wow/wow.min.js"></script>
-        <script src="lib/easing/easing.min.js"></script>
-        <script src="lib/waypoints/waypoints.min.js"></script>
-        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-        <script src="lib/tempusdominus/js/moment.min.js"></script>
-        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-        <script src="lib/twentytwenty/jquery.event.move.js"></script>
-        <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="lib/twentytwenty/jquery.event.move.js"></script>
+    <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
 
-        <!-- Template Javascript -->
-        <script src="js/main.js"></script>
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
 </body>
 
 </html>

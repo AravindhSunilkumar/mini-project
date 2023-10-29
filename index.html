@@ -3,7 +3,7 @@ session_start();
 include("connection.php");
 function fetchTableData($conn, $tableName)
 {
-  $sql = "SELECT * FROM $tableName";
+  $sql = "SELECT * FROM $tableName WHERE status='Active'";
   $result = $conn->query($sql);
   $data = [];
 
@@ -125,9 +125,13 @@ $services = fetchTableData($conn, "tbl_services");
           
           
           <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-          <?php }else{ ?>
+          <?php }elseif(isset($_SESSION['d']) && $_SESSION['user'] == 'd'){ ?>
             <a href="doctor-patients.php?id=<?= 5 ?>" class="nav-item nav-link">Patients</a>
-            <?php  }?>
+            <?php  }else{ ?>
+              <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+            <?php  } ?>
+
+
               
             
         

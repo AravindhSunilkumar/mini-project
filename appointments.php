@@ -1,5 +1,7 @@
 <?php
 include("connection.php");
+include("message.php");
+
 $A_end_time = $A_start_time = $full_name = $d = $s = $need_date = '';
 function fetchTableData($conn, $tableName)
 {
@@ -15,6 +17,7 @@ function fetchTableData($conn, $tableName)
 
   return $data;
 }
+
 function fetchTableDoctorTimeData($conn, $tableName)
 {
   $sql = "SELECT * FROM $tableName WHERE status = 'Active' ";
@@ -29,6 +32,7 @@ function fetchTableDoctorTimeData($conn, $tableName)
 
   return $data;
 }
+
 function fetchName($conn, $id, $t_id, $tableName)
 {
   $sql = "SELECT * FROM $tableName WHERE $t_id = $id ";
@@ -46,7 +50,7 @@ function fetchName($conn, $id, $t_id, $tableName)
 
 // Example usage:
 $services = fetchTableData($conn, "tbl_services");
-$appmts = fetchTableData($conn, "tbl_appointments");
+
 $patients = fetchTableData($conn, "tbl_patient");
 $doctors = fetchTableData($conn, "tbl_doctors");
 $doctorTimes = fetchTableDoctorTimeData($conn, "tbl_doctorTime");
@@ -75,6 +79,55 @@ if (isset($_POST['update_status'])) {
     // echo "Update successful!";
     //header("Location: doctors_list.php");
     //exit();
+
+    $sql = "SELECT * FROM tbl_appointments WHERE appointment_id = '$appointment_id'";
+
+    // Execute the query
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+      // Output data of each row
+      while ($row = $result->fetch_assoc()) {
+        $email = $row["patient_email"];
+        $date = $row['appointmentneed_date'];
+        $time = $row['appo_time'];
+        $id = $row['service_id'];
+        $pid = $row['patient_id'];
+        $paids = fetchName($conn, $pid, "patient_id", "tbl_patient");
+        foreach ($paids as $index => $paid) :
+          $p = $paid['full_name'];
+
+        endforeach;
+        $servicess = fetchName($conn, $id, "service_id", "tbl_services");
+        foreach ($servicess as $index => $servic) :
+          $sn = $servic['service_name'];
+
+        endforeach;
+      }
+    }
+    $subject = "Subject: Confirmation of Your " . $status . " Appointment Request";
+    $body = "Dear " . $p . ",\nI hope this email finds you in good health and high spirits. We are pleased to inform you that your requested appointment for " . $sn . " service has been " . $status . ". Your dental care is of the utmost importance to us, and we are committed to providing you with the best possible treatment.\n\n\n
+    Here are the details of your " . $status . " appointment:\n\n 
+    
+    Date: " . $date . "\n
+    Time: " . $time . "\n
+    Dental Service: " . $sn . "\n\n
+    
+    Please note that we will do our best to ensure your visit is as comfortable and convenient as possible. To make your appointment go smoothly, kindly remember to bring any relevant documents or records, and arrive a few minutes early.\n
+    
+    If you have any questions or need to make any changes to your appointment, please do not hesitate to contact our clinic's reception at 7567467667 or reply to this email.\n
+    
+    We look forward to seeing you on the scheduled date and time. Your oral health is our priority, and we are here to provide you with the care you deserve.\n
+    
+    Thank you for choosing Smaile 32 for your dental needs. We value your trust and confidence in our services.\n
+    
+    Warm regards,\n\n
+    
+    Dental Group\n
+    Smile 32
+    
+    ";
+    email($email, $subject, $body);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
   } else {
@@ -87,11 +140,38 @@ if (isset($_POST['update_status'])) {
   //header("Location: doctors_list.php");
   //exit();
 }
-//Status edit
-if (isset($_GET['status'])) {
-  $appo_id = $_GET['id'];
-  $statussql = "SELECT * FROM  tbl_appointments WHERE appointment_id = '$appo_id' ";
+// Filter by date
+// Reassign an empty array to clear previous data
+if (isset($_POST['filter'])) {
+  $appmts = array();
+  $filter_date = $_POST['filter_date'];
+
+  $sql = "SELECT * FROM tbl_appointments WHERE created_at = '$filter_date'";
+  $result = $conn->query($sql);
+  if (!$result) {
+    die("SQL Error: " . $conn->error); // Display the SQL error message
+  }
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $appmts[] = $row;
+    }
+  }
+
+  // Redirect to the same page
+  //header("Location: " . $_SERVER['PHP_SELF']);
 }
+
+// Display based on the "display" parameter
+if (isset($_GET['display'])) {
+   $filter_date = date("Y-m-d"); // Example format: 2023-10-29 
+          
+  $appmts = fetchTableData($conn, "tbl_appointments");
+}
+
+// Now $appmts contains the filtered or displayed data
+
+
 
 ?>
 <!DOCTYPE html>
@@ -190,6 +270,16 @@ if (isset($_GET['status'])) {
           </div>
         </div>
       </form>
+      <div>
+        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+          
+          <label for="filter">filter By Date</label>
+          <input type="date" name="filter_date" value="<?php echo $filter_date; ?>">
+          <input type="submit" name="filter" value="filter">
+        </form>
+
+      </div>
+
       <div class="table-responsive ">
         <table class="table table-success table-striped">
           <thead>
@@ -208,81 +298,88 @@ if (isset($_GET['status'])) {
             </tr>
           </thead>
           <tbody id="table-body">
-            <?php foreach ($appmts as $index => $appmt) : ?>
-              <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
-                <td>
-                  <?php
-                  $a_id = $appmt['appointment_id'];
-                  
-                  echo $a_id; ?>
-                </td>
-                <td><?php
-                    $p_id = $appmt['patient_id'];
-                    $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
-                    foreach ($names as $index => $name) :
-                      echo $name['full_name'];
-                      $fullname = $name['full_name'];
-                    endforeach;
-                    ?></td>
-                <td><?php
-                    $d_id = $appmt['doctor_id'];
-                    $d_names = fetchName($conn, $d_id, 'doctor_id', "tbl_doctors");
-                    foreach ($d_names as $index => $d_name) :
-                      echo $d_name['doctor_name'];
-                      $d = $d_name['doctor_name'];
-                    endforeach;
-                    ?></td>
-                <td><?php
-                    $s_id = $appmt['service_id'];
-                    
-                    
-                    $s_names = fetchName($conn, $s_id, 'service_id', "tbl_services");
+            <?php
+            if (!empty($appmts)) {
+              foreach ($appmts as $index => $appmt) : ?>
+                <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
+                  <td>
+                    <?php
+                    $a_id = $appmt['appointment_id'];
 
-                    foreach ($s_names as $index => $s_name) :
-                      $s = $s_name['service_name'];
-                      echo $s;
-                    endforeach;
-
-                    ?></td>
-                <td><?php
-                    $p_email = $appmt['patient_email'];
-                    echo $p_email;
-                    ?></td>
-                <td><?php
-                    $section = $appmt['section'];
-                    echo $section;
-                    ?></td>
-                <td><?php
-                    $appo_time = $appmt['appo_time'];
-                    echo $appo_time;
-                    ?></td>
-
-                <td><?php
-                    $appointmentneed_date = $appmt['appointmentneed_date'];
-                    echo $appointmentneed_date;
-                    ?></td>
-                <td><?php
-                    $applied_date = $appmt['created_at'];
-                    echo $applied_date;
-                    ?></td>
-                <td><?php
-                    $status = $appmt['status'];
-                    echo '<a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(' . $a_id . ', \'' . $status . '\')">' . $status . '</a>';
+                    echo $a_id; ?>
+                  </td>
+                  <td><?php
+                      $p_id = $appmt['patient_id'];
+                      $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
+                      foreach ($names as $index => $name) :
+                        echo $name['full_name'];
+                        $fullname = $name['full_name'];
+                      endforeach;
+                      ?></td>
+                  <td><?php
+                      $d_id = $appmt['doctor_id'];
+                      $d_names = fetchName($conn, $d_id, 'doctor_id', "tbl_doctors");
+                      foreach ($d_names as $index => $d_name) :
+                        echo $d_name['doctor_name'];
+                        $d = $d_name['doctor_name'];
+                      endforeach;
+                      ?></td>
+                  <td><?php
+                      $s_id = $appmt['service_id'];
 
 
+                      $s_names = fetchName($conn, $s_id, 'service_id', "tbl_services");
 
-                    ?></td>
+                      foreach ($s_names as $index => $s_name) :
+                        $s = $s_name['service_name'];
+                        echo $s;
+                      endforeach;
+
+                      ?></td>
+                  <td><?php
+                      $p_email = $appmt['patient_email'];
+                      echo $p_email;
+                      ?></td>
+                  <td><?php
+                      $section = $appmt['section'];
+                      echo $section;
+                      ?></td>
+                  <td><?php
+                      $appo_time = $appmt['appo_time'];
+                      echo $appo_time;
+                      ?></td>
+
+                  <td><?php
+                      $appointmentneed_date = $appmt['appointmentneed_date'];
+                      echo $appointmentneed_date;
+                      ?></td>
+                  <td><?php
+                      $applied_date = $appmt['created_at'];
+                      echo $applied_date;
+                      ?></td>
+                  <td><?php
+                      $status = $appmt['status'];
+                      echo '<a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(' . $a_id . ', \'' . $status . '\')">' . $status . '</a>';
+
+
+
+                      ?></td>
 
       </div>
     <?php endforeach; ?>
-    </tr>
-    </tbody>
-    <div class="pagination">
-      <button onclick="previousPage()">Previous</button>
-      <button onclick="nextPage()">Next</button>
-    </div>
 
-    </table>
+    </tr>
+  <?php } else { ?>
+    <tr>
+      <td colspan="10">No appointment on selected date</td>
+    </tr>
+
+  <?php } ?>
+
+  </tbody>
+
+
+  </table>
 
     </div>
 

@@ -10,6 +10,7 @@ function addService()
     if (isset($_POST["add_service"])) {
       $service_name = $_POST["service_name"];
       $service_info = $_POST["additional_info"];
+      $price=$_POST['price'];
       $check_sql = "SELECT * FROM tbl_services WHERE service_name = '$service_name'";
       $check_result = $conn->query($check_sql);
       if ($check_result->num_rows > 0) {
@@ -28,14 +29,14 @@ function addService()
             // File was successfully uploaded
             // Now insert the file address into the table
             $fileAddress = $targetDir . $newFilename;
-            if (isset($service_name) && isset($service_info) &&  isset($fileAddress)) {
+            if (isset($service_name) && isset($service_info) &&  isset($fileAddress) && isset($price)) {
 
               // Insert data into the table
-              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info,status ) 
-                    VALUES (?, ?, ?,'Active')";
+              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info,status,price ) 
+                    VALUES (?, ?, ?,'Active',?)";
 
               $stmt = $conn->prepare($sql);
-              $stmt->bind_param("sss", $service_name, $fileAddress, $service_info);
+              $stmt->bind_param("ssss", $service_name, $fileAddress, $service_info,$price);
 
 
 
@@ -281,7 +282,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_status"])) {
               <input type="file" class="new2" id="service_image" name="service_image" required />
 
               <label for="additional_info">Additional Info:</label>
-              <textarea id="additional_info" name="additional_info" rows="1" required></textarea><br><br><br>
+              <textarea id="additional_info" name="additional_info" rows="1" required></textarea><br><br><br> 
+              <label for="price">price</label>
+              <input type="text" id="price" name="price" required /><br><br><br>
             </div>
           </center>
           <center>

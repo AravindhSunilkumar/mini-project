@@ -15,7 +15,7 @@ if ($result) {
 
     if ($appointmentCount > 0) {
     } else {
-        $appointmentCount = "No appointments for today.";
+        $appointmentCount = "<p style='width: 95vh;font-size: small;margin-left: -78px;margin-top: 14px;'>No appointments for today.</p>";
     }
 } else {
     echo "Error executing the query: " . $conn->error;
@@ -31,7 +31,7 @@ if ($result2) {
 
     if ($doctorCount > 0) {
     } else {
-        $doctorCount = "No doctor for today.";
+        $doctorCount = "<p style='width: 95vh;font-size: small;margin-left: -78px;margin-top: 14px;'>No doctor for today.</p>";
     }
 } else {
     echo "Error executing the query: " . $conn->error;
@@ -47,7 +47,7 @@ if ($result3) {
 
     if ($patientCount > 0) {
     } else {
-        $patientCount = "No doctor for today.";
+        $patientCount = "No patients for today.";
     }
 } else {
     echo "Error executing the query: " . $conn->error;
@@ -60,8 +60,8 @@ if ($result3) {
     <meta charset="utf-8">
     <title>Smile 32</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta content="Dental Clinic" name="keywords">
+    <meta content="Dental Clinic" name="description">
 
     <!-- Favicon -->
     <link rel="icon" href="./img/tooth.png" type="image/png">
