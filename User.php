@@ -3,6 +3,7 @@ session_start();
 include('connection.php');
 // Include the message.php file
 include('message.php');
+
 $vali = '2';
 $otp = 0;
 
@@ -432,144 +433,246 @@ if (isset($_POST['insert'])) {
 
                     <!-- Right Column -->
                     <div class="w3-twothird">
-                        <?php foreach ($patients as $index => $patient) : ?>
+                        <table class="table table-success table-striped">
+                            <thead>
+                                <tr>
+                                    <th>appointment_id</th>
+                                    <th>Patient Name</th>
+                                    <th>doctor Name</th>
+                                    <th>service Name</th>
+                                    <th>Patient Email</th>
+                                    <th>Needed Section</th>
+                                    <th>Needed Time</th>
+                                    <th>Needed Date</th>
+                                    <th>Booked Date & Time</th>
+                                    <th>Status</th>
 
-                            <div class="w3-container w3-card w3-white w3-margin-bottom">
-                                <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Patient Details</h2>
-                                <div class="w3-container">
-                                    <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
-                                        <div class="flex">
-                                            <label for="full_name">Full Name:</label>
-                                            <input type="text" class="form-control bg-light border-0" value="<?php echo $patient['full_name']; ?>" id="full_name" name="full_name" required><br><br>
-                                        </div>
-                                        <div class="flex">
-                                            <label for="gender">Gender:</label>
-                                            <select id="gender" value="<?php echo $patient['gender']; ?>" class="form-select bg-light border-0" name="gender">
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="Other">Other</option>
-                                            </select><br><br>
-                                        </div>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <?php
+                                if (!empty($appmts)) {
+                                    foreach ($appmts as $index => $appmt) : ?>
+                                        <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
+                                            <td>
+                                                <?php
+                                                $a_id = $appmt['appointment_id'];
 
-                                        <label for="date_of_birth">Date of Birth:</label>
-                                        <input type="date" class="form-select bg-light border-0" value="<?php echo $patient['date_of_birth']; ?>" id="date_of_birth" name="date_of_birth" required><br><br>
-
-                                        <label for="address">Address:</label>
-                                        <input type="text" class="form-select bg-light border-0" value="<?php echo $patient['address']; ?>" id="address" name="address" size="50"><br><br>
-
-                                        <label for="profile_picture">Profile Picture:</label>
-                                        <input type="file" class="form-select bg-light border-0" id="profile_picture" value="<?php echo $patient['profile_picture']; ?>" name="profile_picture"><br><br>
-                                        <label for="emergency_contact_phone">Emergency Contact Phone:</label>
-                                        <input type="text" id="emergency_contact_phone" value="<?php echo $patient['emergency_contact_phone']; ?>" name="phone" oninput="checkPhoneNumber()">
-                                        <span id="phoneMessage" style="color: red;"></span><br><br>
-
-                                        <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
-                                            <strong>Phone number</strong> should only contain 10 digits.
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                        </div>
-
-                                        <label>Allergy Info:</label>
-
-
-                                        <div id="allergy_input" style="display: none;">
-                                            <label for="allergy_info">Type Allergy Info:</label>
-                                            <input class="form-select bg-light border-0" value="<?php echo $patient['allergy_info']; ?>" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
-                                        </div>
-
-
-
-
-                                        <input type="text" id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
-                                        <span id="phoneMessage" style="color: red;"></span><br><br>
-
-                                        <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
-                                            <strong>Phone number</strong> should only contain 10 digits.
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                        </div>
+                                                echo $a_id; ?>
+                                            </td>
+                                            <td><?php
+                                                $p_id = $appmt['patient_id'];
+                                                $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
+                                                foreach ($names as $index => $name) :
+                                                    echo $name['full_name'];
+                                                    $fullname = $name['full_name'];
+                                                endforeach;
+                                                ?></td>
+                                            <td><?php
+                                                $d_id = $appmt['doctor_id'];
+                                                $d_names = fetchName($conn, $d_id, 'doctor_id', "tbl_doctors");
+                                                foreach ($d_names as $index => $d_name) :
+                                                    echo $d_name['doctor_name'];
+                                                    $d = $d_name['doctor_name'];
+                                                endforeach;
+                                                ?></td>
+                                            <td><?php
+                                                $s_id = $appmt['service_id'];
 
 
+                                                $s_names = fetchName($conn, $s_id, 'service_id', "tbl_services");
 
-                                        <input type="submit" name="insert" value="Update Details ">
-                                    </form>
-                                <?php endforeach; ?>
+                                                foreach ($s_names as $index => $s_name) :
+                                                    $s = $s_name['service_name'];
+                                                    echo $s;
+                                                endforeach;
 
-                                <hr>
-                                </div>
+                                                ?></td>
+                                            <td><?php
+                                                $p_email = $appmt['patient_email'];
+                                                echo $p_email;
+                                                ?></td>
+                                            <td><?php
+                                                $section = $appmt['section'];
+                                                echo $section;
+                                                ?></td>
+                                            <td><?php
+                                                $appo_time = $appmt['appo_time'];
+                                                echo $appo_time;
+                                                ?></td>
+
+                                            <td><?php
+                                                $appointmentneed_date = $appmt['appointmentneed_date'];
+                                                echo $appointmentneed_date;
+                                                ?></td>
+                                            <td><?php
+                                                $applied_date = $appmt['created_at'];
+                                                echo $applied_date;
+                                                ?></td>
+                                            <td><?php
+                                                $status = $appmt['status'];
+                                                echo '<a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(' . $a_id . ', \'' . $status . '\')">' . $status . '</a>';
 
 
-                                <!-- End Right Column -->
-                            </div>
 
-                            <!-- End Grid -->
+                                                ?></td>
+
                     </div>
+                <?php endforeach; ?>
 
-                    <!-- End Page Container -->
-                </div>
+                </tr>
+            <?php } else { ?>
+                <tr>
+                    <td colspan="10">No appointment on selected date</td>
+                </tr>
+
             <?php } ?>
 
-            <footer class="w3-container w3-teal w3-center w3-margin-top">
-                <p>Find me on social media.</p>
-                <i class="fa fa-facebook-official w3-hover-opacity"></i>
-                <i class="fa fa-instagram w3-hover-opacity"></i>
-                <i class="fa fa-snapchat w3-hover-opacity"></i>
-                <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-                <i class="fa fa-twitter w3-hover-opacity"></i>
-                <i class="fa fa-linkedin w3-hover-opacity"></i>
-                <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+            </tbody>
 
-            </footer>
+
+            </table>
+                </div>
+                <div class="w3-twothird">
+
+                    <?php foreach ($patients as $index => $patient) : ?>
+
+                        <div class="w3-container w3-card w3-white w3-margin-bottom">
+                            <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-suitcase fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Patient Details</h2>
+                            <div class="w3-container">
+                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+                                    <div class="flex">
+                                        <label for="full_name">Full Name:</label>
+                                        <input type="text" class="form-control bg-light border-0" value="<?php echo $patient['full_name']; ?>" id="full_name" name="full_name" required><br><br>
+                                    </div>
+                                    <div class="flex">
+                                        <label for="gender">Gender:</label>
+                                        <select id="gender" value="<?php echo $patient['gender']; ?>" class="form-select bg-light border-0" name="gender">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select><br><br>
+                                    </div>
+
+                                    <label for="date_of_birth">Date of Birth:</label>
+                                    <input type="date" class="form-select bg-light border-0" value="<?php echo $patient['date_of_birth']; ?>" id="date_of_birth" name="date_of_birth" required><br><br>
+
+                                    <label for="address">Address:</label>
+                                    <input type="text" class="form-select bg-light border-0" value="<?php echo $patient['address']; ?>" id="address" name="address" size="50"><br><br>
+
+                                    <label for="profile_picture">Profile Picture:</label>
+                                    <input type="file" class="form-select bg-light border-0" id="profile_picture" value="<?php echo $patient['profile_picture']; ?>" name="profile_picture"><br><br>
+                                    <label for="emergency_contact_phone">Emergency Contact Phone:</label>
+                                    <input type="text" id="emergency_contact_phone" value="<?php echo $patient['emergency_contact_phone']; ?>" name="phone" oninput="checkPhoneNumber()">
+                                    <span id="phoneMessage" style="color: red;"></span><br><br>
+
+                                    <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                                        <strong>Phone number</strong> should only contain 10 digits.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+
+                                    <label>Allergy Info:</label>
+
+
+                                    <div id="allergy_input" style="display: none;">
+                                        <label for="allergy_info">Type Allergy Info:</label>
+                                        <input class="form-select bg-light border-0" value="<?php echo $patient['allergy_info']; ?>" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
+                                    </div>
+
+
+
+
+                                    <input type="text" id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
+                                    <span id="phoneMessage" style="color: red;"></span><br><br>
+
+                                    <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+                                        <strong>Phone number</strong> should only contain 10 digits.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+
+
+
+                                    <input type="submit" name="insert" value="Update Details ">
+                                </form>
+                            <?php endforeach; ?>
+
+                            <hr>
+                            </div>
+
+
+                            <!-- End Right Column -->
+                        </div>
+
+                        <!-- End Grid -->
+                </div>
+
+                <!-- End Page Container -->
+            </div>
         <?php } ?>
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="lib/wow/wow.min.js"></script>
-        <script src="lib/easing/easing.min.js"></script>
-        <script src="lib/waypoints/waypoints.min.js"></script>
-        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-        <script src="lib/tempusdominus/js/moment.min.js"></script>
-        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-        <script src="lib/twentytwenty/jquery.event.move.js"></script>
-        <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+        <footer class="w3-container w3-teal w3-center w3-margin-top">
+            <p>Find me on social media.</p>
+            <i class="fa fa-facebook-official w3-hover-opacity"></i>
+            <i class="fa fa-instagram w3-hover-opacity"></i>
+            <i class="fa fa-snapchat w3-hover-opacity"></i>
+            <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+            <i class="fa fa-twitter w3-hover-opacity"></i>
+            <i class="fa fa-linkedin w3-hover-opacity"></i>
+            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
 
-        <script>
-            function checkPhoneNumber() {
-                const phoneNumberInput = document.getElementById('emergency_contact_phone');
-                const phoneMessage = document.getElementById('phoneMessage');
-                const phoneAlert = document.getElementById('phoneAlert');
-                const phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
-                if (phoneNumberInput.value.length > 10 || phoneNumberInput.value.length < 10) {
-                    phoneMessage.textContent = '';
-                    phoneAlert.style.display = 'block';
-                } else {
-                    phoneMessage.textContent = '';
-                    phoneAlert.style.display = 'none';
-                }
+        </footer>
+    <?php } ?>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="lib/twentytwenty/jquery.event.move.js"></script>
+    <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+
+    <script>
+        function checkPhoneNumber() {
+            const phoneNumberInput = document.getElementById('emergency_contact_phone');
+            const phoneMessage = document.getElementById('phoneMessage');
+            const phoneAlert = document.getElementById('phoneAlert');
+            const phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+            if (phoneNumberInput.value.length > 10 || phoneNumberInput.value.length < 10) {
+                phoneMessage.textContent = '';
+                phoneAlert.style.display = 'block';
+            } else {
+                phoneMessage.textContent = '';
+                phoneAlert.style.display = 'none';
             }
+        }
 
 
-            const loginText = document.querySelector(".title-text .login");
-            const loginForm = document.querySelector("form.login");
-            const loginBtn = document.querySelector("label.login");
-            const signupBtn = document.querySelector("label.signup");
-            const signupLink = document.querySelector("form .signup-link a");
-            signupBtn.onclick = (() => {
-                loginForm.style.marginLeft = "-50%";
-                loginText.style.marginLeft = "-50%";
-            });
-            loginBtn.onclick = (() => {
-                loginForm.style.marginLeft = "0%";
-                loginText.style.marginLeft = "0%";
-            });
-            signupLink.onclick = (() => {
-                signupBtn.click();
-                return false;
-            });
-        </script>
+        const loginText = document.querySelector(".title-text .login");
+        const loginForm = document.querySelector("form.login");
+        const loginBtn = document.querySelector("label.login");
+        const signupBtn = document.querySelector("label.signup");
+        const signupLink = document.querySelector("form .signup-link a");
+        signupBtn.onclick = (() => {
+            loginForm.style.marginLeft = "-50%";
+            loginText.style.marginLeft = "-50%";
+        });
+        loginBtn.onclick = (() => {
+            loginForm.style.marginLeft = "0%";
+            loginText.style.marginLeft = "0%";
+        });
+        signupLink.onclick = (() => {
+            signupBtn.click();
+            return false;
+        });
+    </script>
 
-        <!-- Template Javascript -->
-        <script src="js/main.js"></script>
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
 </body>
 
 </html>

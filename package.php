@@ -34,7 +34,7 @@ function packprice($conn, $id)
     global $data;
     $sqlfetch = "SELECT price FROM tbl_price_packages WHERE package_id = '$id'";
     $result4 = $conn->query($sqlfetch);
-    
+
 
     if ($result4->num_rows > 0) {
         while ($row = $result4->fetch_assoc()) {
@@ -52,12 +52,14 @@ $price = 0; // Initialize $price
 
 if (isset($_POST['choose'])) {
     $packageid = (string)$_POST['package_id'];
+   
 
     $sql = "SELECT * FROM tbl_price_packages WHERE package_id = '$packageid'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+       
         $package_name = $row['package_name'];
         $price = $row['price'];
     }
@@ -65,16 +67,31 @@ if (isset($_POST['choose'])) {
     $patient_id = patientid($conn, $id);
     $pack_price = packprice($conn, $packageid);
     $pack_price = (string)$pack_price; // Ensure $pack_price is a string
+    $_SESSION['pack_price'] = $pack_price;
+  
+    if ($serviceId == 5) {
+        
+        
+        $currentpayamount = intval($pack_price) / 12;
+        echo $currentpayamount;
+    } elseif ($serviceId == 1) {
+        $currentpayamount = intval($pack_price) / 6;
+    } else {
+        $currentpayamount = $pack_price;
+    }
+
 
     $sqlupdate = "UPDATE tbl_appointments SET package_id = '$packageid', due_amount = '$pack_price' WHERE patient_id = '$patient_id'";
     $result2 = $conn->query($sqlupdate);
     if (!$result2) {
         die("Query error: " . $conn->error);
     }
-
+   
     $flag = 1;
 }
-
+if(isset($_POST['paynow'])){
+    header('location : payment.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -111,16 +128,32 @@ if (isset($_POST['choose'])) {
 </head>
 
 <body>
-    <!---->
+    <?php
+
+    ?>
 
     <div style="display: flex;justify-content: center;">
         <div class="offer-text text-center rounded p-5" style="width: 70%;">
-            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                 <?php if (isset($flag) && $flag == 1) : ?>
                     <div class="d-flex justify-content-center">
-                        <div class="d-flex" style="width:40%;">
-                            <p><?php echo $price;
-                                echo $package_name; ?></p>
+                       
+                        <div class="" style="width:40%;font-size: larger;display: grid;font-family: 'Jost';color: #fff;">
+                        <h2 style="color:#fff"><center>Choosed package</center></h2>
+                            <p>Choosed pack :<?php echo $package_name; ?></p>
+                            <p>Total price :<?php echo $price;
+                                            if ($packageid == 5 || $packageid == 1) { ?></p><br>
+                            <p>Initial Amount : <?php echo $currentpayamount; ?></p>
+                        <?php } else { ?>
+                            <p>Amount to pay :<?php echo $currentpayamount;
+                                            } ?></p>
+                            
+                            <input type="submit" class="btn btn-dark py-3 px-5 me-3"  name="paynow"  value="PAY">
+                            <a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-light py-3 px-5">PAY</a>
+
+                           
+
+
                         </div>
                     </div>
                 <?php else : ?>
@@ -148,7 +181,7 @@ if (isset($_POST['choose'])) {
             <p class="text-white mb-4">
 
             </p>
-            <a href="appointment.html" class="btn btn-dark py-3 px-5 me-3">Appointment</a>
+            
             <a href="" class="btn btn-light py-3 px-5">Read More</a>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('connection.php');
-$totalprice=isset($_GET['totalprice']);
+$totalprice=isset($_GET['payamount']);
 
 ?>
 
@@ -784,7 +784,7 @@ body {
             </div>
           </div>
           <button class="card-form__button" type="submit" name="payNow">&#8377;
-            <?php echo $_GET['totalprice']; ?>  
+            <?php echo $_GET['payamount']; ?>                    
           </button>
         </div>
       </form>
@@ -885,16 +885,37 @@ body {
 </html>
 
 <?php
+
+function patientid($conn, $userid)
+{
+    $sqlfetch = "SELECT patient_id FROM tbl_patient WHERE user_id = '$userid'";
+    $result4 = $conn->query($sqlfetch);
+    $data = [];
+
+    if ($result4->num_rows > 0) {
+        while ($row = $result4->fetch_assoc()) {
+            $data = $row['patient_id'];
+        }
+    }
+    return $data;
+}
 if (isset($_REQUEST['payNow'])) {
-  //$qry = "UPDATE tbl_orders SET payment='Paid' WHERE customer_id='$userid' AND status='Requested'";
+  $id=$_SESSION['id'];
+  $patient_id=Patientid($conn,$id);
+  $pack_price=$_SESSION['pack_price'];
+  $due_amount=intval($pack_price)-intval($_GET['payamount']);
+  $payamount=$_GET["payamount"];
+  
+  $qry = "UPDATE tbl_appointments SET payment_status='Paid',paid_amount='$payamount',due_amount='$due_amount' WHERE patient_id='$patient_id'";
+
   //$qry1 = "UPDATE car SET cstatus='sold' WHERE cid='$cid' AND cstatus='not paid'";
 
-  //if ($conn->query($qry) === TRUE ) {
-    echo "<script>alert('Successfully Paid'); window.location = 'product.php?cat_id=default';</script>";
- // } else {
-  //  $error_message = "Error updating payment status: " . mysqli_error($conn);
-   // echo "<script>alert('$error_message');</script>";
- // }
+  if ($conn->query($qry) === TRUE ) {
+    echo "<script>alert('Successfully Paid'); window.location = 'User.php';</script>";
+ } else {
+  $error_message = "Error updating payment status: " . mysqli_error($conn);
+   echo "<script>alert('$error_message');</script>";
+  }
 }
 $totalprice='';
 ?>
