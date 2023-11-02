@@ -3,12 +3,27 @@ session_start();
 include('connection.php');
 // Include the message.php file
 include('message.php');
+global $patient_id;
+$userid = $_SESSION['id'];
+$username = $_SESSION['name'];
+$password = $_SESSION['password'];
+function patientid($conn, $userid)
+{
+    $sqlfetch = "SELECT patient_id FROM tbl_patient WHERE user_id = '$userid'";
+    $result4 = $conn->query($sqlfetch);
+    global $data;
 
+    if ($result4->num_rows > 0) {
+        while ($row = $result4->fetch_assoc()) {
+            $data = $row['patient_id'];
+        }
+    }
+    return $data;
+}
+$patient_id = patientid($conn, $userid);
 $vali = '2';
 $otp = 0;
 
-$username = $_SESSION['name'];
-$password = $_SESSION['password'];
 $sql = "SELECT * FROM tbl_users WHERE user_username = '$username' AND user_password = '$password'";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
@@ -132,6 +147,25 @@ if (isset($_POST['insert'])) {
         }
     }
 }
+
+function fetchName($conn, $id, $t_id, $tableName)
+{
+    $sql = "SELECT * FROM $tableName WHERE $t_id = $id ";
+    $result = $conn->query($sql);
+    $data = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+
+    return $data;
+}
+if (isset($_POST['pay'])) {
+    $payamount = intval($_POST['price']);
+    header('location: payment.php?payamount='.$payamount);
+  }
 ?>
 
 <!DOCTYPE html>
@@ -244,6 +278,27 @@ if (isset($_POST['insert'])) {
             color: #fff;
             width: 70%;
 
+        }
+
+        /* Styles for the modal dialog */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 20% auto;
+            padding: 20px;
+            width: 60%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
     </style>
 </head>
@@ -377,10 +432,10 @@ if (isset($_POST['insert'])) {
                 <div class="w3-row-padding">
 
                     <!-- Left Column -->
-                    <div class="w3-third">
+                    <div class="w3-third" style="width:30%;">
 
                         <div class="w3-white w3-text-grey w3-card-4 ">
-                            <div class="d-flex justify-content-center    w3-display-container">
+                            <div class="d-flex justify-content-center w3-display-container">
                                 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
                                     <label for="fileInput" class="file-label">
                                         <img src="img/person.png" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
@@ -427,46 +482,92 @@ if (isset($_POST['insert'])) {
                                 </form>
                             </div>
                         </div><br>
+                        <?php if (isset($_GET['pay']) && $_GET['pay'] == 1) { ?>
+                            <div id="paymentModal" class="modal">
+                                <div class="modal-content">
+                                    <h2>Payment Form</h2>
+                                   <a href="User.php" style="
+    width: 10%;
+    margin-left: 111vh;
+    margin-top: -17px;
+    position: absolute;
+"> <span class="close-button" >&times;</span></a>
+                                    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
+                                        <label for="price">Enter the price:</label>
+                                        <input type="text" name="price" id="price">
+                                        <input type="submit" value="Pay" class="btn btn-dark  " name="pay">
+                                    </form>
+                                </div>
+                            </div>
+                        <?php } ?>
+                        <script>
+                            // JavaScript to display the modal when the page loads
+                            window.addEventListener('DOMContentLoaded', function() {
+                                <?php if (isset($_GET['pay']) && $_GET['pay'] == 1) { ?>
+                                    var modal = document.getElementById('paymentModal');
+                                    modal.style.display = 'block';
+                                <?php } ?>
+                            });
+                        </script>
+
+
 
                         <!-- End Left Column -->
                     </div>
 
                     <!-- Right Column -->
                     <div class="w3-twothird">
-                        <table class="table table-success table-striped">
+                        <table class="table table-success table-striped" style="font-size: smaller;">
                             <thead>
                                 <tr>
-                                    <th>appointment_id</th>
+
                                     <th>Patient Name</th>
+                                    <th>Patient Email</th>
                                     <th>doctor Name</th>
                                     <th>service Name</th>
-                                    <th>Patient Email</th>
-                                    <th>Needed Section</th>
-                                    <th>Needed Time</th>
-                                    <th>Needed Date</th>
-                                    <th>Booked Date & Time</th>
-                                    <th>Status</th>
+
+                                    <th>Next appointment</th>
+                                    <th>Package Name</th>
+                                    <th>Total Amount </th>
+                                    <th>Due Amount</th>
+                                    <th>Pay</th>
+                                    
 
                                 </tr>
                             </thead>
                             <tbody id="table-body">
                                 <?php
+                                //appointment details
+                                function getAppointmentDetails($conn, $patient_id)
+                                {
+                                    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1";
+                                    $result = $conn->query($sql);
+                                    $appmts = [];
+
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            $appmts[] = $row;
+                                        }
+                                    }
+                                    return $appmts;
+                                }
+                                $appmts = getAppointmentDetails($conn, $patient_id);
                                 if (!empty($appmts)) {
                                     foreach ($appmts as $index => $appmt) : ?>
                                         <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
-                                            <td>
-                                                <?php
-                                                $a_id = $appmt['appointment_id'];
 
-                                                echo $a_id; ?>
-                                            </td>
                                             <td><?php
+                                                $_SESSION['appointment_id'] = $appmt['appointment_id'];
                                                 $p_id = $appmt['patient_id'];
                                                 $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
                                                 foreach ($names as $index => $name) :
                                                     echo $name['full_name'];
                                                     $fullname = $name['full_name'];
                                                 endforeach;
+                                                ?></td>
+                                            <td><?php
+                                                $p_email = $appmt['patient_email'];
+                                                echo $p_email;
                                                 ?></td>
                                             <td><?php
                                                 $d_id = $appmt['doctor_id'];
@@ -488,33 +589,38 @@ if (isset($_POST['insert'])) {
                                                 endforeach;
 
                                                 ?></td>
-                                            <td><?php
-                                                $p_email = $appmt['patient_email'];
-                                                echo $p_email;
-                                                ?></td>
+
                                             <td><?php
                                                 $section = $appmt['section'];
-                                                echo $section;
-                                                ?></td>
-                                            <td><?php
                                                 $appo_time = $appmt['appo_time'];
-                                                echo $appo_time;
+                                                $appo_date = $appmt['appointmentneed_date'];
+                                                echo $section . '<br>';
+                                                echo '<span style="font-size: xx-small;">'.$appo_time.'</span><br>';
+                                                echo $appo_date.'<br>';
                                                 ?></td>
 
+
                                             <td><?php
-                                                $appointmentneed_date = $appmt['appointmentneed_date'];
-                                                echo $appointmentneed_date;
+                                                $package_id = $appmt['package_id'];
+                                                $package_names = fetchName($conn, $package_id, 'package_id', "tbl_price_packages");
+                                                foreach ($package_names as $index => $package_name) :
+                                                    echo $package_name['package_name'];
+                                                endforeach;
                                                 ?></td>
                                             <td><?php
-                                                $applied_date = $appmt['created_at'];
-                                                echo $applied_date;
+                                                foreach ($package_names as $index => $package_name) :
+                                                    echo $package_name['price'];
+                                                    $_SESSION['pack_price'] = $package_name['price'];
+                                                endforeach;
                                                 ?></td>
                                             <td><?php
-                                                $status = $appmt['status'];
-                                                echo '<a href="javascript:void(0);" class="btn btn-info" onclick="showEditForm(' . $a_id . ', \'' . $status . '\')">' . $status . '</a>';
+                                                $due = $appmt['due_amount'];
+                                                echo $due;
+                                                //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
+                                                ?></td>
+                                            <td><?php
 
-
-
+                                                echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
 
                     </div>
@@ -609,18 +715,9 @@ if (isset($_POST['insert'])) {
                 <!-- End Page Container -->
             </div>
         <?php } ?>
-
-        <footer class="w3-container w3-teal w3-center w3-margin-top">
-            <p>Find me on social media.</p>
-            <i class="fa fa-facebook-official w3-hover-opacity"></i>
-            <i class="fa fa-instagram w3-hover-opacity"></i>
-            <i class="fa fa-snapchat w3-hover-opacity"></i>
-            <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-            <i class="fa fa-twitter w3-hover-opacity"></i>
-            <i class="fa fa-linkedin w3-hover-opacity"></i>
-            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-
-        </footer>
+        <div style="margin-top:60px;">
+            <?php include('footer.php'); ?>
+        </div>
     <?php } ?>
 
     <!-- JavaScript Libraries -->
@@ -635,6 +732,16 @@ if (isset($_POST['insert'])) {
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="lib/twentytwenty/jquery.event.move.js"></script>
     <script src="lib/twentytwenty/jquery.twentytwenty.js"></script>
+
+    <script>
+        // JavaScript to display the modal when the link is clicked
+        var modal = document.getElementById('paymentModal');
+        var link = document.querySelector('.btn-info');
+
+        link.onclick = function() {
+            modal.style.display = 'block';
+        };
+    </script>
 
     <script>
         function checkPhoneNumber() {

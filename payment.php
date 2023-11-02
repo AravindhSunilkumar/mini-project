@@ -902,8 +902,17 @@ function patientid($conn, $userid)
 if (isset($_REQUEST['payNow'])) {
   $id=$_SESSION['id'];
   $patient_id=Patientid($conn,$id);
+  $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1";
+  $result = $conn->query($sql);
+  global $due;
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $due = $row['due_amount'];
+        }
+    }
   $pack_price=$_SESSION['pack_price'];
-  $due_amount=intval($pack_price)-intval($_GET['payamount']);
+  $due_amount=intval($due)-intval($_GET['payamount']);
   $payamount=$_GET["payamount"];
   
   $qry = "UPDATE tbl_appointments SET payment_status='Paid',paid_amount='$payamount',due_amount='$due_amount' WHERE patient_id='$patient_id'";
