@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('connection.php');
+global $pay_amount;
 // Include the message.php file
 include('message.php');
 global $patient_id;
@@ -162,10 +163,39 @@ function fetchName($conn, $id, $t_id, $tableName)
 
     return $data;
 }
+
+//appointment details
+function getAppointmentDetails($conn, $patient_id)
+{
+    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC ";
+    $result = $conn->query($sql);
+    $appmts = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $appmts[] = $row;
+        }
+    }
+    return $appmts;
+}
+function getAppointmentDetail($conn, $patient_id)
+{
+    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1 ";
+    $result = $conn->query($sql);
+    $appmtes = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $appmtes[] = $row;
+        }
+    }
+    return $appmtes;
+}
 if (isset($_POST['pay'])) {
     $payamount = intval($_POST['price']);
-    header('location: payment.php?payamount='.$payamount);
-  }
+
+    header('location: payment.php?payamount=' . $payamount);
+}
 ?>
 
 <!DOCTYPE html>
@@ -482,24 +512,26 @@ if (isset($_POST['pay'])) {
                                 </form>
                             </div>
                         </div><br>
-                        <?php if (isset($_GET['pay']) && $_GET['pay'] == 1) { ?>
+                        <?php if (isset($_GET['pay']) && $_GET['pay'] == 1) {
+
+                        ?>
                             <div id="paymentModal" class="modal">
                                 <div class="modal-content">
                                     <h2>Payment Form</h2>
-                                   <a href="User.php" style="
-    width: 10%;
-    margin-left: 111vh;
-    margin-top: -17px;
-    position: absolute;
-"> <span class="close-button" >&times;</span></a>
-                                    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
-                                        <label for="price">Enter the price:</label>
-                                        <input type="text" name="price" id="price">
-                                        <input type="submit" value="Pay" class="btn btn-dark  " name="pay">
-                                    </form>
+                                    <a href="User.php" style="width: 10%;margin-left: 111vh;margin-top: -17px;position: absolute;"> <span class="close-button">&times;</span></a>
+                                  
+                                        <?php $appmtes = getAppointmentDetail($conn, $patient_id);
+                                        foreach ($appmtes as $index => $appm) : ?>
+                                            <label for="price">Amount To Pay:</label>
+                                            <?php echo "₹".$appm['paid_amount']; ?><br>
+
+                                      
+                                            <center> <a href="payment.php?payamount=<?php echo $appm['paid_amount'] ?>" class="btn btn-dark" style="width:10%;">PAY</a></center>
+                                        <?php endforeach; ?>
+                                   
                                 </div>
                             </div>
-                        <?php } ?>
+                        <?php  } ?>
                         <script>
                             // JavaScript to display the modal when the page loads
                             window.addEventListener('DOMContentLoaded', function() {
@@ -521,7 +553,7 @@ if (isset($_POST['pay'])) {
                             <thead>
                                 <tr>
 
-                                    <th>Patient Name</th>
+                              
                                     <th>Patient Email</th>
                                     <th>doctor Name</th>
                                     <th>service Name</th>
@@ -530,41 +562,31 @@ if (isset($_POST['pay'])) {
                                     <th>Package Name</th>
                                     <th>Total Amount </th>
                                     <th>Due Amount</th>
+                                    <th>Status</th>
                                     <th>Pay</th>
-                                    
+
 
                                 </tr>
                             </thead>
                             <tbody id="table-body">
                                 <?php
-                                //appointment details
-                                function getAppointmentDetails($conn, $patient_id)
-                                {
-                                    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1";
-                                    $result = $conn->query($sql);
-                                    $appmts = [];
 
-                                    if ($result->num_rows > 0) {
-                                        while ($row = $result->fetch_assoc()) {
-                                            $appmts[] = $row;
-                                        }
-                                    }
-                                    return $appmts;
-                                }
                                 $appmts = getAppointmentDetails($conn, $patient_id);
                                 if (!empty($appmts)) {
                                     foreach ($appmts as $index => $appmt) : ?>
                                         <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
 
-                                            <td><?php
+                                            <?php
+                                                global $pay_amount;
+                                                $pay_amount = $appmt['paid_amount'];
                                                 $_SESSION['appointment_id'] = $appmt['appointment_id'];
                                                 $p_id = $appmt['patient_id'];
                                                 $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
-                                                foreach ($names as $index => $name) :
+                                               /* foreach ($names as $index => $name) :
                                                     echo $name['full_name'];
                                                     $fullname = $name['full_name'];
-                                                endforeach;
-                                                ?></td>
+                                                endforeach;*/
+                                                ?>
                                             <td><?php
                                                 $p_email = $appmt['patient_email'];
                                                 echo $p_email;
@@ -595,8 +617,8 @@ if (isset($_POST['pay'])) {
                                                 $appo_time = $appmt['appo_time'];
                                                 $appo_date = $appmt['appointmentneed_date'];
                                                 echo $section . '<br>';
-                                                echo '<span style="font-size: xx-small;">'.$appo_time.'</span><br>';
-                                                echo $appo_date.'<br>';
+                                                echo '<span style="font-size: xx-small;">' . $appo_time . '</span><br>';
+                                                echo $appo_date . '<br>';
                                                 ?></td>
 
 
@@ -616,6 +638,11 @@ if (isset($_POST['pay'])) {
                                             <td><?php
                                                 $due = $appmt['due_amount'];
                                                 echo $due;
+                                                //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
+                                                ?></td>
+                                                <td><?php
+                                                $status = $appmt['status'];
+                                                echo $status;
                                                 //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
                                             <td><?php

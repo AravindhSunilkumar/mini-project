@@ -3,6 +3,7 @@ session_start();
 include("connection.php");
 $id = $_SESSION['id'];
 $serviceId = $_SESSION['s_id'];
+global $flag;
 function name($conn, $id)
 {
     global $data;
@@ -17,7 +18,21 @@ function name($conn, $id)
     }
     return $data;
 }
-$service_name=name($conn,$serviceId);
+$service_name = name($conn, $serviceId);
+function alldetails($conn, $id)
+{
+    global $data;
+    $sqlfetch = "SELECT * FROM tbl_price_packages WHERE service_id = '$id'";
+    $result4 = $conn->query($sqlfetch);
+
+
+    if ($result4->num_rows > 0) {
+        while ($row = $result4->fetch_assoc()) {
+            $data = $row['price'];
+        }
+    }
+    return $data;
+}
 function fetchTableData($conn, $tableName, $serviceId)
 {
     $sql = "SELECT * FROM $tableName WHERE service_id = $serviceId";
@@ -66,15 +81,16 @@ $packages = fetchTableData($conn, "tbl_price_packages", $serviceId);
 $price = 0; // Initialize $price
 
 if (isset($_POST['choose'])) {
+    $flag = 1;
     $packageid = (string)$_POST['package_id'];
-   
+
 
     $sql = "SELECT * FROM tbl_price_packages WHERE package_id = '$packageid'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-       
+
         $package_name = $row['package_name'];
         $price = $row['price'];
     }
@@ -84,10 +100,10 @@ if (isset($_POST['choose'])) {
     $pack_price = (string)$pack_price; // Ensure $pack_price is a string
     $_SESSION['patient_id'] = $patient_id;
     $_SESSION['pack_price'] = $pack_price;
-  
+
     if ($serviceId == 5) {
-        
-        
+
+
         $currentpayamount = intval($pack_price) / 12;
         //echo $currentpayamount;
     } elseif ($serviceId == 1) {
@@ -102,12 +118,21 @@ if (isset($_POST['choose'])) {
     if (!$result2) {
         die("Query error: " . $conn->error);
     }
-   
-    $flag = 1;
 }
-if(isset($_POST['paynow'])){
+if (isset($_SESSION['service_status']) && $_SESSION['service_status'] === "new") {
+    if ($serviceId == '5') {
+        $flag = 3;
+    } else {
+        $flag = 5;
+    }
+}
+if (isset($_SESSION['service_status']) && $_SESSION['service_status'] === "notnew") {
+    $flag = 2;
+}
+if (isset($_POST['paynow'])) {
     header('location : payment.php');
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -191,15 +216,17 @@ if(isset($_POST['paynow'])){
 
     <div style="display: flex;justify-content: center;margin-top:20px;" class="carousel slide carousel-fade">
         <div class="offer-text text-center rounded p-5" style="width: 70%;">
-        <h2><?php echo $service_name; ?></h2>
-       
-        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                <?php if (isset($flag) && $flag == 1) : ?>
-                    
+            <!--<h2><?php echo $service_name; ?></h2>-->
+
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                <?php if ($flag == 1) { ?>
+
                     <div class="d-flex justify-content-center">
-                       
+
                         <div class="" style="width:40%;font-size: larger;display: grid;font-family: 'Jost';color: #fff;">
-                        <h2 style="color:#fff"><center>Choosed package</center></h2>
+                            <h2 style="color:#fff">
+                                <center>Choosed package</center>
+                            </h2>
                             <p>Choosed pack :<?php echo $package_name; ?></p>
                             <p>Total price :<?php echo $price;
                                             if ($packageid == 5 || $packageid == 1) { ?></p><br>
@@ -207,19 +234,75 @@ if(isset($_POST['paynow'])){
                         <?php } else { ?>
                             <p>Amount to pay :<?php echo $currentpayamount;
                                             } ?></p>
-                            
-                           <!-- <input type="submit" class="btn btn-dark py-3 px-5 me-3"  name="paynow"  value="PAY">-->
-                           <!--<a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-light py-3 px-5">PAY</a>-->
+
+                            <!-- <input type="submit" class="btn btn-dark py-3 px-5 me-3"  name="paynow"  value="PAY">-->
+                            <!--<a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-light py-3 px-5">PAY</a>-->
                             <a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-dark py-3 px-5 me-3">PAY</a>
 
-                           
+
 
 
                         </div>
                     </div>
-                <?php else : ?>
+                <?php } ?>
+                <?php if ($flag == 4) { ?>
+
                     <div class="d-flex justify-content-center">
-                    <h1> Choose convenient Package </h1>
+
+                        <div class="" style="width:40%;font-size: larger;display: grid;font-family: 'Jost';color: #fff;">
+                            <h2 style="color:#fff">
+                                <center>Choosed package</center>
+                            </h2>
+                            <p>Choosed pack :<?php echo $package_name; ?></p>
+                            <p>Total price :<?php echo $price;
+                                            if ($packageid == 5 || $packageid == 1) { ?></p><br>
+                            <p>Initial Amount : <?php echo $currentpayamount; ?></p>
+                        <?php } else { ?>
+                            <p>Amount to pay :<?php echo $currentpayamount;
+                                            } ?></p>
+
+                            <!-- <input type="submit" class="btn btn-dark py-3 px-5 me-3"  name="paynow"  value="PAY">-->
+                            <!--<a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-light py-3 px-5">PAY</a>-->
+                            <a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-dark py-3 px-5 me-3">PAY</a>
+
+
+
+
+                        </div>
+                    </div>
+
+                <?php }
+                if ($flag == 2) { ?>
+                    <div class="d-flex justify-content-center">
+                        <center>
+                            <h1> You have Already purchased <?php echo $service_name; ?></h1>
+                            <div class="d-flex" style="width:40%;">
+                                <?php
+                                $packageid = $_SESSION['package_id'];
+                                $pack_price = packprice($conn, $packageid);
+                                $pack_price = (string)$pack_price;
+                                if ($serviceId == 5) {
+                                    $currentpayamount = intval($pack_price) / 12;
+                                    //echo $currentpayamount;
+                                } elseif ($serviceId == 1) {
+                                    $currentpayamount = intval($pack_price) / 6;
+                                } else {
+                                    $currentpayamount = $due_amount;
+                                }
+                                echo $currentpayamount;
+                                ?>
+                            </div>
+                        </center><br><br><br><br><br>
+
+                    </div>
+                    <div>
+                        <a href="payment.php?payamount=<?php echo $currentpayamount ?>" class="btn btn-dark py-3 px-5 me-3"><?php echo '₹' . $currentpayamount; ?></a>
+                    </div>
+                <?php }
+                if ($flag == 3) { ?>
+
+                    <div class="d-flex justify-content-center">
+                        <h1> Choose convenient Package </h1>
                         <div class="d-flex" style="width:40%;">
                             <select class="form-select bg-light border-0" name="package_id" style="height:54px;" required>
                                 <?php
@@ -235,7 +318,20 @@ if(isset($_POST['paynow'])){
                             <input type="submit" value="Select" name="choose" class="btn btn-dark py-3 px-5 me-3">
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php }
+                if ($flag == 5) { 
+                    ?>
+
+                    <div class="d-flex justify-content-center">
+                        <h1> Choosed Package </h1>
+                        <div class="d-flex" style="width:40%;">
+                            
+                        </div>
+                        <div>
+                            <input type="submit" value="Select" name="choose" class="btn btn-dark py-3 px-5 me-3">
+                        </div>
+                    </div>
+                <?php } ?>
             </form>
 
 
@@ -243,14 +339,14 @@ if(isset($_POST['paynow'])){
             <p class="text-white mb-4">
 
             </p>
-            
+
             <!--<a href="" class="btn btn-light py-3 px-5">Read More</a>-->
         </div>
     </div>
     <div style="margin-top:100px;">
-    <?php include('footer.php');?>
+        <?php include('footer.php'); ?>
     </div>
-    
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -268,5 +364,6 @@ if(isset($_POST['paynow'])){
     <script src="js/main.js"></script>
 
 </body>
+<?php unset($_SESSION['service_status']); ?>
 
 </html>

@@ -992,25 +992,24 @@ function patientid($conn, $userid)
 if (isset($_REQUEST['payNow'])) {
   $id = $_SESSION['id'];
   $patient_id = Patientid($conn, $id);
-  $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' ORDER BY created_at DESC LIMIT 1";
+  $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1";
   $result = $conn->query($sql);
   global $due;
-  global $appo_id;
   if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
       $due = $row['due_amount'];
-      $appo_id = $row['appointment_id'];
+    }
+  }
+  $pack_price = $_SESSION['pack_price'];
+  $due_amount = intval($due) - intval($_GET['payamount']);
+  $payamount = $_GET["payamount"];
 
-      $pack_price = $_SESSION['pack_price'];
-      $due_amount = intval($due) - intval($_GET['payamount']);
-      $payamount = $_GET["payamount"];
+  $qry = "UPDATE tbl_appointments SET payment_status='Paid',paid_amount='$payamount',due_amount='$due_amount' WHERE patient_id='$patient_id'";
 
-      $qry = "UPDATE tbl_appointments SET payment_status='Paid',paid_amount='$payamount',due_amount='$due_amount' WHERE patient_id='$patient_id' AND appointment_id='$appo_id'";
+  //$qry1 = "UPDATE car SET cstatus='sold' WHERE cid='$cid' AND cstatus='not paid'";
 
-      //$qry1 = "UPDATE car SET cstatus='sold' WHERE cid='$cid' AND cstatus='not paid'";
-
-      if ($conn->query($qry) === TRUE) {
-        echo "<script>
+  if ($conn->query($qry) === TRUE) {
+    echo "<script>
             Swal.fire({
                 icon: 'success',
                 title: 'Successfully Paid',
@@ -1019,17 +1018,15 @@ if (isset($_REQUEST['payNow'])) {
                 window.location = 'User.php';
             });
           </script>";
-      } else {
-        $error_message = "Error updating payment status: " . mysqli_error($conn);
-        echo "<script>
+  } else {
+    $error_message = "Error updating payment status: " . mysqli_error($conn);
+    echo "<script>
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: '$error_message',
             });
           </script>";
-      }
-    }
   }
 }
 $totalprice = '';

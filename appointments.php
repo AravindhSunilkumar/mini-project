@@ -238,7 +238,7 @@ if (isset($_GET['display'])) {
                     <select id="status" name="status">
                         <option value="${status}" selected>${status}</option>
                         <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
+                        <option value="completed">completed</option>
                         <option value="rejected">Rejected</option>
                     </select><br>
                     <button type="submit" name="update_status" class="btn btn-success">Update</button>

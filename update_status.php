@@ -248,7 +248,7 @@ if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
                 // $email = $_POST['email'];
                 // $phoneNumber = $_POST['phoneNumber'];
                 $serviceId = $_POST['service_id'];
-                $_SESSION['s_id']=$serviceId;
+                $_SESSION['s_id'] = $serviceId;
                 $doctorId = $_POST['doctor_id'];
                 $section = $_POST['section'];
                 $appointmentDate = $_POST['appointmentDate'];
@@ -276,35 +276,70 @@ if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
                         $stmt3->bind_param("is", $patient_id, $appointmentDate);
                         $stmt3->execute();
                         $result3 = $stmt3->get_result();
+                        $uid = $_SESSION['id'];
+                        $email = $_SESSION['email'];
                         if ($result3->num_rows > 0) {
                             echo "" . $patient_name . " is Already Book An Appointment on date " . $appointmentDate;
                             $stmt3->close();
                         } else {
-                            $email = $_SESSION['email'];
-                            $sql = "INSERT INTO tbl_appointments (patient_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
-                            VALUES (?, ?,?, ?,?,?, 'pending', ?, NOW())";
-                            $stmt2 = $conn->prepare($sql);
-                            $stmt2->bind_param("iisssss", $patient_id, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
 
-                            // You may need to determine the patient_id based on the email or other criteria.
-                            // For this example, I'm assuming you have a patients table with an email column.
+                            $sqlcheck = "SELECT * FROM tbl_appointments WHERE user_id = '$uid' AND service_id = '$serviceId' ORDER BY created_at DESC LIMIT 1";
+                            $result2 = mysqli_query($conn, $sqlcheck);
+                            if (mysqli_num_rows($result2) > 0) {
+                                $row = mysqli_fetch_assoc($result2);
+                                $due_amount = $row['due_amount'];
+                                $packid=$row['package_id'];
+                                $sql = "INSERT INTO tbl_appointments (patient_id,user_id, doctor_id,patient_email, service_id,package_id,section,appo_time,due_amount, status, appointmentneed_date, created_at)
+                                VALUES (?,?,?,?, ?,?,?,?,?, 'pending', ?, NOW())";
+                                $stmt2 = $conn->prepare($sql);
+                                $stmt2->bind_param("iiisssssss", $patient_id, $uid, $doctorId, $email, $serviceId,$packid, $section, $selectedTimeSlot, $due_amount, $appointmentDate);
+                                $_SESSION['service_status'] = "notnew";
+                                $_SESSION['package_id'] =$packid ;
+                                // You may need to determine the patient_id based on the email or other criteria.
+                                // For this example, I'm assuming you have a patients table with an email column.
 
 
 
-                            $stmt2->execute();
+                                $stmt2->execute();
 
-                            //$result2 = $stmt2->get_result();
+                                //$result2 = $stmt2->get_result();
 
 
-                            // Echo the success message directly
-                            echo "Appointment booked successfully!";
+                                // Echo the success message directly
+                                echo "Appointment booked successfully!";
 
-                            //header("location: user-appointment.php");
-                            unset($_POST['selectedTimeSlot']);
-                            // Close the database connection
-                            $stmt->close();
-                            $stmt2->close();
-                            $conn->close();
+                                //header("location: user-appointment.php");
+                                unset($_POST['selectedTimeSlot']);
+                                // Close the database connection
+                                $stmt->close();
+                                $stmt2->close();
+                                $conn->close();
+                            } else {
+                                $sql = "INSERT INTO tbl_appointments (patient_id,user_id, doctor_id,patient_email, service_id,section,appo_time, status, appointmentneed_date, created_at)
+                                VALUES (?,?,?,?, ?,?,?, 'pending', ?, NOW())";
+                                $stmt2 = $conn->prepare($sql);
+                                $stmt2->bind_param("iiisssss", $patient_id, $uid, $doctorId, $email, $serviceId, $section, $selectedTimeSlot, $appointmentDate);
+                                $_SESSION['service_status'] = "new";
+                                // You may need to determine the patient_id based on the email or other criteria.
+                                // For this example, I'm assuming you have a patients table with an email column.
+
+
+
+                                $stmt2->execute();
+
+                                //$result2 = $stmt2->get_result();
+
+
+                                // Echo the success message directly
+                                echo "Appointment booked successfully!";
+
+                                //header("location: user-appointment.php");
+                                unset($_POST['selectedTimeSlot']);
+                                // Close the database connection
+                                $stmt->close();
+                                $stmt2->close();
+                                $conn->close();
+                            }
                         }
                     }
                 } else {
