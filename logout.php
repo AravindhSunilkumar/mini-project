@@ -11,5 +11,9 @@ include("connection.php");
   // Redirect to the login page or any other desired page
   header('Location: index.html');
   exit();
+  if (isset($_GET['f'])) {
+   header('Location: signup.php');
+   
+} 
 
 ?>    

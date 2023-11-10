@@ -15,6 +15,16 @@ if (isset($_SESSION["message2"])) {
 	// Store the message content in a JavaScript variable
 	$message2 = htmlspecialchars($message2, ENT_QUOTES);
 }
+if (isset($_GET['reset']) && $_GET['reset'] == 1) {
+    // Check if the email parameter is set
+    if (isset($_GET['email'])) {
+        $resetEmail = urldecode($_GET['email']);
+        // Now you can use $resetEmail in your code
+        echo "Email received for password reset: $resetEmail";
+    } else {
+        echo "No email parameter in the URL";
+    }
+}
 ?>
 
 
@@ -381,7 +391,9 @@ if (isset($_SESSION["message2"])) {
 						<div class="btn-layer"></div>
 						<input type="submit" name="login" value="Login">
 					</div>
-					<div class="signup-link">Not a member? <a href="">Signup now</a></div>
+					<div class="signup-link">
+					<a href="signup.php?reset=1<?php echo isset($_POST['email']) ? '&email=' . $_POST['email']: ''; ?>">Forgot password?</a>
+					</div>
 				</form>
 				<form action="api.php" method="post" class="signup">
 					<div class="field">

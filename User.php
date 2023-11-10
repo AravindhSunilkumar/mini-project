@@ -2,6 +2,7 @@
 session_start();
 include('connection.php');
 global $pay_amount;
+global $otp;
 // Include the message.php file
 include('message.php');
 global $patient_id;
@@ -48,6 +49,7 @@ function fetchTableData($conn, $tableName, $userid)
 }
 $patients = fetchTableData($conn, "tbl_patient", $userid);
 if (isset($_POST['insert'])) {
+    
     $name = $_POST['full_name'];
     $gender = $_POST['gender'];
     $dob = $_POST['date_of_birth'];
@@ -55,6 +57,7 @@ if (isset($_POST['insert'])) {
     $phone = $_POST['phone'];
     $address = $_POST['address'];
     $userId = $_SESSION['id'];
+    echo $phone;
 
 
 
@@ -65,25 +68,34 @@ if (isset($_POST['insert'])) {
         $targetDir = "img/patients/";
         $targetFile = $targetDir . basename($_FILES["profile_picture"]["name"]);
         $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
+    
         // Generate a unique filename
         $newFilename = uniqid() . '.' . $fileType;
-
+    
+        // Check if a file already exists in the target directory
+        if (file_exists($targetDir . $newFilename)) {
+            // Delete the existing file
+            unlink($targetDir . $newFilename);
+        }
+    
         // Move the uploaded file to the target directory
         if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetDir . $newFilename)) {
             // File was successfully uploaded
             // Now insert the file address into the table
             $fileAddress = $targetDir . $newFilename;
         } else {
-            echo "<script>alert(Error moving file to target directory.)</script>";
+            echo "<script>alert('Error moving file to the target directory.')</script>";
         }
     } else {
+        // Handle the case when no file is uploaded or an error occurs during the upload
         //echo "Error uploading file.";
     }
+    
 
 
     // Process phone number to remove non-numeric characters
     $phone = preg_replace('/\D/', '', $phone);
+    
     // Insert data into the table
     $sql = "UPDATE tbl_patient
             SET full_name = ?,gender = ?,date_of_birth = ?,address = ?,profile_picture = ?,allergy_info = ?,emergency_contact_phone = ? WHERE user_id = ? ";
@@ -179,8 +191,10 @@ function getAppointmentDetails($conn, $patient_id)
     return $appmts;
 }
 function getAppointmentDetail($conn, $patient_id)
-{
-    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id ORDER BY created_at DESC LIMIT 1 ";
+{   
+    
+    $service_id='5';
+    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = $patient_id AND service_id=$service_id ORDER BY created_at DESC LIMIT 1 ";
     $result = $conn->query($sql);
     $appmtes = [];
 
@@ -331,112 +345,155 @@ if (isset($_POST['pay'])) {
             text-align: center;
         }
     </style>
+    
 </head>
-
-<body class="w3-light-grey">
-    <?php if ($_SESSION['name'] === 'admin') {
+<?php if ($_SESSION['name'] === 'admin') {
         header('location:admin_menu.php');
     } else {
+        $id=$_SESSION['id'];
+        $sql = "SELECT * FROM tbl_patient WHERE user_id = $id ";
+        $result = $conn->query($sql);
+        
+    
+        if ($result->num_rows > 0) {}else{
+            echo '<script>
+            var confirmed = confirm("Make the first Appointment setup profile. Click OK to continue.");
+            if (confirmed) {
+                window.location.href = "index.html#services";
+            }
+        </script>';
+        }
         foreach ($patients as $index => $patient) {
 
 
 
-            // Function to generate a random OTP (replace with your implementation)
+            // Function to generate a random OTP
             function generateRandomOTP()
             {
-                // Generate and return a random OTP
                 return rand(1000, 9999);
             }
 
             if (isset($_POST['reset_password'])) {
-
-
                 // Get the submitted username and password
-                $submittedUsername = $_POST['username'];
+                $submittedemail = $_POST['email'];
                 $submittedPassword = $_POST['password'];
+                $_SESSION['submittedPassword'] = $_POST['password'];
 
                 // Get the stored username and password from the session
-                $storedUsername = $_SESSION['name'];
+                $storedemail = $_SESSION['name'];
                 $storedPassword = $_SESSION['password'];
 
-                // Initialize $v as false to indicate whether the OTP was verified
-
-
                 // Check if the submitted username and password match the stored values
-                if ($submittedUsername !== $storedUsername || $submittedPassword !== $storedPassword) {
+                if ($submittedemail !== $storedemail || $submittedPassword !== $storedPassword) {
                     // No changes, display confirmation box with OTP input field
-                    $otp = generateRandomOTP(); // Generate a random OTp
-                    echo $otp;
+                    $otp = generateRandomOTP(); // Generate a random OTP
+
+                    // Store the generated OTP in a session variable
+                    $_SESSION['generated_otp'] = $otp;
+
                     // Send the OTP via email
-                    email($_SESSION['email'], 'OTP Verification for changing password / username' . $otp . '', 'Your OTP is: ' . $otp);
+                    email($_SESSION['email'], 'OTP Verification for changing password / username ' . $otp . '', 'Your OTP is: ' . $otp);
+
                     $vali = '1';
                 } else {
                     // Changes detected, you can perform actions or redirect to a different page
                     // For example, you can update the username and password here
                     // Redirect to a different page
-                    //header("Location: update_password.php");
+                    // header("Location: update_password.php");
                     // exit();
                 }
             }
 
             // Check the OTP form submission
             if (isset($_POST['submit_otp'])) {
-                $enteredOTP = $_POST['otp-input'];
+                $enteredOTP = intval(trim($_POST['otpinput']));
 
-                // Check the entered OTP against the generated OTP
-                if ($enteredOTP === $otp) {
+                // Retrieve the stored generated OTP from the session
+                $storedOTP = isset($_SESSION['generated_otp']) ? $_SESSION['generated_otp'] : 0;
+                $submittedPassword = isset($_SESSION['submittedPassword']) ? $_SESSION['submittedPassword'] : 0;
+
+                // Check the entered OTP against the stored generated OTP
+                if ($enteredOTP == $storedOTP) {
                     // OTP verification succeeded
                     // Perform the SQL update only if OTP was verified
-                    $sql = "UPDATE tbl_users SET user_username='$submittedUsername', user_password='$submittedPassword'";
+                    $email = $_SESSION['email'];
+                    $sql = "UPDATE tbl_users SET user_password='$submittedPassword' WHERE user_email='$email'";
                     if ($conn->query($sql)) {
-                        echo "<script>alert('Your username and password are reset.');</script>";
+                        echo "<script>alert('Your username and password are reset.');window.location='logout.php?f=1';</script>";
                     }
                 } else {
                     // OTP verification failed
                     echo "<script>alert('Entered OTP is Incorrect');</script>";
                     // Handle the case where the OTP is incorrect
                 }
+
+                // Clear the stored OTP from the session
+                unset($_SESSION['generated_otp']);
+                unset($_SESSION['submittedPassword']);
             }
 
     ?>
+
+
+<body class="w3-light-grey">
+    
             <!-- Navbar Start -->
-            <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
-                <a href="contact.php" class="navbar-brand p-0">
-                    <h1 class="m-0 text-primary"><i class="fa fa-tooth me-2"></i>Smile <span style="color:orange;">32</span></h1>
+            <nav class="bg-white navbar navbar-expand-lg navbar-light shadow-sm px-5 py-3 py-lg-0">
+                <a href="index.html" class="navbar-brand p-0">
+                    <h1 class="m-0 text-primary">
+                        <i class="fa fa-tooth me-2"></i>Smile
+                        <span style="color: orange">32</span>
+                    </h1>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.html" class="nav-item nav-link">Home</a>
-                        <a href="index.html" class="nav-item nav-link">About</a>
-                        <a href="index.html" class="nav-item nav-link">Service</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu m-0">
-                                <a href="price.php" class="dropdown-item active">Pricing Plan</a>
-                                <a href="team.php" class="dropdown-item">Our Dentist</a>
-                                <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+                        <a href="index.html" class="nav-item nav-link active">Home</a>
+                        <a href="index.html#about" class="nav-item nav-link">About Us</a>
+                        <a href="index.html#services" class="nav-item nav-link">Service</a>
+                        <a href="index.html#dentist" class="nav-item nav-link">Our Dentist</a>
+                        <!-- <div class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+          <div class="dropdown-menu m-0">
+            <a href="price.php" class="dropdown-item">Pricing Plan</a>
+            <a href="team.php" class="dropdown-item">Our Dentist</a>
+            <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+            <a href="appointment.php" class="dropdown-item">Appointment</a>
+          </div>
+        </div>-->
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
 
-                                <a href="appointment.php" class="dropdown-item">Appointment</a>
-                            </div>
-                        </div>
-                        <a href="index.html" class="nav-item nav-link active">Contact</a>
+
+
+                            <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+                        <?php } elseif (isset($_SESSION['d']) && $_SESSION['user'] == 'd') { ?>
+                            <a href="doctor-patients.php?id=<?= 5 ?>" class="nav-item nav-link">Patients</a>
+                        <?php  } else { ?>
+                            <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+                        <?php  } ?>
+
+
+
+
+
+
                     </div>
                     <?php if (isset($_SESSION['name'])) { ?>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><img src="img/person.png" alt="icon" class="icon"></a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><img src="img/person.png" alt="icon" class="icon" /></a>
                             <div class="dropdown-menu m-0">
                                 <a href="User.php" class="dropdown-item"><?php echo $_SESSION['name'] ?></a>
                                 <a href="logout.php" class="dropdown-item">SignOut</a>
-
                             </div>
                         </div>
                     <?php } else { ?>
                         <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
                     <?php } ?>
-                    <a href="appointment.html" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
+                        <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+                    <?php } ?>
                 </div>
             </nav>
             <!-- Navbar End -->
@@ -445,7 +502,7 @@ if (isset($_POST['pay'])) {
                     <span class='close'>&times;</span>
                     <form id='otp-form' action='<?php echo $_SERVER["PHP_SELF"]; ?>' method='post'>
                         <label for='otp-input'>Please enter the OTP sent to your email:</label>
-                        <input type='text' id="otp-input" name='otp-input'>
+                        <input type='number' id="otp-input" name='otpinput'>
                         <input type='submit' value='Submit OTP' name='submit_otp'>
                     </form>
                 </div>;
@@ -468,7 +525,11 @@ if (isset($_POST['pay'])) {
                             <div class="d-flex justify-content-center w3-display-container">
                                 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
                                     <label for="fileInput" class="file-label">
-                                        <img src="img/person.png" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
+                                        <?php if (!empty($patient['profile_picture'])) { ?>
+                                            <img src="<?php echo $patient['profile_picture'] ?>" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
+                                        <?php } else { ?>
+                                            <img src="img/person.png" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
+                                        <?php } ?>
                                     </label>
                                     <input type="file" id="fileInput" name="profile_image" class="file-input" accept="image/*">
                                     <input type="submit" value="Change" name="profile" style="margin-left: 173px;">
@@ -496,9 +557,10 @@ if (isset($_POST['pay'])) {
                                 <hr>
                                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                                     <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-teal"></i>Reset Username and Password </b></p>
-                                    <p>Username</p>
+                                    <p>Email</p>
                                     <div class=" w3-round-xlarge w3-small">
-                                        <input type="text" class="form-control bg-light border-0" id="username" value="<?php echo $_SESSION['name'] ?>" name="username" required><br><br>
+                                        <input type="text" class="form-control bg-light border-0" id="username" value="<?php echo $_SESSION['email'] ?>" name="email" required readonly>
+                                        <br><br>
                                     </div>
                                     <p>Password</p>
                                     <div class=" w3-round-xlarge w3-small">
@@ -519,16 +581,17 @@ if (isset($_POST['pay'])) {
                                 <div class="modal-content">
                                     <h2>Payment Form</h2>
                                     <a href="User.php" style="width: 10%;margin-left: 111vh;margin-top: -17px;position: absolute;"> <span class="close-button">&times;</span></a>
-                                  
-                                        <?php $appmtes = getAppointmentDetail($conn, $patient_id);
-                                        foreach ($appmtes as $index => $appm) : ?>
-                                            <label for="price">Amount To Pay:</label>
-                                            <?php echo "₹".$appm['paid_amount']; ?><br>
 
-                                      
-                                            <center> <a href="payment.php?payamount=<?php echo $appm['paid_amount'] ?>" class="btn btn-dark" style="width:10%;">PAY</a></center>
-                                        <?php endforeach; ?>
-                                   
+                                    <?php $appmtes = getAppointmentDetail($conn, $patient_id);
+                                    foreach ($appmtes as $index => $appm) : ?>
+                                        <label for="price">Amount To Pay:</label>
+                                        <?php echo "₹" . $appm['paid_amount']; 
+                                        $_SESSION['s_id']='5';?><br>
+
+                                        
+                                        <center> <a href="payment.php?payamount=<?php echo $appm['paid_amount'] ?>" class="btn btn-dark" style="width:10%;">PAY</a></center>
+                                    <?php endforeach; ?>
+
                                 </div>
                             </div>
                         <?php  } ?>
@@ -549,11 +612,12 @@ if (isset($_POST['pay'])) {
 
                     <!-- Right Column -->
                     <div class="w3-twothird">
+                        <h2>User Appointmet Details</h2>
                         <table class="table table-success table-striped" style="font-size: smaller;">
                             <thead>
                                 <tr>
 
-                              
+
                                     <th>Patient Email</th>
                                     <th>doctor Name</th>
                                     <th>service Name</th>
@@ -562,7 +626,7 @@ if (isset($_POST['pay'])) {
                                     <th>Package Name</th>
                                     <th>Total Amount </th>
                                     <th>Due Amount</th>
-                                    <th>Status</th>
+                                    <th>Appointment Status</th>
                                     <th>Pay</th>
 
 
@@ -577,16 +641,16 @@ if (isset($_POST['pay'])) {
                                         <tr class="table-row <?= $index % 2 === 0 ? 'even' : 'odd'; ?>">
 
                                             <?php
-                                                global $pay_amount;
-                                                $pay_amount = $appmt['paid_amount'];
-                                                $_SESSION['appointment_id'] = $appmt['appointment_id'];
-                                                $p_id = $appmt['patient_id'];
-                                                $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
-                                               /* foreach ($names as $index => $name) :
+                                            global $pay_amount;
+                                            $pay_amount = $appmt['paid_amount'];
+                                            $_SESSION['appointment_id'] = $appmt['appointment_id'];
+                                            $p_id = $appmt['patient_id'];
+                                            $names = fetchName($conn, $p_id, 'patient_id', "tbl_patient");
+                                            /* foreach ($names as $index => $name) :
                                                     echo $name['full_name'];
                                                     $fullname = $name['full_name'];
                                                 endforeach;*/
-                                                ?>
+                                            ?>
                                             <td><?php
                                                 $p_email = $appmt['patient_email'];
                                                 echo $p_email;
@@ -640,14 +704,18 @@ if (isset($_POST['pay'])) {
                                                 echo $due;
                                                 //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
-                                                <td><?php
+                                            <td><?php
                                                 $status = $appmt['status'];
                                                 echo $status;
                                                 //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
                                             <td><?php
+                                                if ($appmt['due_amount'] == '0') {
+                                                    echo 'Completed';
+                                                } else {
 
-                                                echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
+                                                    echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
+                                                }
                                                 ?></td>
 
                     </div>
@@ -704,10 +772,10 @@ if (isset($_POST['pay'])) {
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
 
-                                    <label>Allergy Info:</label>
+                                    
 
 
-                                    <div id="allergy_input" style="display: none;">
+                                    <div id="allergy_input" >
                                         <label for="allergy_info">Type Allergy Info:</label>
                                         <input class="form-select bg-light border-0" value="<?php echo $patient['allergy_info']; ?>" type="text" id="allergy_info" name="allergy_info" size="50"><br><br>
                                     </div>
@@ -715,13 +783,9 @@ if (isset($_POST['pay'])) {
 
 
 
-                                    <input type="text" id="emergency_contact_phone" name="phone" oninput="checkPhoneNumber()">
-                                    <span id="phoneMessage" style="color: red;"></span><br><br>
+                                  
 
-                                    <div id="phoneAlert" class="alert  alert-warning alert-dismissible fade show" role="alert" style="display: none;">
-                                        <strong>Phone number</strong> should only contain 10 digits.
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
+                                    
 
 
 

@@ -7,12 +7,12 @@ include('connection.php');
 function userSignUp($username, $email, $password, $confpassword)
 {
     global $conn;
-    $sql = "SELECT user_username FROM tbl_users WHERE user_username = '$username'";
+    //$sql = "SELECT user_username FROM tbl_users WHERE user_username = '$username'";
     $sql2 = "SELECT * FROM tbl_users WHERE user_email = '$email'";
-    $result = $conn->query($sql);
+    //$result = $conn->query($sql);
     $result2 = $conn->query($sql2);
 
-    if (($result->num_rows > 0) || ($result2->num_rows>0)) {
+    if ( ($result2->num_rows>0)) {
         // Name exists in the table
        // echo '<script>alert("Patient With Same email is already exist");</script>';
         return array("success" => false, "message" => "Patient With Same email is already exist");
@@ -26,6 +26,8 @@ function userSignUp($username, $email, $password, $confpassword)
             $sql = "INSERT INTO tbl_users (user_username,user_email, user_password) VALUES ('$username', '$email', '$password')";
 
             if (mysqli_query($conn, $sql)) {
+                $user_id = mysqli_insert_id($conn);
+                $_SESSION['id']=$user_id;
                 $_SESSION["name"] = $username;
                 $_SESSION["email"] = $email;
                 $_SESSION['password'] = $password; 

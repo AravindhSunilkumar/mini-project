@@ -3,6 +3,7 @@ session_start();
 include("connection.php");
 $id = $_SESSION['id'];
 $serviceId = $_SESSION['s_id'];
+
 global $flag;
 function name($conn, $id)
 {
@@ -19,6 +20,21 @@ function name($conn, $id)
     return $data;
 }
 $service_name = name($conn, $serviceId);
+function serviceName($conn, $id)
+{
+    global $data;
+    $sqlfetch = "SELECT * FROM tbl_price_packages WHERE service_id = '$id'";
+    $result4 = $conn->query($sqlfetch);
+
+    $data = [];
+    if ($result4->num_rows > 0) {
+        while ($row = $result4->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
 function alldetails($conn, $id)
 {
     global $data;
@@ -111,12 +127,21 @@ if (isset($_POST['choose'])) {
     } else {
         $currentpayamount = $pack_price;
     }
+    $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' ORDER BY created_at DESC LIMIT 1";
+    $result = $conn->query($sql);
+   
+    global $appo_id;
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
 
+            $appo_id = $row['appointment_id'];
 
-    $sqlupdate = "UPDATE tbl_appointments SET package_id = '$packageid', due_amount = '$pack_price' WHERE patient_id = '$patient_id'";
-    $result2 = $conn->query($sqlupdate);
-    if (!$result2) {
-        die("Query error: " . $conn->error);
+            $sqlupdate = "UPDATE tbl_appointments SET package_id = '$packageid', due_amount = '$pack_price' WHERE patient_id = '$patient_id' AND appointment_id = '$appo_id'";
+            $result2 = $conn->query($sqlupdate);
+            if (!$result2) {
+                die("Query error: " . $conn->error);
+            }
+        }
     }
 }
 if (isset($_SESSION['service_status']) && $_SESSION['service_status'] === "new") {
@@ -124,10 +149,50 @@ if (isset($_SESSION['service_status']) && $_SESSION['service_status'] === "new")
         $flag = 3;
     } else {
         $flag = 5;
+        $service_details = serviceName($conn, $serviceId);
+        foreach ($service_details as $index => $service_detail) :
+            $patient_id = patientid($conn, $id);
+            $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' AND service_id='$serviceId' ORDER BY created_at DESC LIMIT 1";
+            $result = $conn->query($sql);
+           
+           
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+
+                    $appo_id = $row['appointment_id'];
+                    $packageid = $service_detail['package_id'];
+                    $pack_price = $service_detail['price'];
+                    $sqlupdate = "UPDATE tbl_appointments SET package_id = '$packageid', due_amount = '$pack_price' WHERE patient_id = '$patient_id' AND appointment_id = '$appo_id'";
+                    $result2 = $conn->query($sqlupdate);
+                }
+            }
+        endforeach;
     }
 }
 if (isset($_SESSION['service_status']) && $_SESSION['service_status'] === "notnew") {
+    if ($serviceId == '5') {
     $flag = 2;
+    }else{
+        $flag=5;
+        $service_details = serviceName($conn, $serviceId);
+        foreach ($service_details as $index => $service_detail) :
+            $patient_id = patientid($conn, $id);
+            $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' AND service_id='$serviceId' ORDER BY created_at DESC LIMIT 1";
+            $result = $conn->query($sql);
+           
+           
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+
+                    $appo_id = $row['appointment_id'];
+                    $packageid = $service_detail['package_id'];
+                    $pack_price = $service_detail['price'];
+                    $sqlupdate = "UPDATE tbl_appointments SET package_id = '$packageid', due_amount = '$pack_price' WHERE patient_id = '$patient_id' AND appointment_id = '$appo_id'";
+                    $result2 = $conn->query($sqlupdate);
+                }
+            }
+        endforeach;
+    }
 }
 if (isset($_POST['paynow'])) {
     header('location : payment.php');
@@ -319,16 +384,23 @@ if (isset($_POST['paynow'])) {
                         </div>
                     </div>
                 <?php }
-                if ($flag == 5) { 
-                    ?>
+                if ($flag == 5) {
+                ?>
 
                     <div class="d-flex justify-content-center">
-                        <h1> Choosed Package </h1>
+                        <h1> Choosed Package <?php echo $service_name; ?></h1>
                         <div class="d-flex" style="width:40%;">
-                            
+                            <h3>Pay Amount :<?php foreach ($service_details as $index => $service_detail) :
+                                                echo $service_detail['price'];
+                                            endforeach;
+                                            $flag = 5
+                                            ?></h3>
+
                         </div>
                         <div>
-                            <input type="submit" value="Select" name="choose" class="btn btn-dark py-3 px-5 me-3">
+
+                            <a href="payment.php?payamount=<?php echo $service_detail['price'] ?>" class="btn btn-dark py-3 px-5 me-3"><?php echo '₹' . $service_detail['price']; ?></a>
+
                         </div>
                     </div>
                 <?php } ?>

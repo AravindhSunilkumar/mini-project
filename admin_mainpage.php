@@ -21,8 +21,8 @@ if ($result) {
     echo "Error executing the query: " . $conn->error;
 }
 //active doctors
-$st='Active';
-$d_sql="SELECT COUNT(*) AS doctor_count FROM tbl_doctors WHERE status = '$st'";
+$st = 'Active';
+$d_sql = "SELECT COUNT(*) AS doctor_count FROM tbl_doctors WHERE status = '$st'";
 $result2 = $conn->query($d_sql);
 
 if ($result2) {
@@ -37,8 +37,8 @@ if ($result2) {
     echo "Error executing the query: " . $conn->error;
 }
 //active doctors
-$st='Active';
-$p_sql="SELECT COUNT(*) AS patient_count FROM tbl_patient ";
+$st = 'Active';
+$p_sql = "SELECT COUNT(*) AS patient_count FROM tbl_patient ";
 $result3 = $conn->query($p_sql);
 
 if ($result3) {
@@ -94,7 +94,7 @@ if ($result3) {
     </style>
 </head>
 
-<body>
+<body style="background-color:rgb(82, 202, 230);">
     <?php include('admin_menu.php'); ?>
     <div class="main-dashboard">
         <marquee behavior="alternate" direction="right" scrollamount="6">
@@ -117,29 +117,41 @@ if ($result3) {
                 </div>
 
                 <div class="col" style="background-color: #ad25a4; margin: 10px;">
-                <a href="patients_list.php">
-                    <div class="appo" style="margin-top: 22px;">
-                        <center><h3 class="text-uppercase">number of patients</h3></center>
-                        <div style="color: #fff;font-size: xx-large;display: block;position: absolute;margin-top: 82px;margin-left: 93px;">
-                            <?php echo $patientCount; ?>
+                    <a href="patients_list.php">
+                        <div class="appo" style="margin-top: 22px;">
+                            <center>
+                                <h3 class="text-uppercase">number of patients</h3>
+                            </center>
+                            <div style="color: #fff;font-size: xx-large;display: block;position: absolute;margin-top: 82px;margin-left: 93px;">
+                                <?php echo $patientCount; ?>
+                            </div>
+                            <img src="img/patient.png" alt="" style="width: 216px;height: 186px;margin-left: 63px;margin-top: 9px;">
                         </div>
-                        <img src="img/patient.png" alt="" style="width: 216px;height: 186px;margin-left: 63px;margin-top: 9px;">
-                    </div>
                     </a>
                 </div>
                 <div class="col" style="background-color: #006ccb; margin: 10px;">
-                <a href="doctors_list.php">
-                    <div class="appo" style="margin-top: 22px;">
-                        <center><h3 class="text-uppercase">number of doctors</h3></center>
-                        <div style="color: #fff;font-size: xx-large;display: block;position: absolute;margin-top: 12px;margin-left: 155px;">
-                            <?php echo $doctorCount; ?>
+                    <a href="doctors_list.php">
+                        <div class="appo" style="margin-top: 22px;">
+                            <center>
+                                <h3 class="text-uppercase">number of doctors</h3>
+                            </center>
+                            <div style="color: #fff;font-size: xx-large;display: block;position: absolute;margin-top: 12px;margin-left: 155px;">
+                                <?php echo $doctorCount; ?>
+                            </div>
+                            <img src="img/dentist.png" alt="" style="width: 216px;height: 186px;margin-left: 63px;margin-top: 9px;">
                         </div>
-                        <img src="img/dentist.png" alt="" style="width: 216px;height: 186px;margin-left: 63px;margin-top: 9px;">
-                    </div>
                     </a>
                 </div>
             </div>
         </div>
+
+    </div>
+    <div>
+    <h2 style="display: flex;justify-content: center;">Clinic Growth on Pie Chart</h2>
+        </div>
+    <div style="width: 86%;margin: 10px;margin-left: 99px;display: flex;justify-content: center;">
+        
+        <?php include('pieChart.php'); ?>
 
     </div>
 </body>

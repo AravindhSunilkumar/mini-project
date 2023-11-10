@@ -989,10 +989,12 @@ function patientid($conn, $userid)
   }
   return $data;
 }
+$appo_id = '';
 if (isset($_REQUEST['payNow'])) {
   $id = $_SESSION['id'];
+  $serviceId=$_SESSION['s_id'];
   $patient_id = Patientid($conn, $id);
-  $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' ORDER BY created_at DESC LIMIT 1";
+  $sql = "SELECT * FROM tbl_appointments WHERE patient_id = '$patient_id' AND  service_id='$serviceId' ORDER BY created_at DESC LIMIT 1";
   $result = $conn->query($sql);
   global $due;
   global $appo_id;
@@ -1004,8 +1006,12 @@ if (isset($_REQUEST['payNow'])) {
       $pack_price = $_SESSION['pack_price'];
       $due_amount = intval($due) - intval($_GET['payamount']);
       $payamount = $_GET["payamount"];
+      echo $due_amount.$pack_price;
+
 
       $qry = "UPDATE tbl_appointments SET payment_status='Paid',paid_amount='$payamount',due_amount='$due_amount' WHERE patient_id='$patient_id' AND appointment_id='$appo_id'";
+
+
 
       //$qry1 = "UPDATE car SET cstatus='sold' WHERE cid='$cid' AND cstatus='not paid'";
 
@@ -1019,15 +1025,16 @@ if (isset($_REQUEST['payNow'])) {
                 window.location = 'User.php';
             });
           </script>";
+          unset($_SESSION['s_id']);
       } else {
         $error_message = "Error updating payment status: " . mysqli_error($conn);
-        echo "<script>
+        /*echo "<script>
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: '$error_message',
             });
-          </script>";
+          </script>";*/
       }
     }
   }
