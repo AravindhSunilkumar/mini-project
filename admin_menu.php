@@ -70,7 +70,7 @@ include("connection.php");
                     <div class="dropdown-menu m-0">
                         <!-- Set the value of $patient in the href attribute -->
                         <a href="services.php" class="dropdown-item">-Add Services</a>
-                        <a href="services_list.php" class="dropdown-item">-List Services</a>
+                        <a href="services_list.php" class="dropdown-item">-Services Price List  </a>
                     </div>
                 </div>
 

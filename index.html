@@ -16,6 +16,21 @@ function fetchTableData($conn, $tableName)
   return $data;
 }
 $services = fetchTableData($conn, "tbl_services");
+$doctors=fetchTableData($conn, "tbl_doctors");
+function fetchServiceTableData($conn, $id)
+{
+  $sql = "SELECT * FROM tbl_price_packages WHERE service_id='$id' AND  status='Active'";
+  $result = $conn->query($sql);
+  $data = [];
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $data[] = $row;
+    }
+  }
+
+  return $data;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -278,7 +293,7 @@ $services = fetchTableData($conn, "tbl_services");
               </h5>
             </div>
           </div>
-          <a href="appointment.html" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" data-wow-delay="0.6s">Make Appointment</a>
+          <a href="user-appointment.php" class="btn btn-primary py-3 px-5 mt-4 wow zoomIn" data-wow-delay="0.6s">Make Appointment</a>
         </div>
         <div class="col-lg-5" style="min-height: 500px">
           <div class="position-relative h-100">
@@ -524,7 +539,7 @@ $services = fetchTableData($conn, "tbl_services");
               <p class="text-white mb-4">
                 
               </p>
-              <a href="appointment.html" class="btn btn-dark py-3 px-5 me-3">Appointment</a>
+              <a href="user-appointment.php" class="btn btn-dark py-3 px-5 me-3">Appointment</a>
               <a href="" class="btn btn-light py-3 px-5">Read More</a>
             </div>
           </div>
@@ -556,15 +571,20 @@ $services = fetchTableData($conn, "tbl_services");
           </div>
           <div class="col-lg-7">
             <div class="owl-carousel price-carousel wow zoomIn" data-wow-delay="0.9s">
+              <?php foreach ($services as $index => $service) : 
+              $serviceid=$service['service_id'];
+              $price_packages = fetchServiceTableData($conn,$serviceid);
+              foreach ($price_packages as $index => $price_package) {
+              ?>
               <div class="price-item pb-4">
                 <div class="position-relative">
-                  <img class="img-fluid rounded-top" src="img/price-1.jpg" alt="" />
+                  <img class="img-fluid rounded-top" src="<?php echo $service['service_image'] ?>" alt="" />
                   <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
-                    <h2 class="text-primary m-0">₹1500</h2>
+                    <h2 class="text-primary m-0">₹<?php echo $price_package['price'];?></h2>
                   </div>
                 </div>
                 <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
-                  <h4>Teeth Whitening</h4>
+                  <h4><?php echo $price_package['package_name'];?></h4>
                   <hr class="text-primary w-50 mx-auto mt-0" />
                   <div class="d-flex justify-content-between mb-3">
                     <span>Modern Equipment</span><i class="fa fa-check text-primary pt-1"></i>
@@ -578,7 +598,9 @@ $services = fetchTableData($conn, "tbl_services");
                   <a href="user-appointment.php" class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">Appointment</a>
                 </div>
               </div>
-              <div class="price-item pb-4">
+              <?php }endforeach; ?>
+            
+              <!--<div class="price-item pb-4">
                 <div class="position-relative">
                   <img class="img-fluid rounded-top" src="img/price-2.jpg" alt="" />
                   <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
@@ -645,7 +667,7 @@ $services = fetchTableData($conn, "tbl_services");
                   <a href="user-appointment.php" class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">Appointment</a>
                 </div>
                
-              </div>
+              </div>-->
             </div>
           </div>
         </div>
@@ -699,10 +721,11 @@ $services = fetchTableData($conn, "tbl_services");
               <a href="user-appointment.php" class="btn btn-primary py-3 px-5">Appointment</a>
             </div>
           </div>
+          <?php foreach ($doctors as $index => $doctor) : ?>
           <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
             <div class="team-item">
               <div class="position-relative rounded-top" style="z-index: 1">
-                <img class="img-fluid rounded-top w-100" src="img/team-1.jpg" alt="" />
+                <img class="img-fluid rounded-top w-100" src="<?php echo $doctor['doctor_image']; ?>" alt="not availabe " />
                 <div class="position-absolute top-100 start-50 translate-middle bg-light rounded p-2 d-flex">
                   <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-twitter fw-normal"></i></a>
                   <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
@@ -711,12 +734,13 @@ $services = fetchTableData($conn, "tbl_services");
                 </div>
               </div>
               <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
-                <h4 class="mb-2">Dr. Thomas </h4>
-                <p class="text-primary mb-0">Implant Surgeon</p>
+                <h4 class="mb-2">Dr. <?php echo $doctor['doctor_name']; ?> </h4>
+                <p class="text-primary mb-0">Qualification :<?php echo $doctor['qualification']; ?></p>
               </div>
             </div>
           </div>
-          <div class="col-lg-4 wow slideInUp" data-wow-delay="0.6s">
+          <?php endforeach; ?>
+          <!--<div class="col-lg-4 wow slideInUp" data-wow-delay="0.6s">
             <div class="team-item">
               <div class="position-relative rounded-top" style="z-index: 1">
                 <img class="img-fluid rounded-top w-100" src="img/team-2.jpg" alt="" />
@@ -732,7 +756,7 @@ $services = fetchTableData($conn, "tbl_services");
                 <p class="text-primary mb-0">Implant Surgeon</p>
               </div>
             </div>
-          </div>
+          </div>-->
           <!--<div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">
             <div class="team-item">
               <div class="position-relative rounded-top" style="z-index: 1">

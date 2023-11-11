@@ -411,7 +411,7 @@ if (isset($_POST['selectedTimeSlot'])) {
 
                                 <div class="col-12 col-sm-6 ">
                                     <select class="form-select bg-light border-0" name="service_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
-                                        <option value="default" selected>Choose Service</option>
+                                       
                                         <?php
                                         foreach ($services as $index => $service) :
 
@@ -428,7 +428,7 @@ if (isset($_POST['selectedTimeSlot'])) {
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <select class="form-select bg-light border-0" name="doctor_id" style="height:54px;" onchange="fetchAvailableTimeSlots()" required>
-                                        <option value="default" selected>Choose Doctor</option>
+                                        
                                         <?php
                                         foreach ($doctors as $index => $doctor) :
 
@@ -783,7 +783,6 @@ if (isset($_POST['selectedTimeSlot'])) {
 
                         // Display the response message in an alert
                         alert(response); // This will show the "Appointment booked successfully!" message
-                        var newUrl = 'package.php';
                         window.location.href = newUrl;
                     }
                 };

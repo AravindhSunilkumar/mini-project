@@ -280,6 +280,17 @@ if ((isset($_POST['book_now']) && ($_SERVER['REQUEST_METHOD'] === 'POST'))) {
                         $email = $_SESSION['email'];
                         if ($result3->num_rows > 0) {
                             echo "" . $patient_name . " is Already Book An Appointment on date " . $appointmentDate;
+                            
+                            echo "                                                                                                                                                                                                                          
+                            
+                            
+                            
+                            
+                            
+                                
+                                
+                                
+                            <p>window.location.href = 'user-appointments.php';<p>";
                             $stmt3->close();
                         } else {
 
