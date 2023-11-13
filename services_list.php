@@ -140,42 +140,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_status"])) {
 // Check if the form is submitted
 if (isset($_POST['Add_pack'])) {
     // Get the form data
-    $package_name = $_POST['package_name'];
-    $service_id = $_POST['service_id'];
-    $price = $_POST['price'];
+    $package_name = isset($_POST['package_name']) ? $_POST['package_name'] : "";
+    $service_id = isset($_POST['service_id']) ? $_POST['service_id'] : "";
+    $price = isset($_POST['price']) ? $_POST['price'] : "";
 
-    // Validate the data if needed
+    // Check if all required fields are set
+    if (!empty($package_name) && !empty($service_id) && !empty($price)) {
+        // Escape variables to prevent SQL injection
+        $package_name = $conn->real_escape_string($package_name);
+        $service_id = $conn->real_escape_string($service_id);
+        $price = $conn->real_escape_string($price);
 
-    // Insert data into the database
-    $inserted = insertData($conn, "tbl_packages", [
-        'package_name' => $package_name,
-        'service_id' => $service_id,
-        'price' => $price
-    ]);
+        // Your SQL query
+        $sql = "INSERT INTO tbl_price_packages (package_name, service_id, price) VALUES ('$package_name', '$service_id', '$price')";
 
-    // Check if the insertion was successful
-    if ($inserted) {
-        echo "Data inserted successfully!";
+        // Execute the SQL query
+        $result = $conn->query($sql);
+
+        // Check for success
+        if ($result) {
+            echo "Record inserted successfully";
+            header("Location: " . $_SERVER['PHP_SELF']);
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
     } else {
-        echo "Error inserting data.";
+        echo "Please fill in all required fields.";
     }
 }
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['package_id'])) {
+    $package_id = $_GET['package_id'];
 
-// Replace 'insertData' with your actual function to insert data into the database
-function insertData($conn, $tableName, $data)
-{
-    // Assuming you have a function to handle database insertions
-    // The function should handle SQL injection prevention (e.g., use prepared statements)
-    
-    $columns = implode(', ', array_keys($data));
-    $values = "'" . implode("', '", array_values($data)) . "'";
 
-    $sql = "INSERT INTO $tableName ($columns) VALUES ($values)";
 
-    // Execute the SQL query
-    $result = $conn->query($sql);
 
-    return $result;
+    // Delete the doctor from the database
+    $delete_sql = "DELETE FROM tbl_price_packages WHERE package_id = '$package_id'";
+    if ($conn->query($delete_sql) === TRUE) {
+        // Deletion successful
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    } else {
+        // Deletion failed
+        echo "Error deleting record: " . $conn->error;
+    }
 }
 
 
@@ -297,7 +305,7 @@ function insertData($conn, $tableName, $data)
         
     )">Edit</a>
 
-                                <a href="<?= $_SERVER["PHP_SELF"] ?>?action=delete&service_id=<?= $services['package_id']; ?>" class="btn btn-danger">Del</a>
+                                <a href="<?= $_SERVER["PHP_SELF"] ?>?action=delete&package_id=<?= $services['package_id']; ?>" class="btn btn-danger">Del</a>
                             </td>
 
                         </div>
@@ -357,12 +365,18 @@ function insertData($conn, $tableName, $data)
     </div>
 
     <!--add  new package-->
-    <div class="d-flex justify-content-center">
+    <div class=" " style="background-color: aquamarine;margin:20px;">
+        <div class="d-flex justify-content-center">
+            <center>
+                <h2>ADD NEW PACKAGE</h2>
+            </center>
+        </div>
+        <div class="d-flex justify-content-center">
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
             <label for="Packagename">Package Name</label>
-            <input type="text" name="package_name" id="packageName" required>
+            <input class=" bg-light border-0" type="text" name="package_name" id="packageName" required>
             <label for="servicename">Service Name</label>
-            <select class=" bg-light border-0" name="doctor_id" style="height:54px;"  required>
+            <select class=" bg-light border-0" name="service_id" style="height:54px;" required>
 
                 <?php
                 $servs = tableData($conn, "tbl_services");
@@ -379,9 +393,10 @@ function insertData($conn, $tableName, $data)
                 ?>
             </select>
             <label for="price">Price</label>
-            <input type="text" name="price" id="price" required>
-            <input type="submit" value="Submit" name="Add_pack">
+            <input class=" bg-light border-0" type="text" name="price" id="price" required>
+            <input type="submit" value="Submit" class="btn btn-primary py-2 px-4 ms-3" name="Add_pack">
         </form>
+        </div>
     </div>
 
     <script>

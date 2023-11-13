@@ -115,6 +115,14 @@ if (isset($_POST['update_image'])) {
   if ($_FILES['new_image']['error'] === UPLOAD_ERR_OK) {
     // Get the service ID from the form
     $service_id = $_POST['service_id'];
+    $get_image_sql = "SELECT service_image FROM tbl_services WHERE = '$service_id'";
+    $image_result = $conn->query($get_image_sql);
+    if ($image_result->num_rows === 1) {
+        $image_path = $image_result->fetch_assoc()['service_image'];
+        if ($image_path && file_exists($image_path)) {
+            unlink($image_path); // Delete the image file
+        }
+    }
 
     // Define the upload directory and target file name
     $upload_dir = 'img/service_images/';
