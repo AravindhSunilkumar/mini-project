@@ -783,6 +783,7 @@ if (isset($_POST['selectedTimeSlot'])) {
 
                         // Display the response message in an alert
                         alert(response); // This will show the "Appointment booked successfully!" message
+                        newUrl="package.php";
                         window.location.href = newUrl;
                     }
                 };

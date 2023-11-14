@@ -29,14 +29,14 @@ function addService()
             // File was successfully uploaded
             // Now insert the file address into the table
             $fileAddress = $targetDir . $newFilename;
-            if (isset($service_name) && isset($service_info) &&  isset($fileAddress) && isset($price)) {
+            if (isset($service_name) && isset($service_info) &&  isset($fileAddress)) {
 
               // Insert data into the table
-              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info,status,price ) 
-                    VALUES (?, ?, ?,'Active',?)";
+              $sql = "INSERT INTO tbl_services (service_name,service_image, additional_info,status) 
+                    VALUES (?, ?, ?,'Active')";
 
               $stmt = $conn->prepare($sql);
-              $stmt->bind_param("ssss", $service_name, $fileAddress, $service_info,$price);
+              $stmt->bind_param("sss", $service_name, $fileAddress, $service_info);
 
 
 
@@ -50,6 +50,7 @@ function addService()
               } else {
                 echo "Error inserting data: " . $stmt->error;
               }
+              
 
 
               $stmt->close();

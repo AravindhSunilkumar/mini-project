@@ -15,8 +15,30 @@ function fetchTableData($conn, $tableName)
 
   return $data;
 }
+
+function fetchData($conn, $tableName)
+{
+  $sql = "SELECT * FROM $tableName";
+  $result = $conn->query($sql);
+  $data = [];
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $data[] = $row;
+    }
+  }
+
+  return $data;
+}
+$questions = fetchData($conn, 'tbl_prebuild_questions');
+if (isset($_POST['add_question'])) {
+  $question = $_POST['question'];
+  $userid=$_SESSION['id'];
+  $sql = "insert into tbl_questions (user_id,question) values ('$userid','$question')";
+  $result = $conn->query($sql);
+}
 $services = fetchTableData($conn, "tbl_services");
-$doctors=fetchTableData($conn, "tbl_doctors");
+$doctors = fetchTableData($conn, "tbl_doctors");
 function fetchServiceTableData($conn, $id)
 {
   $sql = "SELECT * FROM tbl_price_packages WHERE service_id='$id' AND  status='Active'";
@@ -64,6 +86,78 @@ function fetchServiceTableData($conn, $id)
 
   <!-- Template Stylesheet -->
   <link href="css/style.css" rel="stylesheet" />
+  <style>
+    #chatbot-icon {
+      position: fixed;
+      bottom: 430px;
+      right: 20px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    #chatbot-box {
+      position: fixed;
+      bottom: 100px;
+      color: beige;
+      right: -394px;
+      /* Initially hidden off-screen */
+      width: 344px;
+      height: 400px;
+      background-color: #2196F3;
+      border: 1px solid #ccc;
+      transition: right 0.3s ease-in-out;
+      z-index: 998;
+      box-sizing: border-box;
+      overflow-y: auto;
+      /* Enable vertical scrolling */
+    }
+
+    #close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    #user-input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin: 0 10px 10px;
+      box-sizing: border-box;
+    }
+
+    .answer {
+      display: none;
+      margin: 10px;
+    }
+
+    @keyframes headShake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      10%,
+      30%,
+      50%,
+      70%,
+      90% {
+        transform: translateX(-10px);
+      }
+
+      20%,
+      40%,
+      60%,
+      80% {
+        transform: translateX(10px);
+      }
+    }
+
+    #chatbot-icon img {
+      animation: headShake 5s ease infinite;
+    }
+  </style>
 </head>
 
 <body>
@@ -108,6 +202,36 @@ function fetchServiceTableData($conn, $id)
     </div>
   </div>
   <!-- Topbar End -->
+  <!-- ChatBot-->
+  <div id="chatbot-icon" onclick="toggleChatbox()">
+    <img src="img/chatbot.png" alt="Chatbot Icon" width="50">
+  </div>
+
+  <div id="chatbot-box">
+    <div id="close-btn" onclick="toggleChatbox2()">X</div>
+    <p>Hello! I'm a Enamal.</p>
+    <?php foreach ($questions as $index => $question) : ?>
+
+
+
+    <button style=" margin-top: 12px;"onclick="showAnswer('<?php echo htmlspecialchars($question['prequestion_id'], ENT_QUOTES, 'UTF-8'); ?>')">
+        <?php echo $question['question']; ?>
+      </button>
+      <div id="answer_<?php echo $question['prequestion_id']; ?>" class="answer">
+        <?php echo "<p>".$question['answer']."</p>"; ?>
+      </div>
+
+    <?php endforeach; ?>
+
+    <!-- Input box for user questions -->
+    <div class="row">
+      <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+        <input type="text" id="user-input" style="margin-top:225px;" name="question" placeholder="Type your question...">
+        <input type="submit" value="Submit" name="add_question">
+      </form>
+    </div>
+  </div>
+  <!-- ChatBot End-->
 
   <!-- Navbar Start -->
   <nav class="bg-white navbar navbar-expand-lg navbar-light shadow-sm px-5 py-3 py-lg-0">
@@ -135,21 +259,21 @@ function fetchServiceTableData($conn, $id)
             <a href="appointment.php" class="dropdown-item">Appointment</a>
           </div>
         </div>-->
-        <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user'){?>
-         
-          
-          
+        <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
+
+
+
           <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-          <?php }elseif(isset($_SESSION['d']) && $_SESSION['user'] == 'd'){ ?>
-            <a href="doctor-patients.php?id=<?= 5 ?>" class="nav-item nav-link">Patients</a>
-            <?php  }else{ ?>
-              <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
-            <?php  } ?>
+        <?php } elseif (isset($_SESSION['d']) && $_SESSION['user'] == 'd') { ?>
+          <a href="doctor-patients.php?id=<?= 5 ?>" class="nav-item nav-link">Patients</a>
+        <?php  } else { ?>
+          <a href="user-appointment.php" class="nav-item nav-link">Appointments</a>
+        <?php  } ?>
 
 
-              
-            
-        
+
+
+
 
       </div>
       <?php if (isset($_SESSION['name'])) { ?>
@@ -163,8 +287,8 @@ function fetchServiceTableData($conn, $id)
       <?php } else { ?>
         <a href="signup.php" class="btn btn-primary py-2 px-4 ms-3">login/Sign UP</a>
       <?php } ?>
-      <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user'){?>
-      <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
+      <?php if (isset($_SESSION['user']) && $_SESSION['user'] == 'user') { ?>
+        <a href="user-appointment.php" class="btn btn-primary py-2 px-4 ms-3">Appointment</a>
       <?php } ?>
     </div>
   </nav>
@@ -204,12 +328,12 @@ function fetchServiceTableData($conn, $id)
               <h1 class="display-1 text-white mb-md-4 animated zoomIn">
                 Take The Best Quality Dental Treatment
               </h1>
-              <?php if((isset($_SESSION['user'])) &&( $_SESSION['user'] == 'd')){ ?>
-              <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
-              <?php }else{ ?>
-              <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
-              
-              <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+              <?php if ((isset($_SESSION['user'])) && ($_SESSION['user'] == 'd')) { ?>
+                <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
+              <?php } else { ?>
+                <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
+
+                <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
               <?php } ?>
             </div>
           </div>
@@ -224,12 +348,12 @@ function fetchServiceTableData($conn, $id)
               <h1 class="display-1 text-white mb-md-4 animated zoomIn">
                 Take The Best Quality Dental Treatment
               </h1>
-              <?php if((isset($_SESSION['user'])) &&( $_SESSION['user'] == 'd')){ ?>
-              <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
-              <?php }else{ ?>
-              <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
-              
-              <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+              <?php if ((isset($_SESSION['user'])) && ($_SESSION['user'] == 'd')) { ?>
+                <a href="doctor-patients.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">patients</a>
+              <?php } else { ?>
+                <a href="user-appointment.php" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
+
+                <a href="#about" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
               <?php } ?>
             </div>
           </div>
@@ -383,7 +507,7 @@ function fetchServiceTableData($conn, $id)
                   <div class="position-relative bg-primary rounded h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
                     <h3 class="text-white mb-3">Make Appointment</h3>
                     <p class="text-white mb-3">
-                      
+
                     </p>
                     <h2 class="text-white mb-0">+012 345 6789</h2>
                   </div>
@@ -536,7 +660,7 @@ function fetchServiceTableData($conn, $id)
                 We Offer The Best Quality Dental Services
               </h1>
               <p class="text-white mb-4">
-                
+
               </p>
               <a href="user-appointment.php" class="btn btn-dark py-3 px-5 me-3">Appointment</a>
               <a href="" class="btn btn-light py-3 px-5">Read More</a>
@@ -561,7 +685,7 @@ function fetchServiceTableData($conn, $id)
               </h1>
             </div>
             <p class="mb-4">
-              
+
             </p>
             <h5 class="text-uppercase text-primary wow fadeInUp" data-wow-delay="0.3s">
               Call for Appointment
@@ -570,35 +694,36 @@ function fetchServiceTableData($conn, $id)
           </div>
           <div class="col-lg-7">
             <div class="owl-carousel price-carousel wow zoomIn" data-wow-delay="0.9s">
-              <?php foreach ($services as $index => $service) : 
-              $serviceid=$service['service_id'];
-              $price_packages = fetchServiceTableData($conn,$serviceid);
-              foreach ($price_packages as $index => $price_package) {
+              <?php foreach ($services as $index => $service) :
+                $serviceid = $service['service_id'];
+                $price_packages = fetchServiceTableData($conn, $serviceid);
+                foreach ($price_packages as $index => $price_package) {
               ?>
-              <div class="price-item pb-4">
-                <div class="position-relative">
-                  <img class="img-fluid rounded-top" src="<?php echo $service['service_image'] ?>" alt="" />
-                  <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
-                    <h2 class="text-primary m-0">₹<?php echo $price_package['price'];?></h2>
+                  <div class="price-item pb-4">
+                    <div class="position-relative">
+                      <img class="img-fluid rounded-top" src="<?php echo $service['service_image'] ?>" alt="" />
+                      <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle" style="z-index: 2">
+                        <h2 class="text-primary m-0">₹<?php echo $price_package['price']; ?></h2>
+                      </div>
+                    </div>
+                    <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
+                      <h4><?php echo $price_package['package_name']; ?></h4>
+                      <hr class="text-primary w-50 mx-auto mt-0" />
+                      <div class="d-flex justify-content-between mb-3">
+                        <span>Modern Equipment</span><i class="fa fa-check text-primary pt-1"></i>
+                      </div>
+                      <div class="d-flex justify-content-between mb-3">
+                        <span>Professional Dentist</span><i class="fa fa-check text-primary pt-1"></i>
+                      </div>
+                      <div class="d-flex justify-content-between mb-2">
+                        <span> Call Support</span><i class="fa fa-check text-primary pt-1"></i>
+                      </div>
+                      <a href="user-appointment.php" class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">Appointment</a>
+                    </div>
                   </div>
-                </div>
-                <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
-                  <h4><?php echo $price_package['package_name'];?></h4>
-                  <hr class="text-primary w-50 mx-auto mt-0" />
-                  <div class="d-flex justify-content-between mb-3">
-                    <span>Modern Equipment</span><i class="fa fa-check text-primary pt-1"></i>
-                  </div>
-                  <div class="d-flex justify-content-between mb-3">
-                    <span>Professional Dentist</span><i class="fa fa-check text-primary pt-1"></i>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span> Call Support</span><i class="fa fa-check text-primary pt-1"></i>
-                  </div>
-                  <a href="user-appointment.php" class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">Appointment</a>
-                </div>
-              </div>
-              <?php }endforeach; ?>
-            
+              <?php }
+              endforeach; ?>
+
               <!--<div class="price-item pb-4">
                 <div class="position-relative">
                   <img class="img-fluid rounded-top" src="img/price-2.jpg" alt="" />
@@ -721,23 +846,23 @@ function fetchServiceTableData($conn, $id)
             </div>
           </div>
           <?php foreach ($doctors as $index => $doctor) : ?>
-          <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
-            <div class="team-item">
-              <div class="position-relative rounded-top" style="z-index: 1">
-                <img class="img-fluid rounded-top w-100" src="<?php echo $doctor['doctor_image']; ?>" alt="not availabe " />
-                <div class="position-absolute top-100 start-50 translate-middle bg-light rounded p-2 d-flex">
-                  <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-twitter fw-normal"></i></a>
-                  <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
-                  <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-linkedin-in fw-normal"></i></a>
-                  <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-instagram fw-normal"></i></a>
+            <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
+              <div class="team-item">
+                <div class="position-relative rounded-top" style="z-index: 1">
+                  <img class="img-fluid rounded-top w-100" src="<?php echo $doctor['doctor_image']; ?>" alt="not availabe " />
+                  <div class="position-absolute top-100 start-50 translate-middle bg-light rounded p-2 d-flex">
+                    <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-twitter fw-normal"></i></a>
+                    <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-facebook-f fw-normal"></i></a>
+                    <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-linkedin-in fw-normal"></i></a>
+                    <a class="btn btn-primary btn-square m-1" href="#"><i class="fab fa-instagram fw-normal"></i></a>
+                  </div>
+                </div>
+                <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
+                  <h4 class="mb-2">Dr. <?php echo $doctor['doctor_name']; ?> </h4>
+                  <p class="text-primary mb-0">Qualification :<?php echo $doctor['qualification']; ?></p>
                 </div>
               </div>
-              <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
-                <h4 class="mb-2">Dr. <?php echo $doctor['doctor_name']; ?> </h4>
-                <p class="text-primary mb-0">Qualification :<?php echo $doctor['qualification']; ?></p>
-              </div>
             </div>
-          </div>
           <?php endforeach; ?>
           <!--<div class="col-lg-4 wow slideInUp" data-wow-delay="0.6s">
             <div class="team-item">
@@ -817,7 +942,7 @@ function fetchServiceTableData($conn, $id)
       <div class="container">
         <div class="bg-primary p-5">
           <form class="mx-auto" style="max-width: 600px">
-           <!-- <div class="input-group">
+            <!-- <div class="input-group">
               <input type="text" class="form-control border-white p-3" placeholder="Your Email" />
               <button class="btn btn-dark px-4">Sign Up</button>
             </div>-->
@@ -861,7 +986,7 @@ function fetchServiceTableData($conn, $id)
             <h3 class="text-white mb-4">Get In Touch</h3>
             <p class="mb-2">
               <i class="bi bi-geo-alt text-primary me-2"></i>Tripunithura. 3.0. Layam Road, Tripunithura, Ernakulam - 682301 (Near Chakkankulangara Temple).
-          
+
             </p>
             <p class="mb-2">
               <i class="bi bi-envelope-open text-primary me-2"></i>dental@gmail.com
@@ -907,6 +1032,40 @@ function fetchServiceTableData($conn, $id)
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
+    <script>
+      function toggleChatbox() {
+        var chatbox = document.getElementById("chatbot-box");
+        var chaticon = document.getElementById("chatbot-icon");
+        chaticon.style.display = 'none';
+        var currentRight = parseInt(window.getComputedStyle(chatbox).right);
+
+        if (currentRight === 0) {
+          chatbox.style.right = "-394px";
+        } else {
+          chatbox.style.right = "0";
+        }
+      }
+
+      function toggleChatbox2() {
+        var chatbox = document.getElementById("chatbot-box");
+        var chaticon = document.getElementById("chatbot-icon");
+        chaticon.style.display = ''; // Corrected from 'display' to 'none'
+        var currentRight = parseInt(window.getComputedStyle(chatbox).right);
+
+        if (currentRight === 0) {
+          chatbox.style.right = "-394px";
+        } else {
+          chatbox.style.right = "0";
+        }
+      }
+
+      function showAnswer(questionId) {
+        var answerDiv = document.getElementById("answer_" + questionId);
+        // Toggle the display property
+        answerDiv.style.display = answerDiv.style.display === 'none' ? 'block' : 'none';
+      }
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>

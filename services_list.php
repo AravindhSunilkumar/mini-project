@@ -255,8 +255,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['packa
 
                         <td>
                             <div class="onoffswitch">
-                                <input type="checkbox" class="onoffswitch-checkbox" id="serviceSwitch<?= $services['service_id']; ?>" <?= $services['status'] === 'Active' ? 'checked' : ''; ?>>
-                                <label class="onoffswitch-label swi" for="serviceSwitch<?= $services['service_id']; ?>" onclick="toggleServiceStatus(<?= $services['service_id']; ?>, '<?= $services['status']; ?>')">
+                                <input type="checkbox" class="onoffswitch-checkbox" id="serviceSwitch<?= $services['package_id']; ?>" <?= $services['status'] === 'Active' ? 'checked' : ''; ?>>
+                                <label class="onoffswitch-label swi" for="serviceSwitch<?= $services['package_id']; ?>" onclick="toggleServiceStatus(<?= $services['package_id']; ?>, '<?= $services['status']; ?>')">
                                     <span class="onoffswitch-inner"></span>
                                     <span class="onoffswitch-switch"></span>
                                 </label>
@@ -264,7 +264,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['packa
                         </td>
                         <!-- JavaScript to handle status toggle -->
                         <script>
-                            function toggleServiceStatus(serviceId, currentStatus) {
+                            function toggleServiceStatus(packageId, currentStatus) {
                                 var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
 
                                 var confirmation = confirm("Are you sure you want to change the status to " + newStatus + "?");
@@ -274,7 +274,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['packa
                                         type: "POST",
                                         url: "update_status.php", // Replace with the actual PHP script that updates the status
                                         data: {
-                                            service_id: serviceId,
+                                            package_id: packageId,
                                             new_status: newStatus
                                         },
                                         success: function(response) {
@@ -286,6 +286,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['packa
                                             }
                                         }
                                     });
+                                }else{
+                                    location.reload();
                                 }
                             }
                         </script>

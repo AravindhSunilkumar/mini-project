@@ -626,8 +626,9 @@ if (isset($_POST['pay'])) {
                                     <th>Package Name</th>
                                     <th>Total Amount </th>
                                     <th>Due Amount</th>
-                                    <th>Appointment Status</th>
                                     <th>Pay</th>
+                                    <th>Appointment Status</th>
+
 
 
                                 </tr>
@@ -704,18 +705,18 @@ if (isset($_POST['pay'])) {
                                                 echo $due;
                                                 //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
-                                            <td><?php
-                                                $status = $appmt['status'];
-                                                echo $status;
-                                                //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
-                                                ?></td>
+                                            
                                             <td><?php
                                                 if ($appmt['due_amount'] == '0') {
                                                     echo 'Completed';
                                                 } else {
-
                                                     echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 }
+                                                ?></td>
+                                                <td><?php
+                                                $status = $appmt['status'];
+                                                echo $status;
+                                                //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
 
                     </div>

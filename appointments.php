@@ -105,28 +105,38 @@ if (isset($_POST['update_status'])) {
         endforeach;
       }
     }
-    $subject = "Subject: Confirmation of Your " . $status . " Appointment Request";
-    $body = "Dear " . $p . ",\nI hope this email finds you in good health and high spirits. We are pleased to inform you that your requested appointment for " . $sn . " service has been " . $status . ". Your dental care is of the utmost importance to us, and we are committed to providing you with the best possible treatment.\n\n\n
-    Here are the details of your " . $status . " appointment:\n\n 
-    
-    Date: " . $date . "\n
-    Time: " . $time . "\n
-    Dental Service: " . $sn . "\n\n
-    
-    Please note that we will do our best to ensure your visit is as comfortable and convenient as possible. To make your appointment go smoothly, kindly remember to bring any relevant documents or records, and arrive a few minutes early.\n
-    
-    If you have any questions or need to make any changes to your appointment, please do not hesitate to contact our clinic's reception at 7567467667 or reply to this email.\n
-    
-    We look forward to seeing you on the scheduled date and time. Your oral health is our priority, and we are here to provide you with the care you deserve.\n
-    
-    Thank you for choosing Smaile 32 for your dental needs. We value your trust and confidence in our services.\n
-    
-    Warm regards,\n\n
-    
-    Dental Group\n
-    Smile 32
-    
-    ";
+    if ($status == 'rejected') {
+      $subject = "Subject: Rejection of Your " . $status . " Appointment Request";
+      $body = "Dear " . $p . ",\nWe regret to inform you that your requested appointment for " . $sn . " service has been rejected. We appreciate your understanding and apologize for any inconvenience this may cause.\n\n\n
+          Unfortunately, we are unable to accommodate your appointment request at this time. If you have any questions or concerns, please feel free to contact our clinic's reception at 7567467667 or reply to this email.\n\n
+          We understand the importance of your dental care, and we hope to have the opportunity to serve you in the future.\n\n
+          Thank you for considering Smaile 32 for your dental needs. We appreciate your interest and look forward to the possibility of assisting you in the future.\n\n
+          Warm regards,\n\n
+          Dental Group\nSmile 32";
+    } else {
+      $subject = "Subject: Confirmation of Your " . $status . " Appointment Request";
+      $body = "Dear " . $p . ",\nI hope this email finds you in good health and high spirits. We are pleased to inform you that your requested appointment for " . $sn . " service has been " . $status . ". Your dental care is of the utmost importance to us, and we are committed to providing you with the best possible treatment.\n\n\n
+      Here are the details of your " . $status . " appointment:\n\n 
+      
+      Date: " . $date . "\n
+      Time: " . $time . "\n
+      Dental Service: " . $sn . "\n\n
+      
+      Please note that we will do our best to ensure your visit is as comfortable and convenient as possible. To make your appointment go smoothly, kindly remember to bring any relevant documents or records, and arrive a few minutes early.\n
+      
+      If you have any questions or need to make any changes to your appointment, please do not hesitate to contact our clinic's reception at 7567467667 or reply to this email.\n
+      
+      We look forward to seeing you on the scheduled date and time. Your oral health is our priority, and we are here to provide you with the care you deserve.\n
+      
+      Thank you for choosing Smaile 32 for your dental needs. We value your trust and confidence in our services.\n
+      
+      Warm regards,\n\n
+      
+      Dental Group\n
+      Smile 32
+      
+      ";
+    }
     email($email, $subject, $body);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
@@ -164,8 +174,8 @@ if (isset($_POST['filter'])) {
 
 // Display based on the "display" parameter
 if (isset($_GET['display'])) {
-   $filter_date = date("Y-m-d"); // Example format: 2023-10-29 
-          
+  $filter_date = date("Y-m-d"); // Example format: 2023-10-29 
+
   $appmts = fetchTableData($conn, "tbl_appointments");
 }
 
@@ -272,7 +282,7 @@ if (isset($_GET['display'])) {
       </form>
       <div>
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
-          
+
           <label for="filter">filter By Date</label>
           <input type="date" name="filter_date" value="<?php echo $filter_date; ?>">
           <input type="submit" name="filter" value="filter">
@@ -337,6 +347,7 @@ if (isset($_GET['display'])) {
 
                       ?></td>
                   <td><?php
+
                       $p_email = $appmt['patient_email'];
                       echo $p_email;
                       ?></td>
@@ -446,9 +457,7 @@ if (isset($_GET['display'])) {
             <center>
               <h2 class="mt-5">Appointment </h2>
             </center>
-            <form action="process_appointment.php" method="POST" style="color: black;
-              text-align: center;
-               font-family: sans-serif;margin-top: 55px;">
+            <form action="process_appointment.php" method="POST" style="color: black;text-align: center; font-family: sans-serif;margin-top: 55px;">
               <div class="row box-space">
                 <div class="form-group">
                   <label for="name">Your Name:</label>

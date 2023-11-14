@@ -205,7 +205,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['docto
                             </td>
                             <!-- JavaScript to handle status toggle -->
                             <script>
-                                function toggleServiceStatus(doctorId, currentStatus) {
+                                function toggleServiceStatus(serviceId, currentStatus) {
                                     var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
 
                                     var confirmation = confirm("Are you sure you want to change the status to " + newStatus + "?");
@@ -227,6 +227,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['docto
                                                 }
                                             }
                                         });
+                                    }else{
+                                        location.reload();
                                     }
                                 }
                             </script>

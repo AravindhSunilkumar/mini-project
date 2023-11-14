@@ -74,6 +74,35 @@ if (isset($_POST['service_id']) && isset($_POST['new_status'])) {
         $conn->close();
     }
 }
+//service price update
+if (isset($_POST['package_id']) && isset($_POST['new_status'])) {
+    $package_id = $_POST['package_id'];
+    $new_status = $_POST['new_status'];
+
+    // Update the service status in the tbl_services table
+    $update_services_sql = "UPDATE tbl_price_packages SET status = ? WHERE package_id = ?";
+    $stmt_services = $conn->prepare($update_services_sql);
+    $stmt_services->bind_param("si", $new_status, $package_id);
+
+    
+
+    try {
+        if ($stmt_services->execute() ) {
+            $conn->commit();
+            echo 'success'; // Send a success response to the AJAX request
+        } else {
+            throw new Exception("Error updating status.");
+        }
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo "Error updating status: " . $e->getMessage();
+    } finally {
+        $stmt_services->close();
+       
+        $conn->close();
+    }
+}
+
 function timeFetch($s, $e)
 {
     // Define the start and end times
@@ -183,7 +212,7 @@ if (isset($_POST['serviceId']) == "default") {
                                 echo "";
                             } else {
                                 $htmlContent .= '<div class="col-3" style="width:207px;">';
-                                $htmlContent .= '<input type="radio" class="btn btn-primary py-2 px-4 ms-3 time-slot-button" value="' . $timeSlot . '" style="height:81%;font-size:x-small" name="time" > <label for="" style="margin-left:2px;margin-top:7px;color:#fff;">' . $timeSlot . '</label>';
+                                $htmlContent .= '<input type="radio" class="btn btn-primary py-2 px-4 ms-3 time-slot-button" value="' . $timeSlot . '" style="height:81%;font-size:x-small" name="time" required> <label for="" style="margin-left:2px;margin-top:7px;color:#fff;">' . $timeSlot . '</label>';
                                 $htmlContent .= '</div>';
                             }
                         }
