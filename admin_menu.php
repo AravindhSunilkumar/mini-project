@@ -53,30 +53,38 @@ include("connection.php");
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Doctors</a>
                     <div class="dropdown-menu m-0">
-                        <a href="add_doctors.php" class="dropdown-item">-Add Doctors</a>
-                        <a href="doctors_list.php" class="dropdown-item">-List Doctors</a>
+                        <a href="add_doctors.php" class="dropdown-item">Add Doctors</a>
+                        <a href="doctors_list.php" class="dropdown-item">List Doctors</a>
                     </div>
                 </div>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Patients</a>
                     <div class="dropdown-menu m-0">
                         <!-- Set the value of $patient in the href attribute -->
-                        <a href="add_patient.php" class="dropdown-item">-Add Patients</a>
-                        <a href="patients_list.php" class="dropdown-item">-List patients</a>
+                        <a href="add_patient.php" class="dropdown-item">Add Patients</a>
+                        <a href="patients_list.php" class="dropdown-item">List patients</a>
                     </div>
                 </div>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
                     <div class="dropdown-menu m-0">
                         <!-- Set the value of $patient in the href attribute -->
-                        <a href="services.php" class="dropdown-item">-Add Services</a>
-                        <a href="services_list.php" class="dropdown-item">-Services Price List  </a>
+                        <a href="services.php" class="dropdown-item">Add Services</a>
+                        <a href="services_list.php" class="dropdown-item">Services Price List  </a>
                     </div>
                 </div>
 
                 <!--<a href="services.html" class="nav-item nav-link" data-section="content-patient">Services</a>-->
                 <a href="appointments.php?display=1" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
-                <!--<a href="Service.php" class="nav-item nav-link" data-section="content-services">Services</a>-->
+              <a href="questions.php" class="nav-item nav-link" data-section="content-services">Questions</a>
+              <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Questions</a>
+                    <div class="dropdown-menu m-0">
+                        <!-- Set the value of $patient in the href attribute -->
+                        <a href="user-questions.php" class="dropdown-item">User Questions</a>
+                        <a href="questions.php" class="dropdown-item">Pre Build Questions</a>
+                    </div>
+                </div>
                 
             </div>
 

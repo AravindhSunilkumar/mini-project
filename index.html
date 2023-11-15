@@ -53,6 +53,17 @@ function fetchServiceTableData($conn, $id)
 
   return $data;
 }
+  $userid=isset($_SESSION['id'])?$_SESSION['id']:"";
+  $sql = "SELECT * FROM tbl_questions WHERE user_id='$userid'";
+  $result = $conn->query($sql);
+  $replys = [];
+  $count = 0;
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $count++;
+      $replys[] = $row;
+    }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -222,12 +233,23 @@ function fetchServiceTableData($conn, $id)
       </div>
 
     <?php endforeach; ?>
+    <div>
+      <?php 
+      if(!empty($replys)) {
+      foreach ($replys as $index => $reply) : ?>
+      <p><?php echo $reply['question']; ?></p>
+      <p><?php echo $reply['reply']; ?></p>
+      <?php  endforeach; }
+      echo $count;?>
+    </div>
 
-    <!-- Input box for user questions -->
+     <!--Input box for user questions -->
     <div class="row">
       <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
-        <input type="text" id="user-input" style="margin-top:225px;" name="question" placeholder="Type your question...">
-        <input type="submit" value="Submit" name="add_question">
+        <input type="text" id="user-input"  name="question" placeholder="Type your question...">
+        <div class="text-center">
+        <input type="submit" value="Submit" class="btn btn-success" name="add_question">
+      </div>
       </form>
     </div>
   </div>
