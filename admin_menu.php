@@ -76,7 +76,7 @@ include("connection.php");
 
                 <!--<a href="services.html" class="nav-item nav-link" data-section="content-patient">Services</a>-->
                 <a href="appointments.php?display=1" class="nav-item nav-link" data-section="content-appointment">Appointments</a>
-              <a href="questions.php" class="nav-item nav-link" data-section="content-services">Questions</a>
+              
               <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Questions</a>
                     <div class="dropdown-menu m-0">
@@ -85,6 +85,7 @@ include("connection.php");
                         <a href="questions.php" class="dropdown-item">Pre Build Questions</a>
                     </div>
                 </div>
+                <a href="user-feedbacks.php" class="nav-item nav-link" data-section="content-services">Feedbacks</a>
                 
             </div>
 

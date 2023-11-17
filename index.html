@@ -15,6 +15,7 @@ function fetchTableData($conn, $tableName)
 
   return $data;
 }
+$feedbacks = fetchTableData($conn, "tbl_feedbacks");
 
 function fetchData($conn, $tableName)
 {
@@ -33,7 +34,7 @@ function fetchData($conn, $tableName)
 $questions = fetchData($conn, 'tbl_prebuild_questions');
 if (isset($_POST['add_question'])) {
   $question = $_POST['question'];
-  $userid=$_SESSION['id'];
+  $userid = $_SESSION['id'];
   $sql = "insert into tbl_questions (user_id,question) values ('$userid','$question')";
   $result = $conn->query($sql);
 }
@@ -53,17 +54,34 @@ function fetchServiceTableData($conn, $id)
 
   return $data;
 }
-  $userid=isset($_SESSION['id'])?$_SESSION['id']:"";
-  $sql = "SELECT * FROM tbl_questions WHERE user_id='$userid'";
-  $result = $conn->query($sql);
-  $replys = [];
-  $count = 0;
+$userid = isset($_SESSION['id']) ? $_SESSION['id'] : "";
+$sql = "SELECT * FROM tbl_questions WHERE user_id='$userid'";
+$result = $conn->query($sql);
+$replys = [];
+$count = 0;
+if ($result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $count++;
+    $replys[] = $row;
+  }
+}
+
+if(isset($_POST['add_feedback'])){
+  $userid = isset($_SESSION['id']) ? $_SESSION['id'] : "";
+  $feedback=$_POST['feedback'];
+  $sqlcheck="SELECT * FROM tbl_questions WHERE user_id='$userid'";
+  $result = $conn->query($sqlcheck);
   if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-      $count++;
-      $replys[] = $row;
+    $patient_id=$row['patient_id'];
     }
+    $sql="INSERT INTO tb_feedbacks (patient_id,feedback,status) VALUES('$patient_id','$feedback','Active')";
+    $result = $conn->query($sql);
+  }else {
+    echo "<script>alert('choose a service first');</script>";
   }
+ 
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -168,6 +186,21 @@ function fetchServiceTableData($conn, $id)
     #chatbot-icon img {
       animation: headShake 5s ease infinite;
     }
+
+    .notification {
+      background: #ff8401;
+      font-size: smaller;
+      color: #2b2929;
+      width: 22px;
+      height: 22px;
+      margin-top: -13px;
+      text-align: center;
+      border-radius: 90%;
+      padding: 5px 8px;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   </style>
 </head>
 
@@ -215,8 +248,11 @@ function fetchServiceTableData($conn, $id)
   <!-- Topbar End -->
   <!-- ChatBot-->
   <div id="chatbot-icon" onclick="toggleChatbox()">
+
     <img src="img/chatbot.png" alt="Chatbot Icon" width="50">
+    <span class="notification"><?php echo $count; ?></span>
   </div>
+
 
   <div id="chatbot-box">
     <div id="close-btn" onclick="toggleChatbox2()">X</div>
@@ -225,31 +261,32 @@ function fetchServiceTableData($conn, $id)
 
 
 
-    <button style=" margin-top: 12px;"onclick="showAnswer('<?php echo htmlspecialchars($question['prequestion_id'], ENT_QUOTES, 'UTF-8'); ?>')">
+      <button style=" margin-top: 12px;" onclick="showAnswer('<?php echo htmlspecialchars($question['prequestion_id'], ENT_QUOTES, 'UTF-8'); ?>')">
         <?php echo $question['question']; ?>
       </button>
       <div id="answer_<?php echo $question['prequestion_id']; ?>" class="answer">
-        <?php echo "<p>".$question['answer']."</p>"; ?>
+        <?php echo "<p>" . $question['answer'] . "</p>"; ?>
       </div>
 
     <?php endforeach; ?>
     <div>
-      <?php 
-      if(!empty($replys)) {
-      foreach ($replys as $index => $reply) : ?>
-      <p><?php echo $reply['question']; ?></p>
-      <p><?php echo $reply['reply']; ?></p>
-      <?php  endforeach; }
-      echo $count;?>
+      <?php
+      if (!empty($replys)) {
+        foreach ($replys as $index => $reply) : ?>
+          <p><?php echo 'Question : ' . $reply['question']; ?></p>
+          <p><?php echo 'Response : ' . $reply['reply']; ?></p>
+      <?php endforeach;
+      }
+      echo $count; ?>
     </div>
 
-     <!--Input box for user questions -->
+    <!--Input box for user questions -->
     <div class="row">
       <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
-        <input type="text" id="user-input"  name="question" placeholder="Type your question...">
+        <input type="text" id="user-input" name="question" placeholder="Type your question...">
         <div class="text-center">
-        <input type="submit" value="Submit" class="btn btn-success" name="add_question">
-      </div>
+          <input type="submit" value="Submit" class="btn btn-success" name="add_question">
+        </div>
       </form>
     </div>
   </div>
@@ -450,64 +487,7 @@ function fetchServiceTableData($conn, $id)
   </div>
   <!-- About End -->
 
-  <!-- Appointment Start 
-    <div class="container-fluid bg-primary bg-appointment my-5 wow fadeInUp" data-wow-delay="0.1s">
-        <div class="container">
-            <div class="row gx-5">
-                <div class="col-lg-6 py-5">
-                    <div class="py-5">
-                        <h1 class="display-5 text-white mb-4">We Are A Certified and Award Winning Dental Clinic You Can Trust</h1>
-                        <p class="text-white mb-0">Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum. Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit. Sea dolore sanctus sed et. Takimata takimata sanctus sed.</p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
-                        <h1 class="text-white mb-4">Make Appointment</h1>
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-light border-0" style="height: 55px;">
-                                        <option selected>Select A Service</option>
-                                        <option value="1">Service 1</option>
-                                        <option value="2">Service 2</option>
-                                        <option value="3">Service 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select bg-light border-0" style="height: 55px;">
-                                        <option selected>Select Doctor</option>
-                                        <option value="1">Doctor 1</option>
-                                        <option value="2">Doctor 2</option>
-                                        <option value="3">Doctor 3</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control bg-light border-0" placeholder="Your Email" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="date" id="date1" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-light border-0 datetimepicker-input" placeholder="Appointment Date" data-target="#date1" data-toggle="datetimepicker" style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <div class="time" id="time1" data-target-input="nearest">
-                                        <input type="text" class="form-control bg-light border-0 datetimepicker-input" placeholder="Appointment Time" data-target="#time1" data-toggle="datetimepicker" style="height: 55px;">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-dark w-100 py-3" type="submit">Make Appointment</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-     Appointment End -->
+
 
   <!-- Service Start -->
   <div class="container-fluid py-5 wow fadeInUp" id="services" data-wow-delay="0.1s">
@@ -821,20 +801,22 @@ function fetchServiceTableData($conn, $id)
     </div>
     <!-- Pricing End -->
 
-    <!-- Testimonial Start 
+    <!-- Testimonial Start -->
     <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
       <div class="container py-5">
         <div class="row justify-content-center">
           <div class="col-lg-7">
             <div class="owl-carousel testimonial-carousel rounded p-5 wow zoomIn" data-wow-delay="0.6s">
-              <div class="testimonial-item text-center text-white">
-                <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-1.jpg" alt="" />
-                <p class="fs-5">
-                  
-                </p>
-                <hr class="mx-auto w-25" />
-                <h4 class="text-white mb-0">Client Name</h4>
-              </div>
+              <?php foreach ($feedbacks as $index => $feedback) : ?>
+                <div class="testimonial-item text-center text-white">
+                  <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-1.jpg" alt="" />
+                  <p class="fs-5">
+
+                  </p>
+                  <hr class="mx-auto w-25" />
+                  <h4 class="text-white mb-0">Client Name</h4>
+                </div>
+              <?php endforeach; ?>
               <div class="testimonial-item text-center text-white">
                 <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-2.jpg" alt="" />
                 <p class="fs-5">
@@ -850,7 +832,38 @@ function fetchServiceTableData($conn, $id)
         </div>
       </div>
     </div>
-     Testimonial End -->
+    <!--Testimonial End -->
+    <!-- Appointment Start -->
+    <div class="container-fluid bg-primary bg-appointment my-5 wow fadeInUp" data-wow-delay="0.1s">
+      <div class="container">
+        <div class="row gx-5">
+          <div class="col-lg-6 py-5">
+            <div class="py-5">
+              <h1 class="display-5 text-white mb-4">Your smile is our priority! </h1>
+              <p class="text-white mb-0">Share your experience and help us continue providing exceptional dental care. Your feedback is valuable in our mission to create healthier, happier smiles.Response to your Feedbacks will be sent via email. Share your thoughts today!</p>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+              <h1 class="text-white mb-4">Share Your feedbacks</h1>
+              <form action="<?php $_SERVER['PHP_SELF']; ?>" method="post">
+                <div class="row g-3">
+
+                  <div class="col-12 col-sm-12">
+                    <textarea type="text" class="form-control bg-light border-0" placeholder="Your Name" name="feedback" style="height: 55px;">
+                    </textarea>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn btn-dark w-100 py-3" type="add_feedback">Share With Us</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Appointment End -->
 
     <!-- Team Start -->
     <div class="container-fluid py-5" id="dentist" style="background-color: #f57e57">
