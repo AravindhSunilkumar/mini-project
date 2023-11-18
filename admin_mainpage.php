@@ -142,15 +142,31 @@ if ($result3) {
                         </div>
                     </a>
                 </div>
+
+            </div>
+            <div class="row">
+                <div class="col" style="background-color: #006ccb; margin: 10px;">
+                    <a href="user-questions.php">
+                        <div class="appo" style="margin-top: 22px;">
+                            <center>
+                                <h3 class="text-uppercase">Users questions</h3>
+                            </center>
+                            
+                            <center>
+                                <img src="img/problem.png" alt="" style="width: 216px;height: 186px;margin-left: 63px;margin-top: 9px;">
+                            </center>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
 
     </div>
     <div>
-    <h2 style="display: flex;justify-content: center;">Clinic Growth on Pie Chart</h2>
-        </div>
+        <h2 style="display: flex;justify-content: center;">Clinic Growth on Pie Chart</h2>
+    </div>
     <div style="width: 86%;margin: 10px;margin-left: 99px;display: flex;justify-content: center;">
-        
+
         <?php include('pieChart.php'); ?>
 
     </div>

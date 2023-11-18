@@ -1,6 +1,8 @@
 <?php
 session_start();
 include("connection.php");
+global $count;
+$count = 0;
 function fetchTableData($conn, $tableName)
 {
   $sql = "SELECT * FROM $tableName WHERE status='Active'";
@@ -19,7 +21,8 @@ $feedbacks = fetchTableData($conn, "tbl_feedbacks");
 
 function fetchData($conn, $tableName)
 {
-  $sql = "SELECT * FROM $tableName";
+
+  $sql = "SELECT * FROM $tableName ";
   $result = $conn->query($sql);
   $data = [];
 
@@ -31,12 +34,14 @@ function fetchData($conn, $tableName)
 
   return $data;
 }
+
 $questions = fetchData($conn, 'tbl_prebuild_questions');
 if (isset($_POST['add_question'])) {
   $question = $_POST['question'];
   $userid = $_SESSION['id'];
   $sql = "insert into tbl_questions (user_id,question) values ('$userid','$question')";
   $result = $conn->query($sql);
+  header('location:index.php');
 }
 $services = fetchTableData($conn, "tbl_services");
 $doctors = fetchTableData($conn, "tbl_doctors");
@@ -54,33 +59,50 @@ function fetchServiceTableData($conn, $id)
 
   return $data;
 }
-$userid = isset($_SESSION['id']) ? $_SESSION['id'] : "";
-$sql = "SELECT * FROM tbl_questions WHERE user_id='$userid'";
-$result = $conn->query($sql);
-$replys = [];
-$count = 0;
-if ($result->num_rows > 0) {
-  while ($row = $result->fetch_assoc()) {
-    $count++;
-    $replys[] = $row;
-  }
-}
-
-if(isset($_POST['add_feedback'])){
-  $userid = isset($_SESSION['id']) ? $_SESSION['id'] : "";
-  $feedback=$_POST['feedback'];
-  $sqlcheck="SELECT * FROM tbl_questions WHERE user_id='$userid'";
-  $result = $conn->query($sqlcheck);
+if (isset($_SESSION['id'])) {
+  $userid = $_SESSION['id'];
+  $sql = "SELECT * FROM tbl_questions WHERE user_id='$userid'";
+  $result = $conn->query($sql);
+  $replys = [];
+  $count = 0;
   if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-    $patient_id=$row['patient_id'];
+      $count++;
+      $replys[] = $row;
     }
-    $sql="INSERT INTO tb_feedbacks (patient_id,feedback,status) VALUES('$patient_id','$feedback','Active')";
-    $result = $conn->query($sql);
-  }else {
-    echo "<script>alert('choose a service first');</script>";
   }
- 
+}
+function name($conn,$pat_id){
+  $sql = "SELECT * FROM tbl_patient WHERE patient_id='$pat_id'";
+  $result = $conn->query($sql);
+  
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $patient_name= $row['full_name'];
+    }
+  }
+  return $patient_name;
+}
+if (isset($_POST['add_feedback'])) {
+  if (isset($_SESSION['id'])) {
+    $feedback = $_POST['feedback'];
+    $sqlcheck = "SELECT * FROM tbl_appointments WHERE user_id='$userid'";
+    $result = $conn->query($sqlcheck);
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        $patient_id = $row['patient_id'];
+      }
+      $patient_name=name($conn,$patient_id);
+
+      $sql = "INSERT INTO tbl_feedbacks (patient_name,feedback,status) VALUES('$patient_name','$feedback','Active')";
+      $result = $conn->query($sql);
+      header('location: index.php');
+    } else {
+      echo '<script>alert("Please choose a service first ");</script>';
+    }
+  }else{
+    echo '<script>alert("You are not login yet");</script>';
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -277,7 +299,7 @@ if(isset($_POST['add_feedback'])){
           <p><?php echo 'Response : ' . $reply['reply']; ?></p>
       <?php endforeach;
       }
-      echo $count; ?>
+      ?>
     </div>
 
     <!--Input box for user questions -->
@@ -809,24 +831,15 @@ if(isset($_POST['add_feedback'])){
             <div class="owl-carousel testimonial-carousel rounded p-5 wow zoomIn" data-wow-delay="0.6s">
               <?php foreach ($feedbacks as $index => $feedback) : ?>
                 <div class="testimonial-item text-center text-white">
-                  <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-1.jpg" alt="" />
-                  <p class="fs-5">
-
+                  <!--<img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-1.jpg" alt="" />-->
+                  <p class="fs-5">"
+                  <?= $feedback['feedback'];?>"
                   </p>
                   <hr class="mx-auto w-25" />
-                  <h4 class="text-white mb-0">Client Name</h4>
+                  <h4 class="text-white mb-0"><?= $feedback['patient_name'];?></h4>
                 </div>
               <?php endforeach; ?>
-              <div class="testimonial-item text-center text-white">
-                <img class="img-fluid mx-auto rounded mb-4" src="img/testimonial-2.jpg" alt="" />
-                <p class="fs-5">
-                  Dolores sed duo clita justo dolor et stet lorem kasd dolore
-                  lorem ipsum. At lorem lorem magna ut et, nonumy labore diam
-                  erat. Erat dolor rebum sit ipsum.
-                </p>
-                <hr class="mx-auto w-25" />
-                <h4 class="text-white mb-0">Client Name</h4>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -846,15 +859,14 @@ if(isset($_POST['add_feedback'])){
           <div class="col-lg-6">
             <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
               <h1 class="text-white mb-4">Share Your feedbacks</h1>
-              <form action="<?php $_SERVER['PHP_SELF']; ?>" method="post">
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                 <div class="row g-3">
 
                   <div class="col-12 col-sm-12">
-                    <textarea type="text" class="form-control bg-light border-0" placeholder="Your Name" name="feedback" style="height: 55px;">
-                    </textarea>
+                    <textarea type="text" class="form-control bg-light border-0" placeholder="Your Name" name="feedback" style="height: 55px;"></textarea>
                   </div>
                   <div class="col-12">
-                    <button class="btn btn-dark w-100 py-3" type="add_feedback">Share With Us</button>
+                    <input class="btn btn-dark w-100 py-3" type="submit" name="add_feedback" value="Share With Us">
                   </div>
                 </div>
               </form>
@@ -1082,6 +1094,7 @@ if(isset($_POST['add_feedback'])){
       }
 
       function toggleChatbox2() {
+        
         var chatbox = document.getElementById("chatbot-box");
         var chaticon = document.getElementById("chatbot-icon");
         chaticon.style.display = ''; // Corrected from 'display' to 'none'
