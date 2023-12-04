@@ -244,11 +244,11 @@ if (isset($_POST['paynow'])) {
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="index.html" class="nav-item nav-link">Home</a>
-                <a href="index.html" class="nav-item nav-link">About</a>
-                <a href="index.html" class="nav-item nav-link">Service</a>
-                <a href="index.html" class="nav-item nav-link">Our Dentist</a>
-                <a href="index.html" class="nav-item nav-link">Appointment</a>
+                <a href="index.php"  class="nav-item nav-link">Home</a>
+                <a href="index.php"  class="nav-item nav-link">About</a>
+                <a href="index.php"  class="nav-item nav-link">Service</a>
+                <a href="index.php"  class="nav-item nav-link">Our Dentist</a>
+                <a href="index.php"  class="nav-item nav-link">Appointment</a>
                 <!--<div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
@@ -259,7 +259,7 @@ if (isset($_POST['paynow'])) {
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
                 </div>-->
-                <!--<a href="index.html" class="nav-item nav-link active">Contact</a>-->
+                <!--<a href="index.php" class="nav-item nav-link active">Contact</a>-->
             </div>
             <?php if (isset($_SESSION['name'])) { ?>
                 <div class="nav-item dropdown">

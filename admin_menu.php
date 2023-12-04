@@ -98,7 +98,7 @@ include("connection.php");
                     <a href="signup.php" class="dropdown-item">Sign Out</a>
                 </div>
             </div>
-            <a href="index.html" class="btn btn-primary py-2 px-4 ms-3">User page</a>
+            <a href="index.php" class="btn btn-primary py-2 px-4 ms-3">User page</a>
         </div>
     </nav>
     

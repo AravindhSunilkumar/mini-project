@@ -9,7 +9,7 @@ include("connection.php");
   session_destroy();
 
   // Redirect to the login page or any other desired page
-  header('Location: index.html');
+  header('Location: index.php');
   exit();
   if (isset($_GET['f'])) {
    header('Location: signup.php');

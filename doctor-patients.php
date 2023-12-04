@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("connection.php");
+global $f;
 function fetchTableData($conn, $tableName, $service)
 {
     
@@ -152,7 +153,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
         </div>-->
 
 
-                <a href="index.html" class="nav-item nav-link">Home</a>
+        <a href="today-appointment.php" class="nav-item nav-link">Today Appointment</a> 
                 <a href="doctor-patients.php?id=<?= 1 ?>" class="nav-item nav-link">Cosmetic Dentistry</a>
                 <a href="doctor-patients.php?id=<?= 2 ?>" class="nav-item nav-link">Dental Implant</a>
                 <a href="doctor-patients.php?id=<?= 3 ?>" class="nav-item nav-link">Dental Bridges</a>
@@ -222,10 +223,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
                                     echo 'Dental Bridges';
                                 } elseif ($patient['services'] == '4') {
                                     echo 'Teeth Whitening';
+                                }else{
+                                    echo 'No services have been selected yet';
+                                    $f=0;
                                 }
                                 ?></td>
-                            <td><?= $patient['prescription']; ?></td>
-                            <td><?= $patient['Details']; ?></td>
+                            <td><?php  if($f==0){echo "none";}else{ echo $patient['prescription']; }?></td>
+                            <td><?php if($f==0){echo "none";}else{ echo$patient['Details']; }?></td>
                             <td><?= $patient['status']; ?></td>
                             <div class="d-flex">
                                 <!-- ... your existing table rows ... -->

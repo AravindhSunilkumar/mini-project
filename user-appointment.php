@@ -70,7 +70,7 @@ if (isset($_SESSION['name'])) {
     if (confirm("User not logged in. Do you want to go to the signup page?")) {
         window.location.href = "signup.php";
     } else {
-        window.location.href = "index.html"; // Redirect to index.php if Cancel is clicked
+        window.location.href = "index.php"; // Redirect to index.php if Cancel is clicked
     }
 </script>';
     exit; // Stop further PHP execution
@@ -282,11 +282,11 @@ if (isset($_POST['selectedTimeSlot'])) {
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="index.html" class="nav-item nav-link">Home</a>
-                <a href="index.html" class="nav-item nav-link">About</a>
-                <a href="index.html" class="nav-item nav-link">Service</a>
-                <a href="index.html" class="nav-item nav-link">Our Dentist</a>
-                <a href="index.html" class="nav-item nav-link">Appointment</a>
+                <a href="index.php"  class="nav-item nav-link">Home</a>
+                <a href="index.php"  class="nav-item nav-link">About</a>
+                <a href="index.php"  class="nav-item nav-link">Service</a>
+                <a href="index.php" class="nav-item nav-link">Our Dentist</a>
+                <a href="index.php"  class="nav-item nav-link">Appointment</a>
                 <!--<div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu m-0">
@@ -297,7 +297,7 @@ if (isset($_POST['selectedTimeSlot'])) {
                         <a href="appointment.php" class="dropdown-item">Appointment</a>
                     </div>
                 </div>-->
-                <!--<a href="index.html" class="nav-item nav-link active">Contact</a>-->
+                <!--<a href="index.php" class="nav-item nav-link active">Contact</a>-->
             </div>
             <?php if (isset($_SESSION['name'])) { ?>
                 <div class="nav-item dropdown">
@@ -341,7 +341,7 @@ if (isset($_POST['selectedTimeSlot'])) {
         <div class="row py-3">
             <div class="col-12 text-center">
                 <h1 class="display-3 text-white animated zoomIn">Appointment</h1>
-                <a href="index.html" class="h4 text-white">Home</a>
+                <a href="index.php" class="h4 text-white">Home</a>
                 <i class="far fa-circle text-white px-2"></i>
                 <a href="user-appointment.php" class="h4 text-white">Appointment</a>
             </div>

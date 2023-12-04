@@ -68,7 +68,7 @@ $services = fetchTableData($conn, "tbl_services");
 
     <!-- Navbar Start -->
     <nav class="bg-white navbar navbar-expand-lg navbar-light shadow-sm px-5 py-3 py-lg-0">
-        <a href="index.html" class="navbar-brand p-0">
+        <a href="index.php" class="navbar-brand p-0">
             <h1 class="m-0 text-primary">
                 <i class="fa fa-tooth me-2"></i>Smile
                 <span style="color: orange">32</span>
@@ -79,10 +79,10 @@ $services = fetchTableData($conn, "tbl_services");
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-                <a href="index.html" class="nav-item nav-link active">Home</a>
-                <a href="index.html#about" class="nav-item nav-link">About Us</a>
-                <a href="index.html#services" class="nav-item nav-link">Service</a>
-                <a href="index.html#dentist" class="nav-item nav-link">Our Dentist</a>
+                <a href="index.php" class="nav-item nav-link active">Home</a>
+                <a href="index.php#about" class="nav-item nav-link">About Us</a>
+                <a href="index.php#services" class="nav-item nav-link">Service</a>
+                <a href="index.php#dentist" class="nav-item nav-link">Our Dentist</a>
                 <!-- <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0">
@@ -127,7 +127,7 @@ $services = fetchTableData($conn, "tbl_services");
         <div class="row py-3">
             <div class="col-12 text-center">
                 <h1 class="display-3 text-white animated zoomIn">Services</h1>
-                <a href="index.html#services" class="h4 text-white">Home</a>
+                <a href="index.php#services" class="h4 text-white">Home</a>
                 <i class="far fa-circle text-white px-2"></i>
                 <a href="user-appointment.php" class="h4 text-white">Services</a>
             </div>

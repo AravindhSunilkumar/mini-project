@@ -59,7 +59,7 @@ function userLogin($useremail, $password)
 
         $_SESSION['email'] = $row['user_email'];  
         $_SESSION['password'] = $row['user_password'];  
-        return array("success" => true, "redirect" => "index.html");
+        return array("success" => true, "redirect" => "index.php");
     } else {
         $sql = "SELECT * FROM tbl_admin WHERE email = '$useremail' AND admin_password = '$password'";
         $result = mysqli_query($conn, $sql);
@@ -75,9 +75,10 @@ function userLogin($useremail, $password)
             $row = mysqli_fetch_assoc($result);
     
             if (mysqli_num_rows($result) > 0) {
+                $_SESSION['id']=$row['doctor_id'];
                 $_SESSION['user']='d';
                 $_SESSION['name'] = $row['doctor_name'];
-                return array("success" => true, "redirect" => "index.html");
+                return array("success" => true, "redirect" => "doctor-patients.php");
             } else {
                 return array("success" => false, "message" => "Invalid email or password");
             }
@@ -101,7 +102,7 @@ if (isset($_POST["signup"])) {
         if (isset($result["redirect"])) {
             header('Location: ' . $result["redirect"]);
         } else {
-            header('Location: index.html');
+            header('Location: index.php');
         }
     } else {
         $_SESSION['message2'] = $result["message"];
@@ -118,7 +119,7 @@ if (isset($_POST["login"])) {
         if (isset($result["redirect"])) {
             header('Location: ' . $result["redirect"]);
         } else {
-            header('Location: index.html');
+            header('Location: index.php');
         }
     } else {
         $_SESSION["message1"] = $result["message"];

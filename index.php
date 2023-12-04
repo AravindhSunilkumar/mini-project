@@ -38,10 +38,16 @@ function fetchData($conn, $tableName)
 $questions = fetchData($conn, 'tbl_prebuild_questions');
 if (isset($_POST['add_question'])) {
   $question = $_POST['question'];
+  if(isset($_SESSION['id'])){
   $userid = $_SESSION['id'];
   $sql = "insert into tbl_questions (user_id,question) values ('$userid','$question')";
   $result = $conn->query($sql);
   header('location:index.php');
+  }else{
+    echo '<script>alert("Signup / Signin to ask questions");</script>';
+  }
+  
+  
 }
 $services = fetchTableData($conn, "tbl_services");
 $doctors = fetchTableData($conn, "tbl_doctors");
@@ -316,7 +322,7 @@ if (isset($_POST['add_feedback'])) {
 
   <!-- Navbar Start -->
   <nav class="bg-white navbar navbar-expand-lg navbar-light shadow-sm px-5 py-3 py-lg-0">
-    <a href="index.html" class="navbar-brand p-0">
+    <a href="index.php" class="navbar-brand p-0">
       <h1 class="m-0 text-primary">
         <i class="fa fa-tooth me-2"></i>Smile
         <span style="color: orange">32</span>
@@ -327,7 +333,7 @@ if (isset($_POST['add_feedback'])) {
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="navbar-nav ms-auto py-0">
-        <a href="index.html" class="nav-item nav-link active">Home</a>
+        <a href="index.php" class="nav-item nav-link active">Home</a>
         <a href="#about" class="nav-item nav-link">About Us</a>
         <a href="#services" class="nav-item nav-link">Service</a>
         <a href="#dentist" class="nav-item nav-link">Our Dentist</a>

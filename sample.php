@@ -15,7 +15,7 @@ if (isset($_POST["signup"])) {
         if (mysqli_query($conn, $sql)) {
             $_SESSION["name"] = $name;
             $_SESSION["email"] = $email;
-            header('Location: index.html');
+            header('Location: index.php');
             exit();
         } else {
             $_SESSION['message2'] = "Error: " . mysqli_error($conn);

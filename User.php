@@ -359,7 +359,7 @@ if (isset($_POST['pay'])) {
             echo '<script>
             var confirmed = confirm("Make the first Appointment setup profile. Click OK to continue.");
             if (confirmed) {
-                window.location.href = "index.html#services";
+                window.location.href = "index.php#services";
             }
         </script>';
         }
@@ -439,7 +439,7 @@ if (isset($_POST['pay'])) {
     
             <!-- Navbar Start -->
             <nav class="bg-white navbar navbar-expand-lg navbar-light shadow-sm px-5 py-3 py-lg-0">
-                <a href="index.html" class="navbar-brand p-0">
+                <a href="index.php" class="navbar-brand p-0">
                     <h1 class="m-0 text-primary">
                         <i class="fa fa-tooth me-2"></i>Smile
                         <span style="color: orange">32</span>
@@ -450,10 +450,10 @@ if (isset($_POST['pay'])) {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
-                        <a href="index.html#about" class="nav-item nav-link">About Us</a>
-                        <a href="index.html#services" class="nav-item nav-link">Service</a>
-                        <a href="index.html#dentist" class="nav-item nav-link">Our Dentist</a>
+                        <a href="index.php" class="nav-item nav-link active">Home</a>
+                        <a href="index.php#about" class="nav-item nav-link">About Us</a>
+                        <a href="index.php#services" class="nav-item nav-link">Service</a>
+                        <a href="index.php#dentist" class="nav-item nav-link">Our Dentist</a>
                         <!-- <div class="nav-item dropdown">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
           <div class="dropdown-menu m-0">
