@@ -1,7 +1,51 @@
 <?php
 session_start();
 include("connection.php");
+$doctor_id=$_SESSION['id'];
+$sql = "SELECT * FROM tbl_doctors WHERE doctor_id = '$doctor_id'";
+$result = $conn->query($sql);
+$doctors = [];
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $doctors[] = $row;
+    }
+}
 global $f;
+// Handle doctor update
+if (isset($_POST['update_doctor'])) {
+    $doctor_id = $_POST['doctor_id'];
+    $new_doctor_name = $_POST['new_doctor_name'];
+    $new_age = $_POST['new_age'];
+    $new_gender = $_POST['new_gender'];
+    $new_services = $_POST['new_services'];
+    $new_qualification = $_POST['new_qualification'];
+
+    $update_sql = "UPDATE tbl_doctors SET 
+                   doctor_name = '$new_doctor_name', 
+                   age = '$new_age', 
+                   gender = '$new_gender', 
+                   services = '$new_services', 
+                   qualification = '$new_qualification' 
+                   WHERE doctor_id = '$doctor_id'";
+
+    if ($conn->query($update_sql) === TRUE) {
+        // Update successful
+        // echo "Update successful!";
+        //header("Location: doctors_list.php");
+        //exit();
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    } else {
+        // Update failed
+        //  echo "Error updating record: " . $conn->error;
+    }
+
+
+    // Redirect back to the doctor list page after updating
+    //header("Location: doctors_list.php");
+    //exit();
+}
 function fetchTableData($conn, $tableName, $service)
 {
     
@@ -158,6 +202,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
                 <a href="doctor-patients.php?id=<?= 2 ?>" class="nav-item nav-link">Dental Implant</a>
                 <a href="doctor-patients.php?id=<?= 3 ?>" class="nav-item nav-link">Dental Bridges</a>
                 <a href="doctor-patients.php?id=<?= 4 ?>" class="nav-item nav-link">Teeth Whitening</a>
+                <a href="doctor-profile.php" class="nav-item nav-link">My Profile</a>
 
 
 
@@ -169,7 +214,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><img src="img/person.png" alt="icon" class="icon" /></a>
                     <div class="dropdown-menu m-0">
-                        <a href="User.php" class="dropdown-item"><?php echo $_SESSION['name'] ?></a>
+                    <?php foreach ($doctors as $index => $doctor) : ?> 
+                    <a href="javascript:void(0);"  onclick="showEditForm( <?= $doctor['doctor_id']; ?>, '<?= $doctor['doctor_name']; ?>', '<?= $doctor['age']; ?>', '<?= $doctor['gender']; ?>', '<?= $doctor['services']; ?>', '<?= $doctor['qualification']; ?>'
+                    )"class="dropdown-item"><?php echo $_SESSION['name'] ?></a>
+                    <?php endforeach; ?>
                         <a href="logout.php" class="dropdown-item">SignOut</a>
                     </div>
                 </div>
@@ -300,6 +348,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['patie
             </div>
         </div>
     </div>
+
+    
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>

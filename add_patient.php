@@ -1,5 +1,6 @@
 <?php
 include('connection.php');
+include('message.php');
 $patient = isset($_GET['patient']) ? intval($_GET['patient']) : 0;
 if (isset($_POST['insert'])) {
     $name = $_POST['full_name'];
@@ -44,27 +45,54 @@ if (isset($_POST['insert'])) {
 
 
                         if ($stmt->execute()) {
+                            $patient_id=mysqli_insert_id($conn);
+                            
                             //doctor login username and password 
+                            function generateRandomPassword($length) {
+                                $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                                $password = '';
+                            
+                                for ($i = 0; $i < $length; $i++) {
+                                    $randomIndex = rand(0, strlen($chars) - 1);
+                                    $password .= $chars[$randomIndex];
+                                }
+                            
+                                return $password;
+                            }
+                            
+                            // Usage example
+                            $length = 8; // desired password length
+                            $password = generateRandomPassword($length);
                             
                                
                                 $dsql = "INSERT INTO tbl_users (user_username,user_email,user_password) VALUES('$name','$email','$name')";
 
                                 if ($conn->query($dsql) === true) {
+                                    $user_id = mysqli_insert_id($conn);
+                                    $subject="Succefully  added ".$name;
+                                    $toemail=$email;
+                                    
+                                    //echo $password;
+                                    
+                                    $body="Successfully added ".$name."\n\n Login Email Address : ".$toemail."\n\nPassword : ".$password;
+                                    email($toemail,$subject,$body);
+                                    $idupdate = "UPDATE tbl_patient SET user_id = '$user_id' WHERE patient_id = '$patient_id'";
+                                    if ($conn->query($idupdate) === true) {}
                                     // Display success message or perform any other desired actions
                                     echo '<script>
                                         var confirmed = confirm("Login Password set successfully.");
                                         if (confirmed) {
-                                            window.location.href = "doctors_list.php";
+                                            window.location.href = "patients_list.php";
                                         }
                                         </script>';
                                 }
                             
-                            echo '<script>
-            var confirmed = confirm("Patient added successfully. Click OK to continue.");
-            if (confirmed) {
-                window.location.href = "patients_list.php";
-            }
-        </script>';
+                                            echo '<script>
+                                             var confirmed = confirm("Patient added successfully. Click OK to continue.");
+                                             if (confirmed) {
+                                                 window.location.href = "patients_list.php";
+                                             }
+                                         </script>';
                         } else {
                             echo "Error inserting data: " . $stmt->error;
                         }

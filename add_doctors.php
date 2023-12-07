@@ -180,18 +180,18 @@ if (isset($_POST["add_doctor"])) {
     }
 }
 //doctor login username and password 
-if (isset($_POST['d-username']) ) {
+if (isset($_POST['set-username']) ) {
     $d_id=$_POST['doctor_id'];
-    $d_username = $_POST['d-username'];
-    $d_password = $_POST['d-password'];
-    $dsql = "UPDATE tbl_doctors SET username = '$d_username', password = '$d_password' WHERE doctor_id = '$d_id'";
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $dsql = "UPDATE tbl_doctors SET email = '$email', password = '$password' WHERE doctor_id = '$d_id'";
 
     if ($conn->query($dsql) === true) {
         // Display success message or perform any other desired actions
         echo '<script>
 var confirmed = confirm("Doctor Login Password set successfully.");
 if (confirmed) {
-    window.location.href = "doctors_list.php";
+    window.location.href = "add_doctors.php";
 }
 </script>';
     }
@@ -494,13 +494,12 @@ if (confirmed) {
                             echo "<option value=\"\">No doctors available</option>";
                         }
 
-
                         ?>
                     </select>
-                    <label for="username">User-name</label>
-                    <input type="text" name="d-username">
+                    <label for="username">Email</label>
+                    <input type="email" name="email" value="">
                     <label for="password">Password</label>
-                    <input type="password" name="d-password">
+                    <input type="text" name="password" value="">
                     <input type="submit" value="submit" name="set-username">
                 </form>
             </div>
