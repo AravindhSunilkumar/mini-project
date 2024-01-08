@@ -541,7 +541,7 @@ if (isset($_POST['pay'])) {
 
 
 
-                            <div class="w3-container">
+                            <div class="w3-container" style="height:125vh;">
                                 <div class="w3-display-bottomleft w3-container w3-text-black">
                                     <div>
 
@@ -555,7 +555,7 @@ if (isset($_POST['pay'])) {
                                 <p><i class="fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i><?php echo $_SESSION['email']; ?></p>
                                 <p><i class=" fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i><?php echo $patient['emergency_contact_phone']; ?></p>
                                 <hr>
-                                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                                <!--<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                                     <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-teal"></i>Reset Username and Password </b></p>
                                     <p>Email</p>
                                     <div class=" w3-round-xlarge w3-small">
@@ -571,7 +571,7 @@ if (isset($_POST['pay'])) {
                                     <div style=" width: 152px; margin-left: 116px; margin-top: -12px;">
                                         <input type="submit" class="btn btn-dark w-100 py-3" value="Update" name="reset_password">
                                     </div>
-                                </form>
+                                </form>-->
                             </div>
                         </div><br>
                         <?php if (isset($_GET['pay']) && $_GET['pay'] == 1) {
@@ -618,7 +618,7 @@ if (isset($_POST['pay'])) {
                                 <tr>
 
 
-                                    <th>Patient Email</th>
+                                    <!-- <th>Patient Email</th> -->
                                     <th>doctor Name</th>
                                     <th>service Name</th>
 
@@ -652,10 +652,10 @@ if (isset($_POST['pay'])) {
                                                     $fullname = $name['full_name'];
                                                 endforeach;*/
                                             ?>
-                                            <td><?php
+                                            <!-- <td><?php
                                                 $p_email = $appmt['patient_email'];
                                                 echo $p_email;
-                                                ?></td>
+                                                ?></td> -->
                                             <td><?php
                                                 $d_id = $appmt['doctor_id'];
                                                 $d_names = fetchName($conn, $d_id, 'doctor_id', "tbl_doctors");

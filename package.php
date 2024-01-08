@@ -292,8 +292,8 @@ if (isset($_POST['paynow'])) {
                             <h2 style="color:#fff">
                                 <center>Choosed package</center>
                             </h2>
-                            <p>Choosed pack :<?php echo $package_name; ?></p>
-                            <p>Total price :<?php echo $price;
+                            <p>Choosed pack :<?php echo $package_name; ?></p><br><br>
+                            <p>Total price :<?php echo $price;   ?></p><br><?php
                                             if ($packageid == 5 || $packageid == 1) { ?></p><br>
                             <p>Initial Amount : <?php echo $currentpayamount; ?></p>
                         <?php } else { ?>
@@ -318,7 +318,7 @@ if (isset($_POST['paynow'])) {
                             <h2 style="color:#fff">
                                 <center>Choosed package</center>
                             </h2>
-                            <p>Choosed pack :<?php echo $package_name; ?></p>
+                            <p>Choosed pack :<?php echo $package_name; ?></p><br><br>
                             <p>Total price :<?php echo $price;
                                             if ($packageid == 5 || $packageid == 1) { ?></p><br>
                             <p>Initial Amount : <?php echo $currentpayamount; ?></p>
@@ -387,17 +387,17 @@ if (isset($_POST['paynow'])) {
                 if ($flag == 5) {
                 ?>
 
-                    <div class="d-flex justify-content-center">
-                        <h1> Choosed Package <?php echo $service_name; ?></h1>
-                        <div class="d-flex" style="width:40%;">
-                            <h3>Pay Amount :<?php foreach ($service_details as $index => $service_detail) :
+                    <div class="justify-content-center">
+                        <h1> Choosed Package <?php echo $service_name; ?></h1><br><br>
+                        <div class="" style="width:40%;"><br><br>
+                        <center style=" width: 100vh; margin-left: 233px;"><h3><h3>Pay Amount :<?php foreach ($service_details as $index => $service_detail) :
                                                 echo $service_detail['price'];
                                             endforeach;
                                             $flag = 5
-                                            ?></h3>
+                                            ?></h3></center>
 
                         </div>
-                        <div>
+                        <div><br><br>
 
                             <a href="payment.php?payamount=<?php echo $service_detail['price'] ?>" class="btn btn-dark py-3 px-5 me-3"><?php echo '₹' . $service_detail['price']; ?></a>
 
