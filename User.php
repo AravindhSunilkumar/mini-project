@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('connection.php');
+include("message.php");
 global $pay_amount;
 global $otp;
 // Include the message.php file
@@ -209,6 +210,15 @@ if (isset($_POST['pay'])) {
     $payamount = intval($_POST['price']);
 
     header('location: payment.php?payamount=' . $payamount);
+}
+
+//Cancel appointment
+if (isset($_POST["cancel"]))  {
+    
+        $sql = "UPDATE tbl_appointments SET status = 'canceled' WHERE patient_id = $patient_id";
+        $conn->query($sql);
+        
+    
 }
 ?>
 
@@ -523,19 +533,19 @@ if (isset($_POST['pay'])) {
 
                         <div class="w3-white w3-text-grey w3-card-4 ">
                             <div class="d-flex justify-content-center w3-display-container">
-                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+                                <!-- <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
                                     <label for="fileInput" class="file-label">
-                                        <?php if (!empty($patient['profile_picture'])) { ?>
+                                        <?php if (!empty($patient['profile_picture'])) { ?> -->
                                             <img src="<?php echo $patient['profile_picture'] ?>" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
-                                        <?php } else { ?>
+                                        <!-- <?php } else { ?>
                                             <img src="img/person.png" style="margin-left: 41px; width: 70%" alt="Avatar" class="img-fluid rounded-circle">
                                         <?php } ?>
                                     </label>
                                     <input type="file" id="fileInput" name="profile_image" class="file-input" accept="image/*">
                                     <input type="submit" value="Change" name="profile" style="margin-left: 173px;">
-                                </form>
+                                </form> -->
 
-
+                                <img src="img/person.png" style="margin-left: 11px;width: 60%;margin-top: 15px;" alt="Avatar" class="img-fluid rounded-circle">
 
                             </div>
 
@@ -548,7 +558,7 @@ if (isset($_POST['pay'])) {
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <h2 class=" w3-margin-right w3-large "><?php echo $patient['full_name']; ?></h2>
+                                    <h2 class=" w3-margin-right w3-large " style="margin-left: 21px;"><?php echo $patient['full_name']; ?></h2>
                                 </div>
                                 <p><i class="fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i>DOB:<?php echo $patient['date_of_birth']; ?></p>
                                 <p><i class="fa-fw w3-margin-right w3-large w3-text-teal"><img class="icon" src="img/scribble.png" alt=""></i>Gender:<?php echo $patient['gender']; ?></p>
@@ -628,6 +638,7 @@ if (isset($_POST['pay'])) {
                                     <th>Due Amount</th>
                                     <th>Pay</th>
                                     <th>Appointment Status</th>
+                                    <th></th>
 
 
 
@@ -714,10 +725,23 @@ if (isset($_POST['pay'])) {
                                                 }
                                                 ?></td>
                                                 <td><?php
+                                                $appointmentDate = new DateTime($appo_date);
+                                                $currentDate = new DateTime();
+                                                if ($appointmentDate < $currentDate) {
+                                                
+                                                    echo "Expired";
+                                                }else{
+                                                    // echo $appointmentDate->format('Y-m-d H:i:s') ;
                                                 $status = $appmt['status'];
                                                 echo $status;
+                                                }
                                                 //echo '<a href="User.php?pay=1" class="btn btn-info">Pay Now</a>';
                                                 ?></td>
+                                                <?php if($status== "completed"){
+                                                    
+                                                }elseif($status=="canceled"){}else{?>
+                                                <td><form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post"><input type="submit"  value="Cancel" name="cancel" class="btn btn-info"></form></td>
+                                                <?php } ?>
 
                     </div>
                 <?php endforeach; ?>
