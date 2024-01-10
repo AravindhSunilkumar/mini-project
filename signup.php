@@ -16,14 +16,14 @@ if (isset($_SESSION["message2"])) {
 	$message2 = htmlspecialchars($message2, ENT_QUOTES);
 }
 if (isset($_GET['reset']) && $_GET['reset'] == 1) {
-    // Check if the email parameter is set
-    if (isset($_GET['email'])) {
-        $resetEmail = urldecode($_GET['email']);
-        // Now you can use $resetEmail in your code
-        echo "Email received for password reset: $resetEmail";
-    } else {
-        echo "No email parameter in the URL";
-    }
+	// Check if the email parameter is set
+	if (isset($_GET['email'])) {
+		$resetEmail = urldecode($_GET['email']);
+		// Now you can use $resetEmail in your code
+		echo "Email received for password reset: $resetEmail";
+	} else {
+		echo "No email parameter in the URL";
+	}
 }
 ?>
 
@@ -37,6 +37,7 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 	<!--<link rel="stylesheet" href="css/CSS.css">-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" href="./img/tooth.png" type="image/png" />
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<style>
 		@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
 
@@ -107,7 +108,8 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 			text-align: center;
 			transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 		}
-		.num{
+
+		.num {
 			color: #f57e57;
 		}
 
@@ -341,12 +343,12 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 </head>
 
 <body>
-	
+
 	<!--<video src="./img/signupvideo.mp4"></video>-->
 	<div class="wrapper">
 		<!-- ... Your HTML code ... -->
 
-		<div class="modal" id="message-modal" >
+		<div class="modal" id="message-modal">
 			<div class="modal-content">
 				<span class="close" onclick="closeModal()">&times;</span>
 				<center>
@@ -354,7 +356,7 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 				</center>
 			</div>
 		</div>
-		
+
 
 
 		<!-- ... Your HTML code ... -->
@@ -379,7 +381,7 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 			<div class="form-inner">
 				<form action="api.php" method="post" class="login">
 					<div class="field">
-					<input type="text" class="input-box" placeholder="Email Address" name="email" required>
+						<input type="text" class="input-box" placeholder="Email Address" name="email" required>
 					</div>
 					<div class="field">
 						<input type="password" class="input-box" placeholder="Password" name="password" required>
@@ -391,10 +393,16 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 						<div class="btn-layer"></div>
 						<input type="submit" name="login" value="Login">
 					</div>
-					<div class="signup-link">
-					<a href="signup.php?reset=1<?php echo isset($_POST['email']) ? '&email=' . $_POST['email']: ''; ?>">Forgot password?</a>
-					</div>
+
+
+
+
+
+
 				</form>
+
+
+
 				<form action="api.php" method="post" class="signup">
 					<div class="field">
 						<input type="text" class="input-box" placeholder="User Name" name="name" required>
@@ -416,10 +424,13 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 			</div>
 		</div>
 	</div>
+	
+	<button style="background-color: transparent;color: #06A3DA;border: 0px solid #000;cursor: pointer;position: absolute;margin-top: 416px;margin-left: 408px;" onclick="showPrompt()">Forgot Password?</button>
+	
 	<script>
 		// JavaScript for modal execution
 		console.log("JavaScript for modal execution");
-		
+
 
 		function closeModal() {
 			var modal = document.getElementById('message-modal');
@@ -456,13 +467,45 @@ if (isset($_GET['reset']) && $_GET['reset'] == 1) {
 			return false;
 		});
 	</script>
-	
+
 	<?php
-	
+
 	unset($_SESSION['message1']);
 	unset($_SESSION['message2']);
 	?>
 
 </body>
+
+<script>
+	function showPrompt() {
+		Swal.fire({
+			title: 'Enter your email',
+			input: 'email',
+			inputAttributes: {
+				autocapitalize: 'off'
+			},
+			showCancelButton: true,
+			confirmButtonText: 'Submit',
+			showLoaderOnConfirm: true,
+			preConfirm: (email) => {
+				// You can add client-side validation here if needed
+				return fetch('example3.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						body: 'email=' + email,
+					})
+					.then(response => response.text())
+					.then(response => {
+						Swal.fire(response)
+					})
+					.catch(error => {
+						Swal.fire('Error', 'An error occurred while processing your request', 'error')
+					})
+			}
+		})
+	}
+</script>
 
 </html>

@@ -17,7 +17,7 @@ require 'vendor/autoload.php';
     $mail->Password = 'yupv olta vzjz hroo';                 
     
     // Set 'from' email address and name
-    $mail->setFrom('aravindhsunilkumar3@gmail.com', 'Your Name');
+    $mail->setFrom('aravindhsunilkumar3@gmail.com', 'Smile 32');
     
     // Add a recipient email address
     $mail->addAddress($toemail);
